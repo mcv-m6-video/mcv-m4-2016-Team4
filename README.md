@@ -3,6 +3,7 @@
 * Adrià Ciurana
 * Guim Perarnau
 * Pau Riba
+
 ## Blocks
 1. **Assessment of Foreground Extraction and Optical Flow**. *Deadline*: 17-12-2015
 2. **Background estimation**. *Deadline*: 07-01-2016
