@@ -15,7 +15,7 @@ function [ p , r , f1 ] = getMetrics( tp , fp , fn , tn)
     if den == 0
         p = 0;
     else
-        p = tp/den;
+        p = tp./den;
     end % if
 
     % Recall
@@ -23,7 +23,7 @@ function [ p , r , f1 ] = getMetrics( tp , fp , fn , tn)
     if den == 0
         r = 0;
     else
-        r = tp/den;
+        r = tp./den;
     end % if
     
     % F1-score
@@ -31,7 +31,7 @@ function [ p , r , f1 ] = getMetrics( tp , fp , fn , tn)
     if den == 0
         f1 = 0;
     else
-        f1 = 2*( p * r )/den;
+        f1 = 2.*( p .* r )./den;
     end % if
     
 end % function
