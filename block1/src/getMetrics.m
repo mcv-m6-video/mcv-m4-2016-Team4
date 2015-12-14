@@ -1,4 +1,4 @@
-function [ p , r , f1 ] = getMetrics( tp , fp , fn , tn)
+function [ p , r , f1 ] = getMetrics( tp , fp , fn , tn )
 %GETMETRICS Compute the metrics depending on the input arguments
 %   Recieve the metrics:
 %       * True Positives (TP)
