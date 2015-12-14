@@ -11,3 +11,13 @@
 4. **Video Stabilization**. *Deadline*: 21-01-2016
 5. **Region tracking**. *Deadline*: 29-01-2016
 6. **Final presentation and report**. *Deadline*: 04-02-2016
+
+##Datasets structure
+1. Highway/
+			/groundtruth/ *ignored by git*
+			/input/ *ignored by git*
+			/results/ 
+2. data_stereo_flow/
+			/results/
+			/testing/ *ignored by git*
+			/training/ *ignored by git*
