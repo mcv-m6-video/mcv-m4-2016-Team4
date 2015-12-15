@@ -10,7 +10,7 @@ function plotTP_TF_PerFrame( truePositives, totalForeground )
     hold on;
     plot(totalForeground,'r');
     
-    title('Total Foreground vs #frame');
+    title('True Positives & Total Foreground vs #frame');
     xlabel('#frame');
     legend('True Positives', 'Total Foreground', 'Location' , 'SouthEast')
 end
