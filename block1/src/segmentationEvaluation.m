@@ -1,14 +1,14 @@
-function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationEvaluation( pathGroundtruth , pathResults , testId , forward , VERBOSE )
+function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationEvaluation( pathGroundtruth , pathResults , testId , offsetDesynch , VERBOSE )
 %SEGMENTATIONEVALUATION Evaluates one folder
 %   Recieve the information:
 %       * pathGroundtruth: Path to the ground truth.
 %       * pathResults: Path to the results to evaluate
 %       * testId: Test id for identifying the files in pathResults.
-%       * forward: number of frames to shift in order to create a
+%       * offsetDesynch: number of frames to shift in order to create a
 %                  desynchronization for experimentation / debug purposes. 
-%                  forward = 0 means no desynch at all, forward = N (where 
-%                  N > 0) creates a shift of N frames between the results 
-%                  and the groundtruth.
+%                  offsetDesynch = 0 means no desynch at all, offsetDesynch = 
+%                  N (where N > 0) creates a shift of N frames between the 
+%                  results and the groundtruth.
 %       * VERBOSE: Plot further information.
 %   The output are:
 %       * True Positives (TP)
@@ -21,8 +21,8 @@ function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationE
     if ~exist( 'testId' , 'var' )
         testId = '';
     end % if
-    if ~exist( 'forward' , 'var' )
-        forward = 0;
+    if ~exist( 'offsetDesynch' , 'var' )
+        offsetDesynch = 0;
     end % if
     if ~exist( 'VERBOSE' , 'var' )
         VERBOSE = false;
@@ -55,7 +55,7 @@ function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationE
         splittedStr1 = strsplit(filesResultsTest(i).name , '_');
         splittedStr2 = strsplit(splittedStr1{end} , '.');
         
-        numFile=sprintf(['%0' num2str(length(splittedStr2{1})) 'd'] , str2double(splittedStr2{1}) + forward );
+        numFile=sprintf(['%0' num2str(length(splittedStr2{1})) 'd'] , str2double(splittedStr2{1}) + offsetDesynch );
         nameGroundtruth = [strjoin({splittedStr1{1:end-1}, numFile},'_') '.' splittedStr2{end}];
         nameGroundtruth = strrep(nameGroundtruth , testId , '');
         im_gt = imread( [ pathGroundtruth  nameGroundtruth] );
