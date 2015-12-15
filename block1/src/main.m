@@ -93,3 +93,5 @@ testIdB = 'test_B_';
 % flow_u = (double(im_test(:,:,1))-2^15)/64.0;
 % flow_v = (double(im_test(:,:,2))-2^15)/64.0;
 % quiver(flow_u,flow_v)
+plotOpticalFlow(imreal, imtest, 10);
+
