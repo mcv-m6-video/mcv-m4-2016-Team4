@@ -20,14 +20,21 @@ pathHighwayResults = [pathHighway filesep 'results' filesep ];
 
 % Test A
 testIdA = 'test_A_';
-[ tpA , fpA , fnA , tnA , totalForegroundA , totalBackgroundA ] =  segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdA , VERBOSE );
+[ tpA , fpA , fnA , tnA , totalForegroundA , totalBackgroundA ] =  ...
+    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdA , VERBOSE );
 
 % Test B
 testIdB = 'test_B_';
-[ tpB , fpB , fnB , tnB , totalForegroundB , totalBackgroundB ] =  segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdB , VERBOSE );
+[ tpB , fpB , fnB , tnB , totalForegroundB , totalBackgroundB ] =  ...
+    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdB , VERBOSE );
 
 %% Task 2
-
+% Test A segmentation has a higher recall because it misses less foreground pixels (true samples). 
+% However, it misclassifies background pixels (false samples) as foreground (FP) and, consequently, 
+% the precision lowers.
+% On the other hand, Test B has a higher precision because most of the positive pixels (TP+FP) are 
+% foreground (TP) at a cost of having foreground pixels incorrectly classified as background (FN), 
+% which lowers the recall.
 
 %% Task 3
 
