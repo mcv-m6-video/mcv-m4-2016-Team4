@@ -11,28 +11,16 @@ function [ p , r , f1 ] = getMetrics( tp , fp , fn , tn )
 %       * F1-score (F1)
 
     % Precision
-    den = tp + fp;
-    if den == 0
-        p = 0;
-    else
-        p = tp./den;
-    end % if
+    p = tp./(tp + fp);
+    p(isnan(p)) = 0; % Avoid 0/0 and 0/0=0
 
     % Recall
-    den = tp + fn;
-    if den == 0
-        r = 0;
-    else
-        r = tp./den;
-    end % if
+    r = tp./(tp + fn);
+    r(isnan(r)) = 0; % Avoid 0/0 and 0/0=0
     
     % F1-score
-    den = p + r;
-    if den == 0
-        f1 = 0;
-    else
-        f1 = 2.*( p .* r )./den;
-    end % if
+    f1 = 2.*( p .* r )./(p + r);
+    f1(isnan(f1)) = 0; % Avoid 0/0 and 0/0=0
     
 end % function
 

@@ -1,4 +1,4 @@
-function [ tp , fp , fn , tn ] = segmentationEvaluation( pathGroundtruth , pathResults , test , VERBOSE )
+function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationEvaluation( pathGroundtruth , pathResults , testId , VERBOSE )
 %SEGMENTATIONEVALUATION Evaluates one folder
 %   Recieve the information:
 %       * pathGroundtruth: Path to the ground truth.
@@ -13,24 +13,24 @@ function [ tp , fp , fn , tn ] = segmentationEvaluation( pathGroundtruth , pathR
 
     % If no test is provided, we assume that we have to compute it for the
     % whole folder
-    if ~exist( 'test' , 'var' )
-        test = '*';
+    if ~exist( 'testId' , 'var' )
+        testId = '';
     end % if
     if ~exist( 'VERBOSE' , 'var' )
         VERBOSE = false;
     end % if
     
     % List of files for the test
-    filesResultsTest = dir([ pathResults , test ]);
+    filesResultsTest = dir([ pathResults , testId , '*' ]);
     
     % Setup variables
     tp = zeros(length(filesResultsTest),1);
     fp = zeros(length(filesResultsTest),1);
     tn = zeros(length(filesResultsTest),1);
     fn = zeros(length(filesResultsTest),1);
-        
-    % String to delete in the path to get the ground truth image
-    strToDel = strrep(test,'*','');
+    totalForeground = zeros(length(filesResultsTest),1);
+    totalBackground = zeros(length(filesResultsTest),1);
+    
     
     % Annotations on the groundtruth
     %     0 : Static
@@ -44,7 +44,8 @@ function [ tp , fp , fn , tn ] = segmentationEvaluation( pathGroundtruth , pathR
         im_test = logical( im_test );
         
         % Read Ground truth image
-        im_gt = imread( [ pathGroundtruth strrep(filesResultsTest(i).name,strToDel,'') ] );
+        nameGroundtruth = strrep(filesResultsTest(i).name , testId , '');
+        im_gt = imread( [ pathGroundtruth  nameGroundtruth] );
         im_gt = im_gt == 255;
         
         % Compare both images
@@ -52,11 +53,15 @@ function [ tp , fp , fn , tn ] = segmentationEvaluation( pathGroundtruth , pathR
         fp(i) = fp(i) + sum( sum( im_test .* (~im_gt) ) );
         tn(i) = tn(i) + sum( sum( (~im_test) .* (~im_gt) ) );
         fn(i) = fn(i) + sum( sum( (~im_test) .* im_gt ) );
+        
+        % Compute total foreground and total background
+        totalForeground(i) = totalForeground(i) + sum( sum( im_gt ) );
+        totalBackground(i) = totalBackground(i) + sum( sum( ~im_gt ) );
     end % for
     
     if VERBOSE
         [ p , r , f1 ] = getMetrics( sum( tp ) , sum( fp ) , sum( fn ) , sum( tn ) );
-        fprintf( 'Test %s:\n' , strToDel );
+        fprintf( 'Test %s:\n' , testId );
         fprintf( '\ttp = %d , fp = %d , fn = %d , tn = %d\n' , sum( tp ) , sum( fp ) , sum( fn ) , sum( tn ) );
         fprintf( '\tPrecision = %f , Recall = %f , F1-score = %f\n' , p , r , f1 );
     end
