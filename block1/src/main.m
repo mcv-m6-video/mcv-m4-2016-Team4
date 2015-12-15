@@ -6,11 +6,13 @@
 %% Set up enviroment
 
 clear all; clc; close all;
+
 pathDatasets = ['..' filesep '..' filesep 'datasets'];
 pathHighway = [pathDatasets filesep 'highway'];
 pathDataStereo = [pathDatasets filesep 'data_stereo_flow'];
 VERBOSE = true;
 
+%% Foreground Estimation Metrics
 %% Task 1
 % Segmentation metrics (total).
 
@@ -37,15 +39,35 @@ testIdB = 'test_B_';
 % which lowers the recall.
 
 %% Task 3
+% Temporal analysis of the results
 
+% Test A
 % Obtain the metrics
 [precisionA, recallA, f1scoreA] = getMetrics(tpA, fpA, fnA, tnA);
+
+% Test B
+% Obtain the metrics
 [precisionB, recallB, f1scoreB] = getMetrics(tpB, fpB, fnB, tnB);
 
 if VERBOSE
-    % .a
+    % Graph 1. F1-Score vd # frame
     plotF1ScorePerFrame([f1scoreA f1scoreB]);
 
-    % .b
+    % Graph 2. True Positive & Total Foreground pixels vs # frame
     plotTP_TF_PerFrame([tpA tpB], totalForegroundA);
-end
+end % if
+
+%% Motion Estimation Metrics
+%% Task 4
+% Compute the mean magnitude error, MMEN, for all pixels in non-occluded areas.
+
+%% Task 5
+% Calculate the percentage of erroneous pixels, PEPN, in non-occluded
+% areas.
+
+%% Optionals
+%% Task 6
+% De-synchronized results for background substraction
+
+%% Task 7
+% Plot the optical flow
