@@ -3,7 +3,7 @@ function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationE
 %   Recieve the information:
 %       * pathGroundtruth: Path to the ground truth.
 %       * pathResults: Path to the results to evaluate
-%       * test: Test id for identifying the files in pathResults.
+%       * testId: Test id for identifying the files in pathResults.
 %       * VERBOSE: Plot further information.
 %   The output are:
 %       * True Positives (TP)

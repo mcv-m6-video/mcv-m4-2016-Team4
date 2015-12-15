@@ -61,6 +61,13 @@ end % if
 %% Task 4
 % Compute the mean magnitude error, MMEN, for all pixels in non-occluded areas.
 
+pathDataStereoGroundtruth = [ pathDataStereo filesep 'training' filesep 'flow_noc' ];
+pathDataStereoResults = [ pathDataStereo filesep 'results' ];
+testId = 'LKflow_';
+pepnThresh = 3;
+
+[ msen , pepn ] = opticalFlowEvaluation( pathDataStereoGroundtruth , pathDataStereoResults , testId , pepnThresh , VERBOSE );
+
 %% Task 5
 % Calculate the percentage of erroneous pixels, PEPN, in non-occluded
 % areas.
@@ -71,3 +78,6 @@ end % if
 
 %% Task 7
 % Plot the optical flow
+% flow_u = (double(im_test(:,:,1))-2^15)/64.0;
+% flow_v = (double(im_test(:,:,2))-2^15)/64.0;
+% quiver(flow_u,flow_v)

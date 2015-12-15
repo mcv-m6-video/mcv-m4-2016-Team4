@@ -4,7 +4,7 @@ function plotF1ScorePerFrame( f1Scores )
 %       * f1Scores: NxM matrix where N are the F1 Scores of each frame and
 %                        M_i represents the F1 Score of test sequence i
 
-    colorList = ['r', 'b', 'g', 'm', 'y', 'c', 'k'];
+    colorList = [ 'b', 'g', 'm', 'y', 'c', 'k'];
     alphabet = 'ABCDEFGHIJKLMNOPQRSTWVXZ';
     legendString = cell(1,size(f1Scores,2));
     figure();
