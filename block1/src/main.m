@@ -5,7 +5,7 @@
 % 
 %% Set up enviroment
 
-%clear all; clc;
+clear all; clc; close all;
 pathDatasets = ['..' filesep '..' filesep 'datasets'];
 pathHighway = [pathDatasets filesep 'highway'];
 pathDataStereo = [pathDatasets filesep 'data_stereo_flow'];
@@ -42,9 +42,10 @@ testIdB = 'test_B_';
 [precisionA, recallA, f1scoreA] = getMetrics(tpA, fpA, fnA, tnA);
 [precisionB, recallB, f1scoreB] = getMetrics(tpB, fpB, fnB, tnB);
 
-% .a
-%plotF1ScorePerFrame(f1scoreA);
-%plotF1ScorePerFrame(f1scoreB);
+if VERBOSE
+    % .a
+    plotF1ScorePerFrame([f1scoreA f1scoreB]);
 
-% .b
-plotTP_TF_PerFrame(tpA, totalForegroundA);
+    % .b
+    plotTP_TF_PerFrame([tpA tpB], totalForegroundA);
+end
