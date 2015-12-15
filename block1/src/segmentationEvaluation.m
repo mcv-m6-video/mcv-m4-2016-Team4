@@ -1,4 +1,4 @@
-function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationEvaluation( pathGroundtruth , pathResults , testId , VERBOSE )
+function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationEvaluation( pathGroundtruth , pathResults , testId , forward , VERBOSE )
 %SEGMENTATIONEVALUATION Evaluates one folder
 %   Recieve the information:
 %       * pathGroundtruth: Path to the ground truth.
@@ -15,6 +15,9 @@ function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationE
     % whole folder
     if ~exist( 'testId' , 'var' )
         testId = '';
+    end % if
+    if ~exist( 'forward' , 'var' )
+        forward = 0;
     end % if
     if ~exist( 'VERBOSE' , 'var' )
         VERBOSE = false;
@@ -44,7 +47,12 @@ function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationE
         im_test = logical( im_test );
         
         % Read Ground truth image
-        nameGroundtruth = strrep(filesResultsTest(i).name , testId , '');
+        splittedStr1 = strsplit(filesResultsTest(i).name , '_');
+        splittedStr2 = strsplit(splittedStr1{end} , '.');
+        
+        numFile=sprintf(['%0' num2str(length(splittedStr2{1})) 'd'] , str2double(splittedStr2{1}) + forward );
+        nameGroundtruth = [strjoin({splittedStr1{1:end-1}, numFile},'_') '.' splittedStr2{end}];
+        nameGroundtruth = strrep(nameGroundtruth , testId , '');
         im_gt = imread( [ pathGroundtruth  nameGroundtruth] );
         im_gt = im_gt == 255;
         

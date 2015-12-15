@@ -5,7 +5,7 @@
 % 
 %% Set up enviroment
 
-clear all; clc; close all;
+%clear all; clc; close all;
 
 pathDatasets = ['..' filesep '..' filesep 'datasets'];
 pathHighway = [pathDatasets filesep 'highway'];
@@ -19,16 +19,16 @@ VERBOSE = true;
 % Get the needed files and split in test A and test B
 pathHighwayGroundtruth = [pathHighway filesep 'groundtruth' filesep 'gt' ];
 pathHighwayResults = [pathHighway filesep 'results' filesep ];
-
+forward = 1; % Synchronized
 % Test A
 testIdA = 'test_A_';
 [ tpA , fpA , fnA , tnA , totalForegroundA , totalBackgroundA ] =  ...
-    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdA , VERBOSE );
+    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdA , forward , VERBOSE );
 
 % Test B
 testIdB = 'test_B_';
 [ tpB , fpB , fnB , tnB , totalForegroundB , totalBackgroundB ] =  ...
-    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdB , VERBOSE );
+    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdB , forward , VERBOSE );
 
 %% Task 2
 % Test A segmentation has a higher recall because it misses less foreground pixels (true samples). 
@@ -75,6 +75,18 @@ pepnThresh = 3;
 %% Optionals
 %% Task 6
 % De-synchronized results for background substraction
+
+forward = 1; % Synchronized
+% Test A
+testIdA = 'test_A_';
+[ tpA , fpA , fnA , tnA , totalForegroundA , totalBackgroundA ] =  ...
+    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdA , forward , VERBOSE );
+
+% Test B
+testIdB = 'test_B_';
+[ tpB , fpB , fnB , tnB , totalForegroundB , totalBackgroundB ] =  ...
+    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdB , forward , VERBOSE );
+
 
 %% Task 7
 % Plot the optical flow
