@@ -19,16 +19,16 @@ VERBOSE = true;
 % Get the needed files and split in test A and test B
 pathHighwayGroundtruth = [pathHighway filesep 'groundtruth' filesep 'gt' ];
 pathHighwayResults = [pathHighway filesep 'results' filesep ];
-forward = 0; % forward = 0 --> Synchronized
+offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 % Test A
 testIdA = 'test_A_';
 [ tpA , fpA , fnA , tnA , totalForegroundA , totalBackgroundA ] =  ...
-    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdA , forward , VERBOSE );
+    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdA , offsetDesynch , VERBOSE );
 
 % Test B
 testIdB = 'test_B_';
 [ tpB , fpB , fnB , tnB , totalForegroundB , totalBackgroundB ] =  ...
-    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdB , forward , VERBOSE );
+    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdB , offsetDesynch , VERBOSE );
 
 %% Task 2
 % Test A segmentation has a higher recall because it misses less foreground pixels (true samples). 
@@ -71,19 +71,61 @@ pepnThresh = 3;
 
 %% Optionals
 %% Task 6
-% De-synchronized results for background substraction
+% Desynchronized results for background substraction
+offsetList = 0:5:25;
+offsetDesynch = 1; % offsetDesynch > 0 --> Desynchronized
 
-forward = 1; % forward > 0 --> Desynchronized
-% Test A
-testIdA = 'test_A_';
-[ tpA , fpA , fnA , tnA , totalForegroundA , totalBackgroundA ] =  ...
-    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdA , forward , VERBOSE );
 
-% Test B
-testIdB = 'test_B_';
-[ tpB , fpB , fnB , tnB , totalForegroundB , totalBackgroundB ] =  ...
-    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdB , forward , VERBOSE );
+f1scoreB = zeros(length(offsetList),1);
 
+i=1;
+for offsetDesynch=offsetList
+    % Test A
+    testIdA = 'test_A_';
+    [tpA, fpA, fnA, tnA, ~, ~] =  ...
+        segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdA , offsetDesynch , 0 );
+    
+    %Initialize F1 Score Test A
+    if i==1
+        f1scoreA = zeros(length(tpA),length(offsetList));
+    end % if
+    
+    [~, ~, f1scoreA(:,i)] = getMetrics(tpA, fpA, fnA, tnA);
+    % Test B
+    
+    %Initialize F1 Score Test A
+    if i==1
+        f1scoreB = zeros(length(tpB),length(offsetList));
+    end % if
+    
+    testIdB = 'test_B_';
+    [tpB, fpB, fnB, tnB, ~, ~] =  ...
+        segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testIdB , offsetDesynch , 0 );
+    [~, ~, f1scoreB(:,i)] = getMetrics(tpB, fpB, fnB, tnB);
+    
+    i = i + 1;
+end %for
+
+if VERBOSE
+    % Create custom legend indicating the offset of each curve. 
+    legendStr = cell(1,length(offsetList));
+    for i=1:length(offsetList)
+        legendStr{i} = sprintf('Offset=%d', offsetList(i));
+    end %for
+    
+    %TEST A
+    plotF1ScorePerFrame(f1scoreA);
+    %Overwrite title and legend
+    title('F1-Score vs #frame (Test A)');
+    legend(legendStr);
+    
+    %TEST B
+    plotF1ScorePerFrame(f1scoreB);
+    %Overwrite title and legend
+    title('F1-Score vs #frame (Test B)');
+    legend(legendStr);
+    
+end %if
 
 %% Task 7
 % Plot the optical flow
