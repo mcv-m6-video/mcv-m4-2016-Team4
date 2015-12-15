@@ -7,8 +7,10 @@ function [ msen , pepn ] = opticalFlowEvaluation( pathGroundtruth , pathResults 
 %       * pepnThresh: Threshold for the pepnThresh
 %       * VERBOSE: Plot further information.
 %   The output are:
-%       * msen: Mean Square Error in Non-occluded areas 
-%       * pepn: Percentage of Erroneous Pixels in Non-occluded areas
+%       * msen: N array where each position has the Mean Square Error in 
+%               Non-occluded areas for a given result.
+%       * pepn: N array where each position has the Percentage of Erroneous
+%               Pixels in Non-occluded areas for a given result.
 
     % If no test is provided, we assume that we have to compute it for the
     % whole folder

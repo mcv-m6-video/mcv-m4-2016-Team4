@@ -19,7 +19,7 @@ VERBOSE = true;
 % Get the needed files and split in test A and test B
 pathHighwayGroundtruth = [pathHighway filesep 'groundtruth' filesep 'gt' ];
 pathHighwayResults = [pathHighway filesep 'results' filesep ];
-forward = 1; % Synchronized
+forward = 0; % forward = 0 --> Synchronized
 % Test A
 testIdA = 'test_A_';
 [ tpA , fpA , fnA , tnA , totalForegroundA , totalBackgroundA ] =  ...
@@ -58,8 +58,9 @@ if VERBOSE
 end % if
 
 %% Motion Estimation Metrics
-%% Task 4
+%% Task 4 and 5
 % Compute the mean magnitude error, MMEN, for all pixels in non-occluded areas.
+% Calculate the percentage of erroneous pixels, PEPN, in non-occluded areas.
 
 pathDataStereoGroundtruth = [ pathDataStereo filesep 'training' filesep 'flow_noc' ];
 pathDataStereoResults = [ pathDataStereo filesep 'results' ];
@@ -68,15 +69,11 @@ pepnThresh = 3;
 
 [ msen , pepn ] = opticalFlowEvaluation( pathDataStereoGroundtruth , pathDataStereoResults , testId , pepnThresh , VERBOSE );
 
-%% Task 5
-% Calculate the percentage of erroneous pixels, PEPN, in non-occluded
-% areas.
-
 %% Optionals
 %% Task 6
 % De-synchronized results for background substraction
 
-forward = 1; % Synchronized
+forward = 1; % forward > 0 --> Desynchronized
 % Test A
 testIdA = 'test_A_';
 [ tpA , fpA , fnA , tnA , totalForegroundA , totalBackgroundA ] =  ...

@@ -4,6 +4,11 @@ function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationE
 %       * pathGroundtruth: Path to the ground truth.
 %       * pathResults: Path to the results to evaluate
 %       * testId: Test id for identifying the files in pathResults.
+%       * forward: number of frames to shift in order to create a
+%                  desynchronization for experimentation / debug purposes. 
+%                  forward = 0 means no desynch at all, forward = N (where 
+%                  N > 0) creates a shift of N frames between the results 
+%                  and the groundtruth.
 %       * VERBOSE: Plot further information.
 %   The output are:
 %       * True Positives (TP)
