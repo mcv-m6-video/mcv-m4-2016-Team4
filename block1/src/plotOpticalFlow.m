@@ -5,10 +5,12 @@ function plotOpticalFlow(realImage, annotationImage, subSample)
 %       * annotationImage: the opticalFlow annotations
 %       * subSample: Numbers of subsamples
 
-    if(~exist('subSample'))
+    if ~exist('subSample', 'var')
         subSample=10;
     end
 
+    figure;
+    
     % Show the realImage
     imshow(realImage)
     hold on;
@@ -18,11 +20,9 @@ function plotOpticalFlow(realImage, annotationImage, subSample)
     
     % Creates the optical flow
     [x, y] = meshgrid(1:size(realImage, 2), 1:size(realImage, 1));
-    u = (double(annotationImage(:,:,1))-2^15)/64.0;
-    v = (double(annotationImage(:,:,2))-2^15)/64.0;
     
-    %u = annotationImage(:,:,1);
-    %v = annotationImage(:,:,2);
+    u = annotationImage(:,:,1);
+    v = annotationImage(:,:,2);
     
     % Apply the subsample to do a more simple representation
     % Delete the non valid pixels
@@ -38,4 +38,5 @@ function plotOpticalFlow(realImage, annotationImage, subSample)
     xlim([1, size(realImage,2)])
     ylim([1, size(realImage,1)])
     
+    hold off;
 end

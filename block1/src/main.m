@@ -136,8 +136,24 @@ end %if
 
 %% Task 7
 % Plot the optical flow
-% flow_u = (double(im_test(:,:,1))-2^15)/64.0;
-% flow_v = (double(im_test(:,:,2))-2^15)/64.0;
-% quiver(flow_u,flow_v)
-plotOpticalFlow(imreal, imtest, 10);
+
+% List of files for the test
+filesStereoResultsTest = dir([ pathDataStereoResults filesep testId  '*' ]);
+
+% Path to colored image
+pathDataStereoReal = [ pathDataStereo filesep 'training' filesep 'colored_0' ];
+
+% subsample
+subSample = 10;
+for i = 1:length(filesStereoResultsTest)
+    % Read test image
+    [testU , testV , val ] = readFlow( [ pathDataStereoResults filesep filesStereoResultsTest(i).name ] );
+    imtest = cat(3, testU, testV , val);
+    
+    % Read real image
+    realName = strrep(filesResultsTest(i).name , testId , '');
+    imreal = imread( [ pathDataStereoReal filesep realName ] );
+    % Read real image
+    plotOpticalFlow(imreal, imtest, subSample);
+end % for
 
