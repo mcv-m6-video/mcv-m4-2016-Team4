@@ -151,7 +151,7 @@ for i = 1:length(filesStereoResultsTest)
     imtest = cat(3, testU, testV , val);
     
     % Read real image
-    realName = strrep(filesResultsTest(i).name , testId , '');
+    realName = strrep(filesStereoResultsTest(i).name , testId , '');
     imreal = imread( [ pathDataStereoReal filesep realName ] );
     % Read real image
     plotOpticalFlow(imreal, imtest, subSample);
