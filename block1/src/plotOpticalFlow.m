@@ -32,10 +32,10 @@ function plotOpticalFlow(realImage, annotationImage, subSample)
     % avoid the zero-padding we apply the mirroring padarray
     marginSubSample = floor(subSample/2);
     u = padarray(u, [marginSubSample, marginSubSample], 'replicate');
-    u = conv2(u, (1/(subSample^2))*ones(subSample), 'valids');
+    u = conv2(u, (1/(subSample^2))*ones(subSample), 'valid');
     
     v = padarray(v, [marginSubSample, marginSubSample], 'replicate');
-    v = conv2(v, (1/(subSample^2))*ones(subSample), 'valids');
+    v = conv2(v, (1/(subSample^2))*ones(subSample), 'valid');
     
     % Apply the subsample to do a more simple representation
     % Delete the non valid pixels
