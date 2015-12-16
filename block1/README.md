@@ -37,6 +37,9 @@ Plot the F1-score per frame. Recieve the information _f1Scores_ that is a NxM ma
 
 Plot true positives and total foreground of the groundtruth. Recieve the information _truePositives_ that is a NxM matrix where N are the TP of each frame and M_i represents the TP of test sequence i.
 
+* *_readFlow.m_*
+Given a path of a flow file, extract the components (u,v) and the valid non-ocluded pixels.
+
 * *_plotOpticalFlow.m_*
 
 Show the optical flow. Its parameters are _realImage_ that is the realimage RGB, _annotationImage_ that corresponds to the opticalFlow annotations and _subSample_ that indicates the numbers of subsamples.

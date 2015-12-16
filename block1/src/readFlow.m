@@ -1,6 +1,6 @@
 function [u , v , val ] = readFlow( pathFlow )
-%READFLOW Summary of this function goes here
-%   Detailed explanation goes here
+%READFLOW Given a path of a flow file, extract the components (u,v) and 
+% the valid non-occluded pixels.
     
     im = double(imread( pathFlow ));
     u = ( im(:,:,1) - 2^15 )/64;
