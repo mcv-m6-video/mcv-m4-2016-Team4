@@ -72,14 +72,10 @@ pepnThresh = 3;
 %% Optionals
 %% Task 6
 % Desynchronized results for background substraction
-offsetList = 0:5:25;
-offsetDesynch = 1; % offsetDesynch > 0 --> Desynchronized
-
-
-f1scoreB = zeros(length(offsetList),1);
+offsetList = 0:25;
 
 i=1;
-for offsetDesynch=offsetList
+for offsetDesynch=offsetList % offsetDesynch > 0 --> Desynchronized
     % Test A
     testIdA = 'test_A_';
     [tpA, fpA, fnA, tnA, ~, ~] =  ...
@@ -107,23 +103,34 @@ for offsetDesynch=offsetList
 end %for
 
 if VERBOSE
-    % Create custom legend indicating the offset of each curve. 
-    legendStr = cell(1,length(offsetList));
-    for i=1:length(offsetList)
-        legendStr{i} = sprintf('Offset=%d', offsetList(i));
-    end %for
+    %F1 Score evolution along desynchronization
+    plotF1ScorePerFrame([mean(f1scoreA)' mean(f1scoreB)']);
+    title('F1 Score evolution along desynchronization');
+    xlabel('Desync frames');
+    xlim([0 max(offsetList)]);
     
-    %TEST A
-    plotF1ScorePerFrame(f1scoreA);
-    %Overwrite title and legend
-    title('F1-Score vs #frame (Test A)');
-    legend(legendStr);
-    
-    %TEST B
-    plotF1ScorePerFrame(f1scoreB);
-    %Overwrite title and legend
-    title('F1-Score vs #frame (Test B)');
-    legend(legendStr);
+    %Only make this detailed plot if there are few lines (>6) to segment.
+    %Otherwise, the plot will fail because there are not enough colors.
+    if length(offsetList) < 6
+        %More detailed F1 Score evolution plot
+        % Create custom legend indicating the offset of each curve. 
+        legendStr = cell(1,length(offsetList));
+        for i=1:length(offsetList)
+            legendStr{i} = sprintf('Offset=%d', offsetList(i));
+        end %for
+
+        %TEST A
+        plotF1ScorePerFrame(f1scoreA);
+        %Overwrite title and legend
+        title('F1-Score vs #frame (Test A)');
+        legend(legendStr);
+
+        %TEST B
+        plotF1ScorePerFrame(f1scoreB);
+        %Overwrite title and legend
+        title('F1-Score vs #frame (Test B)');
+        legend(legendStr);
+    end
     
 end %if
 
