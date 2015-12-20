@@ -5,7 +5,7 @@
 % 
 %% Set up enviroment
 
-%clear all; clc; close all;
+clear all; clc; close all;
 
 pathDatasets = ['..' filesep '..' filesep 'datasets'];
 pathHighway = [pathDatasets filesep 'highway'];

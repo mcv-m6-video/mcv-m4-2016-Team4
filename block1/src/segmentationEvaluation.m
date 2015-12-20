@@ -46,6 +46,10 @@ function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationE
     %     85 : Outside region of interest
     %     170 : Unknown motion (usually around moving objects, due to semi-transparency and motion blur)
     %     255 : Motion
+    % We will use:
+    %     Background: 0, 50
+    %     Foreground: 255
+    %     Unknown (not evaluated): 85, 170 
     for i = 1:length(filesResultsTest)
         % Read test image
         im_test = imread( [ pathResults filesResultsTest(i).name ] );
@@ -59,17 +63,18 @@ function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationE
         nameGroundtruth = [strjoin({splittedStr1{1:end-1}, numFile},'_') '.' splittedStr2{end}];
         nameGroundtruth = strrep(nameGroundtruth , testId , '');
         im_gt = imread( [ pathGroundtruth  nameGroundtruth] );
-        im_gt = im_gt == 255;
+        foreground = im_gt == 255;
+        background = im_gt==0 | im_gt==50;
         
         % Compare both images
-        tp(i) = tp(i) + sum( sum( im_test .* im_gt ) );
-        fp(i) = fp(i) + sum( sum( im_test .* (~im_gt) ) );
-        tn(i) = tn(i) + sum( sum( (~im_test) .* (~im_gt) ) );
-        fn(i) = fn(i) + sum( sum( (~im_test) .* im_gt ) );
+        tp(i) = tp(i) + sum( sum( im_test .* foreground ) );
+        fp(i) = fp(i) + sum( sum( im_test .* background ) );
+        tn(i) = tn(i) + sum( sum( (~im_test) .* background ) );
+        fn(i) = fn(i) + sum( sum( (~im_test) .* foreground ) );
         
         % Compute total foreground and total background
-        totalForeground(i) = totalForeground(i) + sum( sum( im_gt ) );
-        totalBackground(i) = totalBackground(i) + sum( sum( ~im_gt ) );
+        totalForeground(i) = totalForeground(i) + sum( sum( foreground ) );
+        totalBackground(i) = totalBackground(i) + sum( sum( background ) );
     end % for
     
     if VERBOSE
