@@ -21,22 +21,41 @@ VERBOSE = true;
 %% Non-recursive Gaussian modeling
 %% Task 1
 % One gaussian distribution to model the background pixels.
+
+% Threshold = 0.5
+alpha = 5;
+
 testId1 = 'test_1_';
 pathResults = [ pathDatasets 'results' filesep testId1 ];
-oneGaussianBackground( highway , pathInput , fileFormat , pathResults );
+oneGaussianBackground( highway , pathInput , fileFormat , pathResults , alpha);
+
+testId2 = 'test_2_';
+pathResults = [ pathDatasets 'results' filesep testId2 ];
+oneGaussianBackground( fall , pathInput , fileFormat , pathResults , alpha);
+
+testId3 = 'test_3_';
+pathResults = [ pathDatasets 'results' filesep testId3 ];
+oneGaussianBackground( traffic , pathInput , fileFormat , pathResults , alpha);
 
 %% Task 2
 % Draw the curves F1 score, True Positive, True Negative, False Positive, False 
 % Negative vs. threshold ? for the three proposed sequences (remember to convert 
 % them to gray-scale).
-addpath('./../../evaluation')
-% Get the needed files and split in test A and test B
+
 pathHighwayGroundtruth = [ pathDatasets 'groundtruth' filesep 'gt' ];
 pathHighwayResults = [ pathDatasets 'results' filesep ];
+
+addpath('./../../evaluation')
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 
 % Test 1
-[ tpA , fpA , fnA , tnA , totalForegroundA , totalBackgroundA ] =  ...
+[ tp1 , fp1 , fn1 , tn1 , totalForeground1 , totalBackground1 ] =  ...
+    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId1 , offsetDesynch , VERBOSE );
+
+[ tp2 , fp2 , fn2 , tn2 , totalForeground2 , totalBackground2 ] =  ...
+    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId1 , offsetDesynch , VERBOSE );
+
+[ tp3 , fp3 , fn3 , tn3 , totalForeground3 , totalBackground3 ] =  ...
     segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId1 , offsetDesynch , VERBOSE );
 rmpath('./../../evaluation')
 
