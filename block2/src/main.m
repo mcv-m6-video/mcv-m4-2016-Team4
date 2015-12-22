@@ -21,14 +21,24 @@ VERBOSE = true;
 %% Non-recursive Gaussian modeling
 %% Task 1
 % One gaussian distribution to model the background pixels.
-testId = 'test_1_'
-pathResults = [ pathDatasets 'results' filesep testId ];
-[ output_args ] = oneGaussianBackground( highway , pathInput , fileFormat , pathResults );
+testId1 = 'test_1_';
+pathResults = [ pathDatasets 'results' filesep testId1 ];
+oneGaussianBackground( highway , pathInput , fileFormat , pathResults );
 
 %% Task 2
 % Draw the curves F1 score, True Positive, True Negative, False Positive, False 
 % Negative vs. threshold ? for the three proposed sequences (remember to convert 
 % them to gray-scale).
+addpath('./../../evaluation')
+% Get the needed files and split in test A and test B
+pathHighwayGroundtruth = [ pathDatasets 'groundtruth' filesep 'gt' ];
+pathHighwayResults = [ pathDatasets 'results' filesep ];
+offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
+
+% Test 1
+[ tpA , fpA , fnA , tnA , totalForegroundA , totalBackgroundA ] =  ...
+    segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId1 , offsetDesynch , VERBOSE );
+rmpath('./../../evaluation')
 
 %% Task 3
 % Draw the curve Precision vs. Recall depending of threshold ? for the three

@@ -1,4 +1,4 @@
-function [ output_args ] = oneGaussianBackground( sequence , folderPath , fileFormat , pathResults , alpha )
+function [ ] = oneGaussianBackground( sequence , folderPath , fileFormat , pathResults , alpha )
 %ONEGAUSSIANBACKGROUND Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -26,7 +26,7 @@ function [ output_args ] = oneGaussianBackground( sequence , folderPath , fileFo
         fileName = [ folderPath , imName , fileFormat ];
         im = double( rgb2gray( imread(fileName) ) );
         background = ~(abs(im - mu) < (alpha*sigma));
-        imwrite(background , [ pathResults , imName , fileFormat ] )
+        imwrite(background , [ pathResults , imName , '.png' ] )
     end % for
 
 end % function
