@@ -7,13 +7,23 @@
 
 clear all; clc; close all;
 
-pathDatasets = ['..' filesep '..' filesep 'datasets'];
-pathHighway = [pathDatasets filesep 'highway'];
+pathDatasets = ['..' filesep '..' filesep 'datasets' filesep 'highway' filesep];
+pathInput = [ pathDatasets 'input' filesep 'in' ];
+pathGroundtruth = [ pathDatasets 'groundtryth' filesep ];
+fileFormat = '.jpg';
+
+highway = 1050:1350;
+fall = 1460:1560;
+traffic = 950:1050;
+
 VERBOSE = true;
 
 %% Non-recursive Gaussian modeling
 %% Task 1
 % One gaussian distribution to model the background pixels.
+testId = 'test_1_'
+pathResults = [ pathDatasets 'results' filesep testId ];
+[ output_args ] = oneGaussianBackground( highway , pathInput , fileFormat , pathResults );
 
 %% Task 2
 % Draw the curves F1 score, True Positive, True Negative, False Positive, False 
