@@ -1,15 +1,9 @@
-function [mu, sigma] = oneGaussianBackground( sequence , folderPath , fileFormat , pathResults , alpha , muPrev , sigmaPrev, rho )
+function [mu, sigma] = oneGaussianBackground( sequence , folderPath , fileFormat , pathResults , alpha )
 %ONEGAUSSIANBACKGROUND Summary of this function goes here
 %   Detailed explanation goes here
 
     if ~exist('alpha', 'var')
         alpha = 2.5;
-    end
-    
-    if ~exist('rho', 'var')
-        muPrev = 1;
-        sigmaPrev = 1;
-        rho = 1;
     end
     
     % First 50% of the test sequence to model the background
@@ -21,9 +15,8 @@ function [mu, sigma] = oneGaussianBackground( sequence , folderPath , fileFormat
         cumpixel = cat(3 , cumpixel , im );
     end % for
     
-    mu = rho*mean(cumpixel , 3) + (1-rho)*muPrev;
-    sigmas_quare = rho*var(cumpixel , 0 , 3) + (1-rho)*(sigmaPrev*sigmaPrev);
-    sigma = sqrt(sigmas_quare);
+    mu = mean(cumpixel , 3);
+    sigma = std(cumpixel , 0 , 3);
     
     % Prevent low values of sigma
     sigma = sigma + 2;
