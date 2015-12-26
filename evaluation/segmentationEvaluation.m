@@ -51,30 +51,33 @@ function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationE
     %     Foreground: 255
     %     Unknown (not evaluated): 85, 170 
     for i = 1:length(filesResultsTest)
-        % Read test image
-        im_test = imread( [ pathResults filesResultsTest(i).name ] );
-        im_test = logical( im_test );
-        
-        % Read Ground truth image
-        splittedStr1 = strsplit(filesResultsTest(i).name , '_');
-        splittedStr2 = strsplit(splittedStr1{end} , '.');
-        
-        numFile=sprintf(['%0' num2str(length(splittedStr2{1})) 'd'] , str2double(splittedStr2{1}) + offsetDesynch );
-        nameGroundtruth = [strjoin({splittedStr1{1:end-1}, numFile},'_') '.' splittedStr2{end}];
-        nameGroundtruth = strrep(nameGroundtruth , testId , '');
-        im_gt = imread( [ pathGroundtruth  nameGroundtruth] );
-        foreground = im_gt == 255;
-        background = im_gt==0 | im_gt==50;
-        
-        % Compare both images
-        tp(i) = tp(i) + sum( sum( im_test .* foreground ) );
-        fp(i) = fp(i) + sum( sum( im_test .* background ) );
-        tn(i) = tn(i) + sum( sum( (~im_test) .* background ) );
-        fn(i) = fn(i) + sum( sum( (~im_test) .* foreground ) );
-        
-        % Compute total foreground and total background
-        totalForeground(i) = totalForeground(i) + sum( sum( foreground ) );
-        totalBackground(i) = totalBackground(i) + sum( sum( background ) );
+        % Check it is not a folder
+        if filesResultsTest(i).name(1) ~= '.'
+            % Read test image
+            im_test = imread( [ pathResults filesResultsTest(i).name ] );
+            im_test = logical( im_test );
+
+            % Read Ground truth image
+            splittedStr1 = strsplit(filesResultsTest(i).name , '_');
+            splittedStr2 = strsplit(splittedStr1{end} , '.');
+
+            numFile=sprintf(['%0' num2str(length(splittedStr2{1})) 'd'] , str2double(splittedStr2{1}) + offsetDesynch );
+            nameGroundtruth = [strjoin({splittedStr1{1:end-1}, numFile},'_') '.' splittedStr2{end}];
+            nameGroundtruth = strrep(nameGroundtruth , testId , '');
+            im_gt = imread( [ pathGroundtruth  nameGroundtruth] );
+            foreground = im_gt == 255;
+            background = im_gt==0 | im_gt==50;
+
+            % Compare both images
+            tp(i) = tp(i) + sum( sum( im_test .* foreground ) );
+            fp(i) = fp(i) + sum( sum( im_test .* background ) );
+            tn(i) = tn(i) + sum( sum( (~im_test) .* background ) );
+            fn(i) = fn(i) + sum( sum( (~im_test) .* foreground ) );
+
+            % Compute total foreground and total background
+            totalForeground(i) = totalForeground(i) + sum( sum( foreground ) );
+            totalBackground(i) = totalBackground(i) + sum( sum( background ) );
+        end % if
     end % for
     
     if VERBOSE
