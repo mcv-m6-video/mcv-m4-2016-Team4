@@ -29,16 +29,18 @@ VERBOSE = false;
 % Threshold
 alpha = 5;
 
-testId1 = 'test_1_';
-pathResults = [ pathDatasets 'results' filesep testId1 ];
+oneGaussianResultsFolder = [ pathDatasets 'resultsOneGaussian' filesep ];
+if ~exist(oneGaussianResultsFolder , 'dir')
+    mkdir( oneGaussianResultsFolder );
+end % if
+
+pathResults = [ oneGaussianResultsFolder testId1 ];
 oneGaussianBackground( highway , pathInput , fileFormat , pathResults , alpha);
 
-testId2 = 'test_2_';
-pathResults = [ pathDatasets 'results' filesep testId2 ];
+pathResults = [ oneGaussianResultsFolder testId2 ];
 oneGaussianBackground( fall , pathInput , fileFormat , pathResults , alpha);
 
-testId3 = 'test_3_';
-pathResults = [ pathDatasets 'results' filesep testId3 ];
+pathResults = [ oneGaussianResultsFolder testId3 ];
 oneGaussianBackground( traffic , pathInput , fileFormat , pathResults , alpha);
 
 %% Task 2 & 3
@@ -49,12 +51,11 @@ oneGaussianBackground( traffic , pathInput , fileFormat , pathResults , alpha);
 % proposed sequences and comment the results.
 
 pathHighwayGroundtruth = [ pathDatasets 'groundtruth' filesep 'gt' ];
-pathHighwayResults = [ pathDatasets 'results' filesep ];
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 
 minAlpha = 0; stepAlpha = 1; maxAlpha = 10;
-szMetrics = floor((maxAlpha-minAlpha)/stepAlpha); count = 1;
 threshold = minAlpha:stepAlpha:maxAlpha;
+szMetrics = length(threshold); count = 1;
 
 % Setup variables
 prec1 = zeros(szMetrics,1); rec1 = zeros(szMetrics,1); f1score1 = zeros(szMetrics,1);
@@ -81,21 +82,21 @@ for alpha = minAlpha:stepAlpha:maxAlpha
     
     % Test 1
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-        segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId1 , offsetDesynch , VERBOSE );
+        segmentationEvaluation( pathHighwayGroundtruth , oneGaussianResultsFolder , testId1 , offsetDesynch , VERBOSE );
     tp1(count) = sum(tpAux); fp1(count) = sum(fpAux); fn1(count) = sum(fnAux); tn1(count) = sum(tnAux);
     [ precAux , recAux , f1Aux ] = getMetrics( tp1(count) , fp1(count) , fn1(count) , tn1(count) );
     prec1(count) = precAux; rec1(count) = recAux; f1score1(count) = f1Aux;
     
     % Test 2
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-        segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId2 , offsetDesynch , VERBOSE );
+        segmentationEvaluation( pathHighwayGroundtruth , oneGaussianResultsFolder , testId2 , offsetDesynch , VERBOSE );
     tp2(count) = sum(tpAux); fp2(count) = sum(fpAux); fn2(count) = sum(fnAux); tn2(count) = sum(tnAux);    
     [ precAux , recAux , f1Aux ] = getMetrics( tp2(count) , fp2(count) , fn2(count) , tn2(count) );
     prec2(count) = precAux; rec2(count) = recAux; f1score2(count) = f1Aux;
 
     % Test 3
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-        segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId3 , offsetDesynch , VERBOSE );
+        segmentationEvaluation( pathHighwayGroundtruth , oneGaussianResultsFolder , testId3 , offsetDesynch , VERBOSE );
     tp3(count) = sum(tpAux); fp3(count) = sum(fpAux); fn3(count) = sum(fnAux); tn3(count) = sum(tnAux);    
     [ precAux , recAux , f1Aux ] = getMetrics( tp3(count) , fp3(count) , fn3(count) , tn3(count) );
     prec3(count) = precAux; rec3(count) = recAux; f1score3(count) = f1Aux;
