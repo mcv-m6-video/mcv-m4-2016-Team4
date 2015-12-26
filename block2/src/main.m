@@ -53,7 +53,7 @@ oneGaussianBackground( traffic , pathInput , fileFormat , pathResults , alpha);
 pathHighwayGroundtruth = [ pathDatasets 'groundtruth' filesep 'gt' ];
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 
-minAlpha = 0; stepAlpha = 1; maxAlpha = 10;
+minAlpha = 0; stepAlpha = 0.5; maxAlpha = 5;
 threshold = minAlpha:stepAlpha:maxAlpha;
 szMetrics = length(threshold); count = 1;
 
@@ -71,13 +71,13 @@ addpath('./../../evaluation')
 for alpha = minAlpha:stepAlpha:maxAlpha
 
     
-    pathResults = [ pathDatasets 'results' filesep testId1 ];
+    pathResults = [ oneGaussianResultsFolder testId1 ];
     oneGaussianBackground( highway , pathInput , fileFormat , pathResults , alpha);
 
-    pathResults = [ pathDatasets 'results' filesep testId2 ];
+    pathResults = [ oneGaussianResultsFolder testId2 ];
     oneGaussianBackground( fall , pathInput , fileFormat , pathResults , alpha);
 
-    pathResults = [ pathDatasets 'results' filesep testId3 ];
+    pathResults = [ oneGaussianResultsFolder testId3 ];
     oneGaussianBackground( traffic , pathInput , fileFormat , pathResults , alpha);
     
     % Test 1
@@ -141,12 +141,12 @@ title('Precision Recall Test1');
 % Precision Recall Test 2
 figure;
 plot(rec2, prec2);
-title('Precision Recall Test1');
+title('Precision Recall Test2');
 
 % Precision Recall Test 3
 figure;
 plot(rec3, prec3);
-title('Precision Recall Test1');
+title('Precision Recall Test3');
 
 %% Recursive Gaussian modeling
 %% Task 4
