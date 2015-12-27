@@ -1,0 +1,5 @@
+/groundtruth
+/input
+*.jpg
+*.bmp
+temporalROI.txt
