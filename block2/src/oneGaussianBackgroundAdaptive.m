@@ -15,13 +15,13 @@ function [ ] = oneGaussianBackgroundAdaptive( sequence , folderPath , fileFormat
         cumpixel = cat(3 , cumpixel , im );
     end % for
     
-    % Prevent low values of sigma
     mu = mean(cumpixel , 3);
     sigma_square = var(cumpixel , 0 , 3);
     % Second 50% to segment the foreground
     for i = (floor(length(sequence)/2)+1):length(sequence)
         % Adapt the mu and sigma
-        sigma = sqrt(sigma_square); 
+        sigma = sqrt(sigma_square);
+        % Prevent low values of sigma
         sigma_plus2 = sigma + 2;
         
         
@@ -32,8 +32,8 @@ function [ ] = oneGaussianBackgroundAdaptive( sequence , folderPath , fileFormat
               
         applyRho = (~background).*rho;
         
-        sigma_square = (1-applyRho).*sigma_square + applyRho.*((im - mu).^2);
         mu = (1-applyRho).*mu + applyRho.*im;
+        sigma_square = (1-applyRho).*sigma_square + applyRho.*((im - mu).^2);
         
         imwrite(background , [ pathResults , imName , '.png' ] )
     end % for
