@@ -193,6 +193,57 @@ title(sprintf('Precision Recall (Traffic). AUC: %.2f', trapz(prec3)));
 % Use the S&G approach and compute the F1 score for the three provided sequences
 % using a different number of gaussians (from 3 to 6). Find out the optimal number
 % and comment the results obtained.
+SGfolder = 'resultsSG';
+pathHighwayResults = [ folderHighway SGfolder filesep ];
+pathFallResults = [ folderFall SGfolder filesep ];
+pathTrafficResults = [ folderTraffic SGfolder filesep ];
+minGaussians = 3;
+maxGaussians = 6;
+f1Scores = zeros(length(minGaussians:maxGaussians), 3);
+count = 1;
+for nGaussians = minGaussians:maxGaussians
+    
+    % Highway
+    staufferGrimsonMultipleGaussian( highway , pathHighwayInput , fileFormat , pathHighwayResults , nGaussians);
+    
+    % Evaluate
+    [ tp , fp , fn , tn , ~ , ~ ] =  ...
+        segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId , 0 , VERBOSE );
+    [ ~ , ~ , f1ScoreAux ] = getMetrics( tp , fp , fn , tn );
+    f1Scores(count,1) = mean(f1ScoreAux);
+    
+    % Fall
+    staufferGrimsonMultipleGaussian( fall , pathFallInput , fileFormat , pathFallResults , nGaussians);
+    
+    % Evaluate
+    [ tp , fp , fn , tn , ~ , ~ ] =  ...
+        segmentationEvaluation( pathFallGroundtruth , pathFallResults , testId , 0 , VERBOSE );
+    
+    [ ~ , ~ , f1ScoreAux ] = getMetrics( tp , fp , fn , tn );
+    f1Scores(count,2) = mean(f1ScoreAux);
+    
+    % Traffic
+    staufferGrimsonMultipleGaussian( traffic , pathTrafficInput , fileFormat , pathTrafficResults , nGaussians);
+    
+    % Evaluate
+    [ tp , fp , fn , tn , ~ , ~ ] =  ...
+        segmentationEvaluation( pathTrafficGroundtruth , pathTrafficResults , testId , 0 , VERBOSE );
+    
+    [ ~ , ~ , f1ScoreAux ] = getMetrics( tp , fp , fn , tn );
+    f1Scores(count,3) = mean(f1ScoreAux);
+    count = count + 1;
+end % for
+
+%Plot the results
+colorList = [ 'b', 'g', 'm'];
+figure; hold on;
+for i=1:size(f1Scores,2)
+   plot(minGaussians:maxGaussians, f1Scores(:,i), colorList(i)); 
+end
+title('F1Score evolution along number of Gaussians', 'FontWeight', 'Bold');
+xlabel('Number of Gaussians'); ylabel('F1Score');
+legend({'Highway', 'Fall', 'Traffic'});
+
 
 %% Task 7
 % Compare your gaussian modeling of the Background pixels with S&G using the
