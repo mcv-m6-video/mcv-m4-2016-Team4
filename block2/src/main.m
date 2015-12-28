@@ -160,17 +160,23 @@ title('F1-Score vs threshold'); legend({'Highway' , 'Fall' , 'Traffic'}); hold o
 % Precision Recall Test 1
 figure;
 plot(rec1, prec1);
-title('Precision Recall Highway');
+xlim([0 1]); ylim([0 1]);
+xlabel('Recall'); ylabel('Precision');
+title(sprintf('Precision Recall (Highway). AUC: %.2f', trapz(prec1)));
 
 % Precision Recall Test 2
 figure;
 plot(rec2, prec2);
-title('Precision Recall Fall');
+xlim([0 1]); ylim([0 1]);
+xlabel('Recall'); ylabel('Precision');
+title(sprintf('Precision Recall (Fall).  AUC: %.2f', trapz(prec2)));
 
 % Precision Recall Test 3
 figure;
 plot(rec3, prec3);
-title('Precision Recall Traffic');
+xlim([0 1]); ylim([0 1]);
+xlabel('Recall'); ylabel('Precision');
+title(sprintf('Precision Recall (Traffic). AUC: %.2f', trapz(prec3)));
 
 %% Recursive Gaussian modeling
 %% Task 4

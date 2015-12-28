@@ -1,5 +1,9 @@
-/groundtruth
-/input
-*.jpg
-*.bmp
-temporalROI.txt
+# Ignore everything
+*
+
+# But not this files...
+!linkToDownload.txt
+# etc...
+
+# ...even if they are in subdirectories
+!*/
