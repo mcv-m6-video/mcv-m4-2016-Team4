@@ -40,6 +40,8 @@ function [mu, sigma] = oneGaussianBackground( sequence , folderPath , fileFormat
     muAux = cellfun(@(x) mean(x,3), cumpixel, 'UniformOutput', false);
     sigmaAux = cellfun(@(x) std(x , 0 , 3), cumpixel, 'UniformOutput', false);
     
+    
+    % Conversion from cell to matrix
     mu = []; sigma = [];
     for i = 1:length(muAux)
         mu = cat(3 , mu , muAux{i} );
@@ -60,7 +62,11 @@ function [mu, sigma] = oneGaussianBackground( sequence , folderPath , fileFormat
             im = colorTransform( im );
         end
         im = double( im );
-        background = ~(prod(abs(im - mu),3) < prod(alpha*sigma,3));
+        % background --> 0      foreground --> 1
+        background = ~(abs(im - mu) < (alpha*sigma));
+        % In case of color images, if any dimension falls outside the
+        % gaussian, it will be considered as foreground
+        background = any(background,3);
         imwrite(background , [ pathResults , imName , '.png' ] )
     end % for
     
