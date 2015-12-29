@@ -362,19 +362,19 @@ rmpath('./../../evaluation')
 
 % F1 score
 [xt, yt] = meshgrid(thresholdRho, thresholdAlpha);
-fig = figure('Visible','off'); 
+fig = figure('Visible','off'); hold on;
 title('F1-Score Highway depending on \alpha and \rho');
 xlabel('\rho'), ylabel('\alpha'), zlabel('F1-score');
 h = surf(xt, yt, f1score1);  set(h, 'edgecolor', 'none');
 print(fig,[ figuresFolder 'Task4_f1score_highway_rho_alpha' ],'-dpng')
 
-fig = figure('Visible','off'); 
+fig = figure('Visible','off'); hold on;
 title('F1-Score Fall depending on \alpha and \rho');
 h = surf(xt, yt, f1score2); set(h, 'edgecolor', 'none'); 
 xlabel('\rho'), ylabel('\alpha'), zlabel('F1-score'); 
 print(fig,[ figuresFolder 'Task4_f1score_fall_rho_alpha' ],'-dpng')
 
-fig = figure('Visible','off'); 
+fig = figure('Visible','off'); hold on;
 title('F1-Score Traffic depending on \rho and \alpha');
 xlabel('\rho'), ylabel('\alpha'), zlabel('F1-score');
 h = surf(xt, yt, f1score3); set(h, 'edgecolor', 'none');
