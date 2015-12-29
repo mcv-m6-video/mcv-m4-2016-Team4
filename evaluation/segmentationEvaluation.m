@@ -32,6 +32,9 @@ function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationE
     list = dir([ pathResults , testId ]); % get info of files/folders in directory
     isfile= ~[list.isdir]; %determine index of files vs folders
     filesResultsTest={list(isfile).name}; %create cell array of file names
+    % filter files starting with '.'
+    filesResultsTestInd = cellfun(@(x) x(1)=='.',filesResultsTest);
+    filesResultsTest = filesResultsTest(~filesResultsTestInd);
     
     % Setup variables
     tp = zeros(length(filesResultsTest),1);
