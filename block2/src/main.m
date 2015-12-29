@@ -30,6 +30,7 @@ pathFallGroundtruth = [ folderFall folderGroundtruth ];
 pathTrafficInput = [ folderTraffic folderInput ];
 pathTrafficGroundtruth = [ folderTraffic folderGroundtruth ];
 
+figuresFolder = ['..' filesep 'figures' filesep];
 testId = '';
 
 %% Non-recursive Gaussian modeling
@@ -130,58 +131,90 @@ end % for
 rmpath('./../../evaluation')
 
 % Test 1
-figure;
+fig = figure('Visible','off');
 plot(thresholdAlpha,tp1,'r'); hold on;
 plot(thresholdAlpha,fp1,'g'); plot(thresholdAlpha,fn1,'b'); plot(thresholdAlpha,tn1,'y'); 
 %Overwrite title and legend
 title('Highway'); legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
+print(fig,[ figuresFolder 'Task2_highway' ],'-dpng')
 
 % Test 2
-figure;
+fig = figure('Visible','off');
 plot(thresholdAlpha,tp2,'r'); hold on;
 plot(thresholdAlpha,fp2,'g'); plot(thresholdAlpha,fn2,'b'); plot(thresholdAlpha,tn2,'y'); 
 %Overwrite title and legend
 title('Fall'); legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
+print(fig,[ figuresFolder 'Task2_fall' ],'-dpng')
 
 % Test 3
-figure;
+fig = figure('Visible','off');
 plot(thresholdAlpha,tp3,'r'); hold on;
 plot(thresholdAlpha,fp3,'g'); plot(thresholdAlpha,fn3,'b'); plot(thresholdAlpha,tn3,'y'); 
 %Overwrite title and legend
 title('Traffic'); legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
+print(fig,[ figuresFolder 'Task2_traffic' ],'-dpng')
 
 % F1 score
-figure;
+fig = figure('Visible','off');
 plot(thresholdAlpha,f1score1,'r'); hold on;
 plot(thresholdAlpha,f1score2,'g'); plot(thresholdAlpha,f1score3,'b'); 
 %Overwrite title and legend
 title('F1-Score vs threshold'); legend({'Highway' , 'Fall' , 'Traffic'}); hold off;
+print(fig,[ figuresFolder 'Task2_f1score' ],'-dpng')
 
 % Precision Recall Test 1
-figure;
+fig = figure('Visible','off');
 plot(rec1, prec1);
 xlim([0 1]); ylim([0 1]);
 xlabel('Recall'); ylabel('Precision');
 title(sprintf('Precision Recall (Highway). AUC: %.2f', trapz(prec1)));
+print(fig,[ figuresFolder 'Task2_highway_precision_recall' ],'-dpng')
 
 % Precision Recall Test 2
-figure;
+fig = figure('Visible','off');
 plot(rec2, prec2);
 xlim([0 1]); ylim([0 1]);
 xlabel('Recall'); ylabel('Precision');
 title(sprintf('Precision Recall (Fall).  AUC: %.2f', trapz(prec2)));
+print(fig,[ figuresFolder 'Task2_fall_precision_recall' ],'-dpng')
 
 % Precision Recall Test 3
-figure;
+fig = figure('Visible','off');
 plot(rec3, prec3);
 xlim([0 1]); ylim([0 1]);
 xlabel('Recall'); ylabel('Precision');
 title(sprintf('Precision Recall (Traffic). AUC: %.2f', trapz(prec3)));
+print(fig,[ figuresFolder 'Task2_traffic_precision_recall' ],'-dpng')
 
 %% Recursive Gaussian modeling
 %% Task 4
 % Implement the recursive function described above and discuss which is the best
 % value of ? for the fall sequence.
+
+% Results Folder
+adaptiveGaussianResultsFolder = 'resultsAdaptiveGaussian';
+
+% Highway
+pathHighwayResults = [ folderHighway adaptiveGaussianResultsFolder filesep ];
+if ~exist(pathHighwayResults , 'dir')
+    mkdir( pathHighwayResults );
+end % if
+pathHighwayResults = [ pathHighwayResults testId ];
+
+% Fall
+pathFallResults = [ folderFall adaptiveGaussianResultsFolder filesep ];
+if ~exist(pathFallResults , 'dir')
+    mkdir( pathFallResults );
+end % if
+pathFallResults = [ pathFallResults testId ];
+
+% Traffic
+pathTrafficResults = [ folderTraffic adaptiveGaussianResultsFolder filesep ];
+if ~exist(pathTrafficResults , 'dir')
+    mkdir( pathTrafficResults );
+end % if
+pathTrafficResults = [ pathTrafficResults testId ];
+
 
 % A) NON-RECURSIVE
 [~, ind] = max(f1score1);
@@ -248,11 +281,12 @@ end % for
 rmpath('./../../evaluation')
 
 % F1 score
-figure;
+fig = figure('Visible','off');
 plot(thresholdRho,f1score1,'r'); hold on;
 plot(thresholdRho,f1score2,'g'); plot(thresholdRho,f1score3,'b'); 
 %Overwrite title and legend
 title('F1-Score vs threshold (RHO)'); legend({'Highway' , 'Fall' , 'Traffic'}); hold off;
+print(fig,[ figuresFolder 'Task4_f1score_rho' ],'-dpng')
 
 % B) Alpha and Rho
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
@@ -321,9 +355,12 @@ rmpath('./../../evaluation')
 
 % F1 score
 [xt, yt] = meshgrid(thresholdRho, thresholdAlpha);
-figure, h = surf(xt, yt, f1score1); xlabel('Rho'), ylabel('Alpha'), zlabel('F1-score'), set(h, 'edgecolor', 'none'); title('F1-Score Test 1');
-figure, h = surf(xt, yt, f1score2); xlabel('Rho'), ylabel('Alpha'), zlabel('F1-score'), set(h, 'edgecolor', 'none'); title('F1-Score Test 2');
-figure, h = surf(xt, yt, f1score3); xlabel('Rho'), ylabel('Alpha'), zlabel('F1-score'), set(h, 'edgecolor', 'none'); title('F1-Score Test 3');
+fig = figure('Visible','off'); h = surf(xt, yt, f1score1); xlabel('Rho'), ylabel('Alpha'), zlabel('F1-score'), set(h, 'edgecolor', 'none'); title('F1-Score Highway');
+print(fig,[ figuresFolder 'Task4_f1score_highway_rho_alpha' ],'-dpng')
+fig = figure('Visible','off'); h = surf(xt, yt, f1score2); xlabel('Rho'), ylabel('Alpha'), zlabel('F1-score'), set(h, 'edgecolor', 'none'); title('F1-Score Fall');
+print(fig,[ figuresFolder 'Task4_f1score_fall_rho_alpha' ],'-dpng')
+fig = figure('Visible','off'); h = surf(xt, yt, f1score3); xlabel('Rho'), ylabel('Alpha'), zlabel('F1-score'), set(h, 'edgecolor', 'none'); title('F1-Score Traffic');
+print(fig,[ figuresFolder 'Task4_f1score_traffic_rho_alpha' ],'-dpng')
 
 [f1, ind] = max(f1score1(:)); [alphaB, rhoB] = ind2sub(size(f1score1), ind); disp(sprintf('Best alpha = %f and rho = %f for Test 1 (F1-score = %f)', thresholdAlpha(alphaB), thresholdRho(rhoB), f1))
 [f1, ind] = max(f1score2(:)); [alphaB, rhoB] = ind2sub(size(f1score2), ind); disp(sprintf('Best alpha = %f and rho = %f for Test 2 (F1-score = %f)', thresholdAlpha(alphaB), thresholdRho(rhoB), f1))
@@ -343,8 +380,17 @@ figure, h = surf(xt, yt, f1score3); xlabel('Rho'), ylabel('Alpha'), zlabel('F1-s
 % and comment the results obtained.
 SGfolder = 'resultsSG';
 pathHighwayResults = [ folderHighway SGfolder filesep ];
+if ~exist(pathHighwayResults , 'dir')
+    mkdir( pathHighwayResults );
+end % if
 pathFallResults = [ folderFall SGfolder filesep ];
+if ~exist(pathFallResults , 'dir')
+    mkdir( pathFallResults );
+end % if
 pathTrafficResults = [ folderTraffic SGfolder filesep ];
+if ~exist(pathTrafficResults , 'dir')
+    mkdir( pathTrafficResults );
+end % if
 minGaussians = 3;
 maxGaussians = 6;
 f1Scores = zeros(length(minGaussians:maxGaussians), 3);
@@ -384,14 +430,14 @@ end % for
 
 %Plot the results
 colorList = [ 'b', 'g', 'm'];
-figure; hold on;
+fig = figure('Visible','off'); hold on;
 for i=1:size(f1Scores,2)
    plot(minGaussians:maxGaussians, f1Scores(:,i), colorList(i)); 
 end
 title('F1Score evolution along number of Gaussians', 'FontWeight', 'Bold');
 xlabel('Number of Gaussians'); ylabel('F1Score');
 legend({'Highway', 'Fall', 'Traffic'});
-
+print(fig,[ figuresFolder 'Task6_f1score' ],'-dpng')
 
 %% Task 7
 % Compare your gaussian modeling of the Background pixels with S&G using the
