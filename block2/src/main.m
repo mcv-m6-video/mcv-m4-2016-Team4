@@ -135,7 +135,8 @@ fig = figure('Visible','off');
 plot(thresholdAlpha,tp1,'r'); hold on;
 plot(thresholdAlpha,fp1,'g'); plot(thresholdAlpha,fn1,'b'); plot(thresholdAlpha,tn1,'y'); 
 %Overwrite title and legend
-title('Highway'); legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
+title('Highway: TP FN TN FP for one gaussian'); xlabel('Threshold (\alpha)'); ylabel('Number of pixels');
+legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
 print(fig,[ figuresFolder 'Task2_highway' ],'-dpng')
 
 % Test 2
@@ -143,7 +144,8 @@ fig = figure('Visible','off');
 plot(thresholdAlpha,tp2,'r'); hold on;
 plot(thresholdAlpha,fp2,'g'); plot(thresholdAlpha,fn2,'b'); plot(thresholdAlpha,tn2,'y'); 
 %Overwrite title and legend
-title('Fall'); legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
+title('Fall: TP FN TN FP for one gaussian');  xlabel('Threshold (\alpha)'); ylabel('Number of pixels');
+legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
 print(fig,[ figuresFolder 'Task2_fall' ],'-dpng')
 
 % Test 3
@@ -151,7 +153,8 @@ fig = figure('Visible','off');
 plot(thresholdAlpha,tp3,'r'); hold on;
 plot(thresholdAlpha,fp3,'g'); plot(thresholdAlpha,fn3,'b'); plot(thresholdAlpha,tn3,'y'); 
 %Overwrite title and legend
-title('Traffic'); legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
+title('Traffic: TP FN TN FP for one gaussian');  xlabel('Threshold (\alpha)'); ylabel('Number of pixels');
+legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
 print(fig,[ figuresFolder 'Task2_traffic' ],'-dpng')
 
 % F1 score
@@ -159,7 +162,9 @@ fig = figure('Visible','off');
 plot(thresholdAlpha,f1score1,'r'); hold on;
 plot(thresholdAlpha,f1score2,'g'); plot(thresholdAlpha,f1score3,'b'); 
 %Overwrite title and legend
-title('F1-Score vs threshold'); legend({'Highway' , 'Fall' , 'Traffic'}); hold off;
+title('F1-Score depending on threshold (\alpha)'); 
+xlabel('Threshold (\alpha)'); ylabel('F1-Score');
+legend({'Highway' , 'Fall' , 'Traffic'}); hold off;
 print(fig,[ figuresFolder 'Task2_f1score' ],'-dpng')
 
 % Precision Recall Test 1
@@ -276,7 +281,7 @@ for rho = minRho:stepRho:maxRho
     
     countRho = countRho + 1;
     
-    disp(sprintf('%f%%', 100*(countRho-1)/szMetricsRho))
+    fprintf('%f%%\n', 100*(countRho-1)/szMetricsRho);
 end % for
 rmpath('./../../evaluation')
 
@@ -285,7 +290,9 @@ fig = figure('Visible','off');
 plot(thresholdRho,f1score1,'r'); hold on;
 plot(thresholdRho,f1score2,'g'); plot(thresholdRho,f1score3,'b'); 
 %Overwrite title and legend
-title('F1-Score vs threshold (RHO)'); legend({'Highway' , 'Fall' , 'Traffic'}); hold off;
+title('F1-Score depending on threshold (\rho)'); 
+xlabel('Threshold (\rho)'); ylabel('F1-Score');
+legend({'Highway' , 'Fall' , 'Traffic'}); hold off;
 print(fig,[ figuresFolder 'Task4_f1score_rho' ],'-dpng')
 
 % B) Alpha and Rho
@@ -347,7 +354,7 @@ for alpha = minAlpha:stepAlpha:maxAlpha
         countRho = countRho + 1;
         k = k + 1;
         
-        disp(sprintf('%f%%', 100*k/(szMetricsAlpha*szMetricsRho)))
+        fprintf('%f%%\n', 100*k/(szMetricsAlpha*szMetricsRho));
     end % for
     countAlpha = countAlpha + 1;
 end % for
@@ -355,18 +362,30 @@ rmpath('./../../evaluation')
 
 % F1 score
 [xt, yt] = meshgrid(thresholdRho, thresholdAlpha);
-fig = figure('Visible','off'); h = surf(xt, yt, f1score1); xlabel('Rho'), ylabel('Alpha'), zlabel('F1-score'), set(h, 'edgecolor', 'none'); title('F1-Score Highway');
+fig = figure('Visible','off'); 
+title('F1-Score Highway depending on \alpha and \rho');
+xlabel('\rho'), ylabel('\alpha'), zlabel('F1-score');
+h = surf(xt, yt, f1score1);  set(h, 'edgecolor', 'none');
 print(fig,[ figuresFolder 'Task4_f1score_highway_rho_alpha' ],'-dpng')
-fig = figure('Visible','off'); h = surf(xt, yt, f1score2); xlabel('Rho'), ylabel('Alpha'), zlabel('F1-score'), set(h, 'edgecolor', 'none'); title('F1-Score Fall');
+
+fig = figure('Visible','off'); 
+title('F1-Score Fall depending on \alpha and \rho');
+h = surf(xt, yt, f1score2); set(h, 'edgecolor', 'none'); 
+xlabel('\rho'), ylabel('\alpha'), zlabel('F1-score'); 
 print(fig,[ figuresFolder 'Task4_f1score_fall_rho_alpha' ],'-dpng')
-fig = figure('Visible','off'); h = surf(xt, yt, f1score3); xlabel('Rho'), ylabel('Alpha'), zlabel('F1-score'), set(h, 'edgecolor', 'none'); title('F1-Score Traffic');
+
+fig = figure('Visible','off'); 
+title('F1-Score Traffic depending on \rho and \alpha');
+xlabel('\rho'), ylabel('\alpha'), zlabel('F1-score');
+h = surf(xt, yt, f1score3); set(h, 'edgecolor', 'none');
 print(fig,[ figuresFolder 'Task4_f1score_traffic_rho_alpha' ],'-dpng')
 
-[f1, ind] = max(f1score1(:)); [alphaB, rhoB] = ind2sub(size(f1score1), ind); disp(sprintf('Best alpha = %f and rho = %f for Test 1 (F1-score = %f)', thresholdAlpha(alphaB), thresholdRho(rhoB), f1))
-[f1, ind] = max(f1score2(:)); [alphaB, rhoB] = ind2sub(size(f1score2), ind); disp(sprintf('Best alpha = %f and rho = %f for Test 2 (F1-score = %f)', thresholdAlpha(alphaB), thresholdRho(rhoB), f1))
-[f1, ind] = max(f1score3(:)); [alphaB, rhoB] = ind2sub(size(f1score3), ind); disp(sprintf('Best alpha = %f and rho = %f for Test 3 (F1-score = %f)', thresholdAlpha(alphaB), thresholdRho(rhoB), f1))
-
-
+[f1, ind] = max(f1score1(:)); [alphaB, rhoB] = ind2sub(size(f1score1), ind); 
+fprintf('Best alpha = %f and rho = %f for Test 1 (F1-score = %f)\n', thresholdAlpha(alphaB), thresholdRho(rhoB), f1);
+[f1, ind] = max(f1score2(:)); [alphaB, rhoB] = ind2sub(size(f1score2), ind); 
+fprintf('Best alpha = %f and rho = %f for Test 2 (F1-score = %f)\n', thresholdAlpha(alphaB), thresholdRho(rhoB), f1);
+[f1, ind] = max(f1score3(:)); [alphaB, rhoB] = ind2sub(size(f1score3), ind); 
+fprintf('Best alpha = %f and rho = %f for Test 3 (F1-score = %f)\n', thresholdAlpha(alphaB), thresholdRho(rhoB), f1);
 
 %% Task 5
 % Compute the F1 score (for the fixed value of ? computed in Task 4 and ? in Task
@@ -435,7 +454,7 @@ for i=1:size(f1Scores,2)
    plot(minGaussians:maxGaussians, f1Scores(:,i), colorList(i)); 
 end
 title('F1Score evolution along number of Gaussians', 'FontWeight', 'Bold');
-xlabel('Number of Gaussians'); ylabel('F1Score');
+xlabel('Number of Gaussians'); ylabel('F1-Score');
 legend({'Highway', 'Fall', 'Traffic'});
 print(fig,[ figuresFolder 'Task6_f1score' ],'-dpng')
 
