@@ -79,7 +79,7 @@ oneGaussianBackground( traffic , pathTrafficInput , fileFormat , pathTrafficResu
 
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 
-minAlpha = 0; stepAlpha = 0.5; maxAlpha = 5;
+minAlpha = 0; stepAlpha = 0.5; maxAlpha = 10;
 thresholdAlpha = minAlpha:stepAlpha:maxAlpha;
 szMetrics = length(thresholdAlpha); count = 1;
 
