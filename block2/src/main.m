@@ -79,7 +79,7 @@ oneGaussianBackground( traffic , pathTrafficInput , fileFormat , pathTrafficResu
 
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 
-minAlpha = 0; stepAlpha = 0.5; maxAlpha = 5;
+minAlpha = 0; stepAlpha = 0.5; maxAlpha = 10;
 thresholdAlpha = minAlpha:stepAlpha:maxAlpha;
 szMetrics = length(thresholdAlpha); count = 1;
 
@@ -131,34 +131,34 @@ end % for
 rmpath('./../../evaluation')
 
 % Test 1
-fig = figure('Visible','off');
+fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
 plot(thresholdAlpha,tp1,'r'); hold on;
-plot(thresholdAlpha,fp1,'g'); plot(thresholdAlpha,fn1,'b'); plot(thresholdAlpha,tn1,'y'); 
+plot(thresholdAlpha,fp1,'g'); plot(thresholdAlpha,fn1,'b'); plot(thresholdAlpha,tn1,'m'); 
 %Overwrite title and legend
 title('Highway: TP FN TN FP for one gaussian'); xlabel('Threshold (\alpha)'); ylabel('Number of pixels');
 legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
 print(fig,[ figuresFolder 'Task2_highway' ],'-dpng')
 
 % Test 2
-fig = figure('Visible','off');
+fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
 plot(thresholdAlpha,tp2,'r'); hold on;
-plot(thresholdAlpha,fp2,'g'); plot(thresholdAlpha,fn2,'b'); plot(thresholdAlpha,tn2,'y'); 
+plot(thresholdAlpha,fp2,'g'); plot(thresholdAlpha,fn2,'b'); plot(thresholdAlpha,tn2,'m'); 
 %Overwrite title and legend
 title('Fall: TP FN TN FP for one gaussian');  xlabel('Threshold (\alpha)'); ylabel('Number of pixels');
 legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
 print(fig,[ figuresFolder 'Task2_fall' ],'-dpng')
 
 % Test 3
-fig = figure('Visible','off');
+fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
 plot(thresholdAlpha,tp3,'r'); hold on;
-plot(thresholdAlpha,fp3,'g'); plot(thresholdAlpha,fn3,'b'); plot(thresholdAlpha,tn3,'y'); 
+plot(thresholdAlpha,fp3,'g'); plot(thresholdAlpha,fn3,'b'); plot(thresholdAlpha,tn3,'m'); 
 %Overwrite title and legend
 title('Traffic: TP FN TN FP for one gaussian');  xlabel('Threshold (\alpha)'); ylabel('Number of pixels');
 legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
 print(fig,[ figuresFolder 'Task2_traffic' ],'-dpng')
 
 % F1 score
-fig = figure('Visible','off');
+fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
 plot(thresholdAlpha,f1score1,'r'); hold on;
 plot(thresholdAlpha,f1score2,'g'); plot(thresholdAlpha,f1score3,'b'); 
 %Overwrite title and legend
@@ -168,7 +168,7 @@ legend({'Highway' , 'Fall' , 'Traffic'}); hold off;
 print(fig,[ figuresFolder 'Task2_f1score' ],'-dpng')
 
 % Precision Recall Test 1
-fig = figure('Visible','off');
+fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
 plot(rec1, prec1);
 xlim([0 1]); ylim([0 1]);
 xlabel('Recall'); ylabel('Precision');
@@ -176,7 +176,7 @@ title(sprintf('Precision Recall (Highway). AUC: %.2f', trapz(prec1)));
 print(fig,[ figuresFolder 'Task2_highway_precision_recall' ],'-dpng')
 
 % Precision Recall Test 2
-fig = figure('Visible','off');
+fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
 plot(rec2, prec2);
 xlim([0 1]); ylim([0 1]);
 xlabel('Recall'); ylabel('Precision');
@@ -184,7 +184,7 @@ title(sprintf('Precision Recall (Fall).  AUC: %.2f', trapz(prec2)));
 print(fig,[ figuresFolder 'Task2_fall_precision_recall' ],'-dpng')
 
 % Precision Recall Test 3
-fig = figure('Visible','off');
+fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
 plot(rec3, prec3);
 xlim([0 1]); ylim([0 1]);
 xlabel('Recall'); ylabel('Precision');
