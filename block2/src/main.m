@@ -169,27 +169,19 @@ print(fig,[ figuresFolder 'Task2_f1score' ],'-dpng')
 
 % Precision Recall Test 1
 fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
-plot(rec1, prec1);
+hold on;
+plot(rec1, prec1, 'r'); % Highway
+plot(rec2, prec2, 'g'); % Fall
+plot(rec3, prec3, 'b'); % Traffic
 xlim([0 1]); ylim([0 1]);
 xlabel('Recall'); ylabel('Precision');
-title(sprintf('Precision Recall (Highway). AUC: %.2f', trapz(prec1)));
-print(fig,[ figuresFolder 'Task2_highway_precision_recall' ],'-dpng')
+title(sprintf('Precision Recall curve.');
+legendStr{1} = sprintf('Highway (AUC: %.2f)', trapz(prec1));
+legendStr{2} = sprintf('Fall (AUC: %.2f)', trapz(prec2));
+legendStr{3} = sprintf('Traffic (AUC: %.2f)', trapz(prec3));
+legend(legendStr); hold off;
+print(fig,[ figuresFolder 'Task2_precision_recall' ],'-dpng')
 
-% Precision Recall Test 2
-fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
-plot(rec2, prec2);
-xlim([0 1]); ylim([0 1]);
-xlabel('Recall'); ylabel('Precision');
-title(sprintf('Precision Recall (Fall).  AUC: %.2f', trapz(prec2)));
-print(fig,[ figuresFolder 'Task2_fall_precision_recall' ],'-dpng')
-
-% Precision Recall Test 3
-fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
-plot(rec3, prec3);
-xlim([0 1]); ylim([0 1]);
-xlabel('Recall'); ylabel('Precision');
-title(sprintf('Precision Recall (Traffic). AUC: %.2f', trapz(prec3)));
-print(fig,[ figuresFolder 'Task2_traffic_precision_recall' ],'-dpng')
 
 %% Recursive Gaussian modeling
 %% Task 4
