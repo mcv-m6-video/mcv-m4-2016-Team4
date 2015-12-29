@@ -19,8 +19,19 @@ function staufferGrimsonMultipleGaussian( sequence , folderPath , fileFormat , p
         figure;
     end
     
+    % Initialize the model
+    detector = vision.ForegroundDetector('NumTrainingFrames',floor(length(sequence)/2), ...
+                                        'NumGaussians', nGaussians, 'LearningRate', 0.005);
+    
     % First 50% of the test sequence to train the model
-    detector = vision.ForegroundDetector('NumTrainingFrames',floor(length(sequence)/2), 'NumGaussians', nGaussians);
+    for i = 1:floor(length(sequence)/2)
+        % Read image
+        imName = sprintf('%06d', sequence(i));
+        fileName = [ folderPath , imName , fileFormat ];
+        im = imread(fileName);
+        % Just segment for training
+        step(detector, im);
+    end
     
     % Second 50% to segment the foreground
     for i = (floor(length(sequence)/2)+1):length(sequence)

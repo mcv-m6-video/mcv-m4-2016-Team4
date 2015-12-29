@@ -414,6 +414,7 @@ minGaussians = 3;
 maxGaussians = 6;
 f1Scores = zeros(length(minGaussians:maxGaussians), 3);
 count = 1;
+addpath('../../evaluation');
 for nGaussians = minGaussians:maxGaussians
     
     % Highway
@@ -449,7 +450,8 @@ end % for
 
 %Plot the results
 colorList = [ 'b', 'g', 'm'];
-fig = figure('Visible','off'); hold on;
+fig = figure('Visible','off', 'PaperUnits', 'centimeters', 'PaperPosition', [0 0 10.5 12.5]); 
+hold on;
 for i=1:size(f1Scores,2)
    plot(minGaussians:maxGaussians, f1Scores(:,i), colorList(i)); 
 end
