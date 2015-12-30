@@ -1,12 +1,9 @@
-%% Task 2 & 3
-% Draw the curves F1 score, True Positive, True Negative, False Positive, False 
-% Negative vs. threshold ? for the three proposed sequences (remember to convert 
-% them to gray-scale).
-% Draw the curve Precision vs. Recall depending of threshold ? for the three
-% proposed sequences and comment the results.
+%% Task 8_1
+% Update the single gaussian functions (non-recursive) to work with
+% color images and use them to obtain the F1 score of the three proposed sequences.
 
 %% Results Folder
-oneGaussianResultsFolder = 'resultsOneGaussian';
+oneGaussianResultsFolder = 'resultsOneGaussianColor';
 
 % Highway
 pathHighwayResults = [ folderHighway oneGaussianResultsFolder filesep ];
@@ -30,6 +27,9 @@ end % if
 pathTrafficResults = [ pathTrafficResults testId ];
 
 %% Evaluation
+colorIm = true;
+colorTransform = @rgb2yuv;
+ 
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 
 thresholdAlpha = minAlpha:stepAlpha:maxAlpha;
@@ -49,7 +49,7 @@ addpath('./../../evaluation')
 for alpha = minAlpha:stepAlpha:maxAlpha
     
     % Highway
-    oneGaussianBackground( highway , pathHighwayInput , fileFormat , pathHighwayResults , alpha);
+    oneGaussianBackground( highway , pathHighwayInput , fileFormat , pathHighwayResults , alpha , colorIm , colorTransform );
     
     % Evaluate
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
@@ -59,7 +59,7 @@ for alpha = minAlpha:stepAlpha:maxAlpha
     prec1(count) = precAux; rec1(count) = recAux; f1score1(count) = f1Aux;
     
     % Fall
-    oneGaussianBackground( fall , pathFallInput , fileFormat , pathFallResults , alpha);
+    oneGaussianBackground( fall , pathFallInput , fileFormat , pathFallResults , alpha , colorIm , colorTransform );
 
     % Evaluate
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
@@ -69,7 +69,7 @@ for alpha = minAlpha:stepAlpha:maxAlpha
     prec2(count) = precAux; rec2(count) = recAux; f1score2(count) = f1Aux;
     
     % Traffic
-    oneGaussianBackground( traffic , pathTrafficInput , fileFormat , pathTrafficResults , alpha);
+    oneGaussianBackground( traffic , pathTrafficInput , fileFormat , pathTrafficResults , alpha , colorIm , colorTransform );
     
     % Evaluate
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
@@ -89,37 +89,37 @@ fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.
 plot(thresholdAlpha,tp1,'r'); hold on;
 plot(thresholdAlpha,fp1,'g'); plot(thresholdAlpha,fn1,'b'); plot(thresholdAlpha,tn1,'m'); 
 %Overwrite title and legend
-title('Highway: TP FN TN FP for one gaussian'); xlabel('Threshold (\alpha)'); ylabel('Number of pixels');
+title('Highway: TP FN TN FP for one gaussian with color'); xlabel('Threshold (\alpha)'); ylabel('Number of pixels');
 legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
-print(fig,[ figuresFolder 'Task2_highway' ],'-dpng')
+print(fig,[ figuresFolder 'Task8_1_highway' ],'-dpng')
 
 % Test 2
 fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
 plot(thresholdAlpha,tp2,'r'); hold on;
 plot(thresholdAlpha,fp2,'g'); plot(thresholdAlpha,fn2,'b'); plot(thresholdAlpha,tn2,'m'); 
 %Overwrite title and legend
-title('Fall: TP FN TN FP for one gaussian');  xlabel('Threshold (\alpha)'); ylabel('Number of pixels');
+title('Fall: TP FN TN FP for one gaussian with color');  xlabel('Threshold (\alpha)'); ylabel('Number of pixels');
 legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
-print(fig,[ figuresFolder 'Task2_fall' ],'-dpng')
+print(fig,[ figuresFolder 'Task8_1_fall' ],'-dpng')
 
 % Test 3
 fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
 plot(thresholdAlpha,tp3,'r'); hold on;
 plot(thresholdAlpha,fp3,'g'); plot(thresholdAlpha,fn3,'b'); plot(thresholdAlpha,tn3,'m'); 
 %Overwrite title and legend
-title('Traffic: TP FN TN FP for one gaussian');  xlabel('Threshold (\alpha)'); ylabel('Number of pixels');
+title('Traffic: TP FN TN FP for one gaussian with color');  xlabel('Threshold (\alpha)'); ylabel('Number of pixels');
 legend({'TP' , 'FP' , 'FN' , 'TN'}); hold off;
-print(fig,[ figuresFolder 'Task2_traffic' ],'-dpng')
+print(fig,[ figuresFolder 'Task8_1_traffic' ],'-dpng')
 
 % F1 score
 fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
 plot(thresholdAlpha,f1score1,'r'); hold on;
 plot(thresholdAlpha,f1score2,'g'); plot(thresholdAlpha,f1score3,'b'); 
 %Overwrite title and legend
-title('F1-Score depending on threshold (\alpha)'); 
+title('F1-Score depending on threshold (\alpha) with color'); 
 xlabel('Threshold (\alpha)'); ylabel('F1-Score');
 legend({'Highway' , 'Fall' , 'Traffic'}); hold off;
-print(fig,[ figuresFolder 'Task2_f1score' ],'-dpng')
+print(fig,[ figuresFolder 'Task8_1_f1score' ],'-dpng')
 
 % Store the bests F1Scores (they'll be needed for Task 6)
 bestF1Scores1G = [max(f1score1); max(f1score2); max(f1score3)];
@@ -132,9 +132,9 @@ plot(rec2, prec2, 'g'); % Fall
 plot(rec3, prec3, 'b'); % Traffic
 xlim([0 1]); ylim([0 1]);
 xlabel('Recall'); ylabel('Precision');
-title(sprintf('Precision Recall curve.'));
+title(sprintf('Precision Recall curve with color.'));
 legendStr{1} = sprintf('Highway (AUC: %.2f)', trapz(prec1));
 legendStr{2} = sprintf('Fall (AUC: %.2f)', trapz(prec2));
 legendStr{3} = sprintf('Traffic (AUC: %.2f)', trapz(prec3));
 legend(legendStr); hold off;
-print(fig,[ figuresFolder 'Task2_precision_recall' ],'-dpng')
+print(fig,[ figuresFolder 'Task8_1_precision_recall' ],'-dpng')

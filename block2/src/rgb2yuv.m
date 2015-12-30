@@ -12,6 +12,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function YUV=rgb2yuv(RGB,plot_flag)
 
+if ~exist('plot_flag','var')
+    plot_flag=0;
+end % if
+
 R = RGB(:,:,1);
 G = RGB(:,:,2);
 B = RGB(:,:,3);

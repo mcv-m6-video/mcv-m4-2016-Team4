@@ -1,9 +1,9 @@
-%% Task 4
-% Implement the recursive function described above and discuss which is the best
-% value of ? for the fall sequence.
+%% Task 8_2
+% Update the single gaussian functions (recursive) to work with
+% color images and use them to obtain the F1 score of the three proposed sequences.
 
-% Results Folder
-adaptiveGaussianResultsFolder = 'resultsAdaptiveGaussian';
+%% Results Folder
+adaptiveGaussianResultsFolder = 'resultsAdaptiveGaussianColor';
 
 % Highway
 pathHighwayResults = [ folderHighway adaptiveGaussianResultsFolder filesep ];
@@ -26,6 +26,12 @@ if ~exist(pathTrafficResults , 'dir')
 end % if
 pathTrafficResults = [ pathTrafficResults testId ];
 
+%% Evaluation
+
+colorIm = true;
+colorTransform = @rgb2yuv;
+offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
+
 %% A) NON-RECURSIVE
 [~, ind] = max(f1score1);
 alpha1 = thresholdAlpha(ind);
@@ -35,8 +41,6 @@ alpha2 = thresholdAlpha(ind);
 
 [~, ind] = max(f1score3);
 alpha3 = thresholdAlpha(ind);
-
-offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 
 thresholdRho = minRho:stepRho:maxRho;
 szMetricsRho = length(thresholdRho); countRho = 1;
@@ -54,7 +58,7 @@ tp3 = zeros(szMetricsRho,1); tn3 = zeros(szMetricsRho,1); fp3 = zeros(szMetricsR
 addpath('./../../evaluation')
 for rho = minRho:stepRho:maxRho
     % Highway
-    oneGaussianBackgroundAdaptive( highway , pathHighwayInput , fileFormat , pathHighwayResults , alpha1, rho);
+    oneGaussianBackgroundAdaptive( highway , pathHighwayInput , fileFormat , pathHighwayResults , alpha1, rho , colorIm , colorTransform );
     
     % Evaluate
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
@@ -64,7 +68,7 @@ for rho = minRho:stepRho:maxRho
     prec1(countRho) = precAux; rec1(countRho) = recAux; f1score1(countRho) = f1Aux;
     
     % Fall
-    oneGaussianBackgroundAdaptive( fall , pathFallInput , fileFormat , pathFallResults , alpha2, rho);
+    oneGaussianBackgroundAdaptive( fall , pathFallInput , fileFormat , pathFallResults , alpha2, rho , colorIm , colorTransform );
 
     % Evaluate
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
@@ -74,7 +78,7 @@ for rho = minRho:stepRho:maxRho
     prec2(countRho) = precAux; rec2(countRho) = recAux; f1score2(countRho) = f1Aux;
     
     % Traffic
-    oneGaussianBackgroundAdaptive( traffic , pathTrafficInput , fileFormat , pathTrafficResults , alpha3, rho);
+    oneGaussianBackgroundAdaptive( traffic , pathTrafficInput , fileFormat , pathTrafficResults , alpha3, rho , colorIm , colorTransform );
     
     % Evaluate
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
@@ -126,7 +130,7 @@ for alpha = minAlpha:stepAlpha:maxAlpha
     countRho = 1;
     for rho = minRho:stepRho:maxRho
         % Highway
-        oneGaussianBackgroundAdaptive( highway , pathHighwayInput , fileFormat , pathHighwayResults , alpha, rho);
+        oneGaussianBackgroundAdaptive( highway , pathHighwayInput , fileFormat , pathHighwayResults , alpha, rho , colorIm , colorTransform );
 
         % Evaluate
         [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
@@ -136,7 +140,7 @@ for alpha = minAlpha:stepAlpha:maxAlpha
         prec1(countAlpha, countRho) = precAux; rec1(countAlpha, countRho) = recAux; f1score1(countAlpha, countRho) = f1Aux;
 
         % Fall
-        oneGaussianBackgroundAdaptive( fall , pathFallInput , fileFormat , pathFallResults , alpha, rho);
+        oneGaussianBackgroundAdaptive( fall , pathFallInput , fileFormat , pathFallResults , alpha, rho , colorIm , colorTransform );
 
         % Evaluate
         [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
@@ -146,7 +150,7 @@ for alpha = minAlpha:stepAlpha:maxAlpha
         prec2(countAlpha, countRho) = precAux; rec2(countAlpha, countRho) = recAux; f1score2(countAlpha, countRho) = f1Aux;
 
         % Traffic
-        oneGaussianBackgroundAdaptive( traffic , pathTrafficInput , fileFormat , pathTrafficResults , alpha, rho);
+        oneGaussianBackgroundAdaptive( traffic , pathTrafficInput , fileFormat , pathTrafficResults , alpha, rho , colorIm , colorTransform );
 
         % Evaluate
         [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...

@@ -23,8 +23,6 @@ task1;
 % Draw the curve Precision vs. Recall depending of threshold ? for the three
 % proposed sequences and comment the results.
 
-minAlpha = 0; stepAlpha = 0.5; maxAlpha = 10;
-
 task2_3;
 
 
@@ -58,3 +56,5 @@ task6;
 % Update the single gaussian functions (recursive and non-recursive) to work with
 % color images and use them to obtain the F1 score of the three proposed sequences.
 
+task8_1;
+task8_2;

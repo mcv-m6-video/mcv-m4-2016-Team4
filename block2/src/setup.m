@@ -27,3 +27,7 @@ pathTrafficGroundtruth = [ folderTraffic folderGroundtruth ];
 
 figuresFolder = ['..' filesep 'figures' filesep];
 testId = '';
+
+% Parameters to find
+minAlpha = 0; stepAlpha = 0.5; maxAlpha = 10;
+minRho = 0.1; stepRho = 0.1; maxRho = 1;
