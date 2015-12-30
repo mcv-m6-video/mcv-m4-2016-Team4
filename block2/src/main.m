@@ -167,6 +167,9 @@ xlabel('Threshold (\alpha)'); ylabel('F1-Score');
 legend({'Highway' , 'Fall' , 'Traffic'}); hold off;
 print(fig,[ figuresFolder 'Task2_f1score' ],'-dpng')
 
+% Store the bests F1Scores (they'll be needed for Task 6)
+bestF1Scores1G = [max(f1score1); max(f1score2); max(f1score3)];
+
 % Precision Recall Test 1
 fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
 hold on;
@@ -175,7 +178,7 @@ plot(rec2, prec2, 'g'); % Fall
 plot(rec3, prec3, 'b'); % Traffic
 xlim([0 1]); ylim([0 1]);
 xlabel('Recall'); ylabel('Precision');
-title(sprintf('Precision Recall curve.');
+title(sprintf('Precision Recall curve.'));
 legendStr{1} = sprintf('Highway (AUC: %.2f)', trapz(prec1));
 legendStr{2} = sprintf('Fall (AUC: %.2f)', trapz(prec2));
 legendStr{3} = sprintf('Traffic (AUC: %.2f)', trapz(prec3));
@@ -440,9 +443,9 @@ for nGaussians = minGaussians:maxGaussians
     count = count + 1;
 end % for
 
-%Plot the results
+% Plot the results
 colorList = [ 'b', 'g', 'm'];
-fig = figure('Visible','off', 'PaperUnits', 'centimeters', 'PaperPosition', [0 0 10.5 12.5]); 
+fig = figure('Visible','off', 'PaperUnits', 'centimeters', 'PaperPosition', [0 0 12.5 10.5]); 
 hold on;
 for i=1:size(f1Scores,2)
    plot(minGaussians:maxGaussians, f1Scores(:,i), colorList(i)); 
@@ -451,6 +454,17 @@ title('F1Score evolution along number of Gaussians', 'FontWeight', 'Bold');
 xlabel('Number of Gaussians'); ylabel('F1-Score');
 legend({'Highway', 'Fall', 'Traffic'});
 print(fig,[ figuresFolder 'Task6_f1score' ],'-dpng')
+
+% Plot one gaussian VS S&G (F1-Score) group of bars
+bestF1ScoresSG = [max(f1Scores(:,1)); max(f1Scores(:,2)); max(f1Scores(:,3))];
+fig = figure('Visible','off', 'PaperUnits', 'centimeters', 'PaperPosition', [0 0 12.5 10.5]); 
+bar([bestF1Scores1G bestF1ScoresSG]);
+title('One Gaussian VS Stauffer & Grimson');
+labels = {'Highway', 'Fall', 'Traffic'};
+set(gca, 'XTickLabel',labels, 'XTick',1:numel(labels));
+ylabel('F1-Score'); 
+legend({'One Gaussian', 'Stauffer&Grimson'});
+print(fig,[ figuresFolder 'Task6_1GvsSG' ],'-dpng');
 
 %% Task 7
 % Compare your gaussian modeling of the Background pixels with S&G using the
