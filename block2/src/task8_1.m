@@ -28,7 +28,9 @@ pathTrafficResults = [ pathTrafficResults testId ];
 
 %% Evaluation
 colorIm = true;
-colorTransform = @rgb2yuv;
+colorTransform = @rgb2yuv; 
+colorSpace = 'yuv'; % Change this variable along colorTransform, so the F1Scores
+                    % saved have a filename that identifies the color space used
  
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 
@@ -121,8 +123,16 @@ xlabel('Threshold (\alpha)'); ylabel('F1-Score');
 legend({'Highway' , 'Fall' , 'Traffic'}); hold off;
 print(fig,[ figuresFolder 'Task8_1_f1score' ],'-dpng')
 
-% Store the bests F1Scores (they'll be needed for Task 6)
-bestF1Scores1G = [max(f1score1); max(f1score2); max(f1score3)];
+% Store the bests F1Scores
+f1Score1Max = 0; indMax = 0;
+% Every row contains the F1Score and its threshold (alpha) of sequence i
+bestF1Scores1G_NR = zeros(3,2); 
+for i=1:3
+    eval(['[f1ScoreMax, indMax] = max(f1score' int2str(i) ');']);
+    bestF1Scores1G_NR(i,:) = [f1ScoreMax thresholdAlpha(indMax)];
+end
+eval(['bestF1Scores1G_NR_' colorSpace '=bestF1Scores1G_NR;']);
+save([savedResultsFolder 'bestF1Scores1G_NR_' colorSpace '.mat'], ['bestF1Scores1G_NR_' colorSpace]);
 
 % Precision Recall Test 1
 fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);

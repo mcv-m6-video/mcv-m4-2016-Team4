@@ -25,8 +25,14 @@ pathFallGroundtruth = [ folderFall folderGroundtruth ];
 pathTrafficInput = [ folderTraffic folderInput ];
 pathTrafficGroundtruth = [ folderTraffic folderGroundtruth ];
 
+savedResultsFolder = ['savedResults' filesep];
+
 figuresFolder = ['..' filesep 'figures' filesep];
 testId = '';
+
+if ~exist(savedResultsFolder , 'dir')
+    mkdir( savedResultsFolder );
+end % if
 
 % Parameters to find
 minAlpha = 0; stepAlpha = 0.5; maxAlpha = 10;

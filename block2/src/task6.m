@@ -68,8 +68,10 @@ print(fig,[ figuresFolder 'Task6_f1score' ],'-dpng')
 
 % Plot one gaussian VS S&G (F1-Score) group of bars
 bestF1ScoresSG = [max(f1Scores(:,1)); max(f1Scores(:,2)); max(f1Scores(:,3))];
+save([savedResultsFolder 'bestF1ScoresSG.mat'], 'bestF1ScoresSG' ); %Save in case it's needed later
+load([savedResultsFolder 'bestF1Scores1G_NR_grey.mat']);
 fig = figure('Visible','off', 'PaperUnits', 'centimeters', 'PaperPosition', [0 0 12.5 10.5]); 
-bar([bestF1Scores1G bestF1ScoresSG]);
+bar([bestF1Scores1G_NR_grey(1,:) bestF1ScoresSG]);
 title('One Gaussian VS Stauffer & Grimson');
 labels = {'Highway', 'Fall', 'Traffic'};
 set(gca, 'XTickLabel',labels, 'XTick',1:numel(labels));

@@ -30,6 +30,8 @@ pathTrafficResults = [ pathTrafficResults testId ];
 
 colorIm = true;
 colorTransform = @rgb2yuv;
+colorSpace = 'yuv'; % Change this variable along colorTransform, so the F1Scores
+                    % saved have a filename that identifies the color space used
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 
 %% A) NON-RECURSIVE
@@ -190,8 +192,13 @@ h = surf(xt, yt, f1score3); set(h, 'edgecolor', 'none');
 print(fig,[ figuresFolder 'Task4_f1score_traffic_rho_alpha' ],'-dpng')
 
 [f1, ind] = max(f1score1(:)); [alphaB, rhoB] = ind2sub(size(f1score1), ind); 
+bestF1Scores1G_R(:,1) = [f1 alphaB rhoB];
 fprintf('Best alpha = %f and rho = %f for Test 1 (F1-score = %f)\n', thresholdAlpha(alphaB), thresholdRho(rhoB), f1);
 [f1, ind] = max(f1score2(:)); [alphaB, rhoB] = ind2sub(size(f1score2), ind); 
+bestF1Scores1G_R(:,2) = [f1 alphaB rhoB];
 fprintf('Best alpha = %f and rho = %f for Test 2 (F1-score = %f)\n', thresholdAlpha(alphaB), thresholdRho(rhoB), f1);
 [f1, ind] = max(f1score3(:)); [alphaB, rhoB] = ind2sub(size(f1score3), ind); 
+bestF1Scores1G_R(:,3) = [f1 alphaB rhoB];
 fprintf('Best alpha = %f and rho = %f for Test 3 (F1-score = %f)\n', thresholdAlpha(alphaB), thresholdRho(rhoB), f1);
+eval(['bestF1Scores1G_R_' colorSpace '=bestF1Scores1G_R;']);
+save([savedResultsFolder 'bestF1Scores1G_R_' colorSpace '.mat'], ['bestF1Scores1G_R_' colorSpace]);
