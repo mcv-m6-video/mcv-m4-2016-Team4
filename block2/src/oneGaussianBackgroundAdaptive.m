@@ -70,7 +70,7 @@ function [ ] = oneGaussianBackgroundAdaptive( sequence , folderPath , fileFormat
         % gaussian, it will be considered as foreground
         background = any(background,3);
         
-        applyRho = repmat( (~background).*rho,1,1,size(im,3) );
+        applyRho = repmat( (~background).*rho,[1,1,size(im,3)] );
         
         mu = (1-applyRho).*mu + applyRho.*im;
         sigma_square = (1-applyRho).*sigma_square + applyRho.*((im - mu).^2);
