@@ -108,9 +108,12 @@ plot(rec3, prec3, 'b'); % Traffic
 xlim([0 1]); ylim([0 1]);
 xlabel('Recall'); ylabel('Precision');
 title(sprintf('Precision Recall curve.'));
-legendStr{1} = sprintf('Highway (AUC: %.2f)', trapz(prec1));
-legendStr{2} = sprintf('Fall (AUC: %.2f)', trapz(prec2));
-legendStr{3} = sprintf('Traffic (AUC: %.2f)', trapz(prec3));
+[~, idx] = sort(rec1,'ascend');
+legendStr{1} = sprintf('Highway (AUC: %.2f)', trapz(rec1(idx),prec1(idx)));
+[~, idx] = sort(rec2,'ascend');
+legendStr{2} = sprintf('Fall (AUC: %.2f)', trapz(rec2(idx),prec2(idx)));
+[~, idx] = sort(rec3,'ascend');
+legendStr{3} = sprintf('Traffic (AUC: %.2f)', trapz(rec3(idx),prec3(idx)));
 legend(legendStr); hold off;
 print(fig,[ figuresFolder 'Task4_precision_recall' ],'-dpng')
 
