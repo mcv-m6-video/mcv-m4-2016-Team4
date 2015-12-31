@@ -90,7 +90,7 @@ end % for
 rmpath('./../../evaluation')
 
 % F1 score
-fig = figure('Visible','off');
+fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
 plot(thresholdRho,f1score1,'r'); hold on;
 plot(thresholdRho,f1score2,'g'); plot(thresholdRho,f1score3,'b'); 
 %Overwrite title and legend
@@ -98,6 +98,21 @@ title('F1-Score depending on threshold (\rho)');
 xlabel('Threshold (\rho)'); ylabel('F1-Score');
 legend({'Highway' , 'Fall' , 'Traffic'}); hold off;
 print(fig,[ figuresFolder 'Task4_f1score_rho' ],'-dpng')
+
+% Precision Recall Test 1
+fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]);
+hold on;
+plot(rec1, prec1, 'r'); % Highway
+plot(rec2, prec2, 'g'); % Fall
+plot(rec3, prec3, 'b'); % Traffic
+xlim([0 1]); ylim([0 1]);
+xlabel('Recall'); ylabel('Precision');
+title(sprintf('Precision Recall curve.'));
+legendStr{1} = sprintf('Highway (AUC: %.2f)', trapz(prec1));
+legendStr{2} = sprintf('Fall (AUC: %.2f)', trapz(prec2));
+legendStr{3} = sprintf('Traffic (AUC: %.2f)', trapz(prec3));
+legend(legendStr); hold off;
+print(fig,[ figuresFolder 'Task4_precision_recall' ],'-dpng')
 
 %% B) Alpha and Rho
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
@@ -167,19 +182,19 @@ rmpath('./../../evaluation')
 %% Plot the results
 % F1 score
 [xt, yt] = meshgrid(thresholdRho, thresholdAlpha);
-fig = figure('Visible','off'); hold on;
+fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]); hold on;
 title('F1-Score Highway depending on \alpha and \rho');
 xlabel('\rho'), ylabel('\alpha'), zlabel('F1-score');
 h = surf(xt, yt, f1score1);  set(h, 'edgecolor', 'none');
 print(fig,[ figuresFolder 'Task4_f1score_highway_rho_alpha' ],'-dpng')
 
-fig = figure('Visible','off'); hold on;
+fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]); hold on;
 title('F1-Score Fall depending on \alpha and \rho');
 h = surf(xt, yt, f1score2); set(h, 'edgecolor', 'none'); 
 xlabel('\rho'), ylabel('\alpha'), zlabel('F1-score'); 
 print(fig,[ figuresFolder 'Task4_f1score_fall_rho_alpha' ],'-dpng')
 
-fig = figure('Visible','off'); hold on;
+fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10.5]); hold on;
 title('F1-Score Traffic depending on \rho and \alpha');
 xlabel('\rho'), ylabel('\alpha'), zlabel('F1-score');
 h = surf(xt, yt, f1score3); set(h, 'edgecolor', 'none');
