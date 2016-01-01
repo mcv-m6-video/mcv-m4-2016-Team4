@@ -21,10 +21,15 @@ maxGaussians = 6;
 f1Scores = zeros(length(minGaussians:maxGaussians), 3);
 count = 1;
 addpath('../../evaluation');
-for nGaussians = minGaussians:maxGaussians
+nGaussians = 3;
+minTh = 3; stepTh = 1; maxTh = 6;
+thList = minTh:stepTh:maxTh;
+for th = thList
     
     % Highway
-    staufferGrimsonMultipleGaussian( highway , pathHighwayInput , fileFormat , pathHighwayResults , nGaussians);
+    bkgRatio = 0.5;
+    lrRate = 0.008;
+    staufferGrimsonMultipleGaussian( highway , pathHighwayInput , fileFormat , pathHighwayResults , nGaussians , bkgRatio, lrRate);
     
     % Evaluate
     [ tp , fp , fn , tn , ~ , ~ ] =  ...
@@ -33,7 +38,9 @@ for nGaussians = minGaussians:maxGaussians
     f1Scores(count,1) = mean(f1ScoreAux);
     
     % Fall
-    staufferGrimsonMultipleGaussian( fall , pathFallInput , fileFormat , pathFallResults , nGaussians);
+    bkgRatio = 0.8;
+    lrRate = 0.012;
+    staufferGrimsonMultipleGaussian( fall , pathFallInput , fileFormat , pathFallResults , nGaussians , bkgRatio, lrRate);
     
     % Evaluate
     [ tp , fp , fn , tn , ~ , ~ ] =  ...
@@ -43,7 +50,9 @@ for nGaussians = minGaussians:maxGaussians
     f1Scores(count,2) = mean(f1ScoreAux);
     
     % Traffic
-    staufferGrimsonMultipleGaussian( traffic , pathTrafficInput , fileFormat , pathTrafficResults , nGaussians);
+    bkgRatio = 0.7;
+    lrRate = 0.016;
+    staufferGrimsonMultipleGaussian( traffic , pathTrafficInput , fileFormat , pathTrafficResults , nGaussians , bkgRatio, lrRate);
     
     % Evaluate
     [ tp , fp , fn , tn , ~ , ~ ] =  ...
@@ -59,12 +68,19 @@ colorList = [ 'b', 'g', 'm'];
 fig = figure('Visible','off', 'PaperUnits', 'centimeters', 'PaperPosition', [0 0 12.5 10.5]); 
 hold on;
 for i=1:size(f1Scores,2)
-   plot(minGaussians:maxGaussians, f1Scores(:,i), colorList(i)); 
+   plot(minTh:stepTh:maxTh, f1Scores(:,i), colorList(i)); 
 end
 title('F1Score evolution along number of Gaussians', 'FontWeight', 'Bold');
 xlabel('Number of Gaussians'); ylabel('F1-Score');
 legend({'Highway', 'Fall', 'Traffic'});
 print(fig,[ figuresFolder 'Task6_f1score' ],'-dpng')
+
+[f1, ind] = max(f1Scores(:,1)); bestTh = thList(ind); 
+fprintf('Best Number of Gaussians = %f for Highway (F1-score = %f)\n', bestTh, f1);
+[f1, ind] = max(f1Scores(:,2)); bestTh = thList(ind); 
+fprintf('Best Number of Gaussians = %f for Fall (F1-score = %f)\n', bestTh, f1);
+[f1, ind] = max(f1Scores(:,3)); bestTh = thList(ind); 
+fprintf('Best Number of Gaussians = %f for Traffic (F1-score = %f)\n', bestTh, f1);
 
 % Plot one gaussian VS S&G (F1-Score) group of bars
 bestF1ScoresSG = [max(f1Scores(:,1)); max(f1Scores(:,2)); max(f1Scores(:,3))];

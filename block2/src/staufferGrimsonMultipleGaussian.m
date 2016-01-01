@@ -1,4 +1,4 @@
-function staufferGrimsonMultipleGaussian( sequence , folderPath , fileFormat , pathResults , nGaussians , verbose )
+function staufferGrimsonMultipleGaussian( sequence , folderPath , fileFormat , pathResults , nGaussians , bkgRatio, lrRate, verbose )
 % staufferGrimsonMultipleGaussian: uses the Stauffer & Grimson Multiple
 % Gaussian approach to segment a video frame between background and
 % foreground.
@@ -12,7 +12,8 @@ function staufferGrimsonMultipleGaussian( sequence , folderPath , fileFormat , p
     
     % Initialize the model
     detector = vision.ForegroundDetector('NumTrainingFrames',floor(length(sequence)/2), ...
-                                        'NumGaussians', nGaussians, 'LearningRate', 0.005);
+                                        'NumGaussians', nGaussians, 'LearningRate', lrRate, ...
+                                        'MinimumBackgroundRatio', bkgRatio);
     
     % First 50% of the test sequence to train the model
     for i = 1:floor(length(sequence)/2)
