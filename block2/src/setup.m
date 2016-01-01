@@ -36,4 +36,4 @@ end % if
 
 % Parameters to find
 minAlpha = 0; stepAlpha = 0.5; maxAlpha = 10;
-minRho = 0.1; stepRho = 0.1; maxRho = 1;
+minRho = 0; stepRho = 0.1; maxRho = 0.5;

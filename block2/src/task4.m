@@ -27,14 +27,12 @@ end % if
 pathTrafficResults = [ pathTrafficResults testId ];
 
 %% A) NON-RECURSIVE
-[~, ind] = max(f1score1);
-alpha1 = thresholdAlpha(ind);
+load([savedResultsFolder 'bestF1Scores1G_NR_grey.mat']);
+alpha1 = bestF1Scores1G_NR_grey(1,2);
 
-[~, ind] = max(f1score2);
-alpha2 = thresholdAlpha(ind);
+alpha2 = bestF1Scores1G_NR_grey(2,2);
 
-[~, ind] = max(f1score3);
-alpha3 = thresholdAlpha(ind);
+alpha3 = bestF1Scores1G_NR_grey(3,2);
 
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 
@@ -120,11 +118,9 @@ print(fig,[ figuresFolder 'Task4_precision_recall' ],'-dpng')
 %% B) Alpha and Rho
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 
-minRho = 0.1; stepRho = 0.1; maxRho = 1;
 thresholdRho = minRho:stepRho:maxRho;
 szMetricsRho = length(thresholdRho); countRho = 1;
 
-minAlpha = 0; stepAlpha = 1; maxAlpha = 10;
 thresholdAlpha = minAlpha:stepAlpha:maxAlpha;
 szMetricsAlpha = length(thresholdAlpha); countAlpha = 1;
 

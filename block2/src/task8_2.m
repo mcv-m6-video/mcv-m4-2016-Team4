@@ -29,90 +29,17 @@ pathTrafficResults = [ pathTrafficResults testId ];
 %% Evaluation
 
 colorIm = true;
-colorTransform = @rgb2yuv;
-colorSpace = 'yuv'; % Change this variable along colorTransform, so the F1Scores
+colorTransform = @rgb2lab;
+colorSpace = 'lab'; % Change this variable along colorTransform, so the F1Scores
                     % saved have a filename that identifies the color space used
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
-
-%% A) NON-RECURSIVE
-[~, ind] = max(f1score1);
-alpha1 = thresholdAlpha(ind);
-
-[~, ind] = max(f1score2);
-alpha2 = thresholdAlpha(ind);
-
-[~, ind] = max(f1score3);
-alpha3 = thresholdAlpha(ind);
-
-thresholdRho = minRho:stepRho:maxRho;
-szMetricsRho = length(thresholdRho); countRho = 1;
-
-% Setup variables
-prec1 = zeros(szMetricsRho,1); rec1 = zeros(szMetricsRho,1); f1score1 = zeros(szMetricsRho,1);
-tp1 = zeros(szMetricsRho,1); tn1 = zeros(szMetricsRho,1); fp1 = zeros(szMetricsRho,1); fn1 = zeros(szMetricsRho,1);
-
-prec2 = zeros(szMetricsRho,1); rec2 = zeros(szMetricsRho,1); f1score2 = zeros(szMetricsRho,1);
-tp2 = zeros(szMetricsRho,1); tn2 = zeros(szMetricsRho,1); fp2 = zeros(szMetricsRho,1); fn2 = zeros(szMetricsRho,1);
-
-prec3 = zeros(szMetricsRho,1); rec3 = zeros(szMetricsRho,1); f1score3 = zeros(szMetricsRho,1);
-tp3 = zeros(szMetricsRho,1); tn3 = zeros(szMetricsRho,1); fp3 = zeros(szMetricsRho,1); fn3 = zeros(szMetricsRho,1);
-
-addpath('./../../evaluation')
-for rho = minRho:stepRho:maxRho
-    % Highway
-    oneGaussianBackgroundAdaptive( highway , pathHighwayInput , fileFormat , pathHighwayResults , alpha1, rho , colorIm , colorTransform );
-    
-    % Evaluate
-    [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-        segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId , offsetDesynch , VERBOSE );
-    tp1(countRho) = sum(tpAux); fp1(countRho) = sum(fpAux); fn1(countRho) = sum(fnAux); tn1(countRho) = sum(tnAux);
-    [ precAux , recAux , f1Aux ] = getMetrics( tp1(countRho) , fp1(countRho) , fn1(countRho) , tn1(countRho) );
-    prec1(countRho) = precAux; rec1(countRho) = recAux; f1score1(countRho) = f1Aux;
-    
-    % Fall
-    oneGaussianBackgroundAdaptive( fall , pathFallInput , fileFormat , pathFallResults , alpha2, rho , colorIm , colorTransform );
-
-    % Evaluate
-    [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-        segmentationEvaluation( pathFallGroundtruth , pathFallResults , testId , offsetDesynch , VERBOSE );
-    tp2(countRho) = sum(tpAux); fp2(countRho) = sum(fpAux); fn2(countRho) = sum(fnAux); tn2(countRho) = sum(tnAux);    
-    [ precAux , recAux , f1Aux ] = getMetrics( tp2(countRho) , fp2(countRho) , fn2(countRho) , tn2(countRho) );
-    prec2(countRho) = precAux; rec2(countRho) = recAux; f1score2(countRho) = f1Aux;
-    
-    % Traffic
-    oneGaussianBackgroundAdaptive( traffic , pathTrafficInput , fileFormat , pathTrafficResults , alpha3, rho , colorIm , colorTransform );
-    
-    % Evaluate
-    [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-        segmentationEvaluation( pathTrafficGroundtruth , pathTrafficResults , testId , offsetDesynch , VERBOSE );
-    tp3(countRho) = sum(tpAux); fp3(countRho) = sum(fpAux); fn3(countRho) = sum(fnAux); tn3(countRho) = sum(tnAux);    
-    [ precAux , recAux , f1Aux ] = getMetrics( tp3(countRho) , fp3(countRho) , fn3(countRho) , tn3(countRho) );
-    prec3(countRho) = precAux; rec3(countRho) = recAux; f1score3(countRho) = f1Aux;
-    
-    countRho = countRho + 1;
-    
-    fprintf('%f%%\n', 100*(countRho-1)/szMetricsRho);
-end % for
-rmpath('./../../evaluation')
-
-% F1 score
-fig = figure('Visible','off');
-plot(thresholdRho,f1score1,'r'); hold on;
-plot(thresholdRho,f1score2,'g'); plot(thresholdRho,f1score3,'b'); 
-%Overwrite title and legend
-title('F1-Score depending on threshold (\rho)'); 
-xlabel('Threshold (\rho)'); ylabel('F1-Score');
-legend({'Highway' , 'Fall' , 'Traffic'}); hold off;
-print(fig,[ figuresFolder 'Task4_f1score_rho' ],'-dpng')
 
 %% B) Alpha and Rho
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
 
-minRho = 0.1; stepRho = 0.1; maxRho = 1;
 thresholdRho = minRho:stepRho:maxRho;
 szMetricsRho = length(thresholdRho); countRho = 1;
 
-minAlpha = 0; stepAlpha = 1; maxAlpha = 10;
 thresholdAlpha = minAlpha:stepAlpha:maxAlpha;
 szMetricsAlpha = length(thresholdAlpha); countAlpha = 1;
 

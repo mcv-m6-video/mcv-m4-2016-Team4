@@ -1,16 +1,7 @@
-function staufferGrimsonMultipleGaussian( sequence , folderPath , fileFormat , pathResults , nGaussians , colorIm , colorTransform , verbose )
+function staufferGrimsonMultipleGaussian( sequence , folderPath , fileFormat , pathResults , nGaussians , verbose )
 % staufferGrimsonMultipleGaussian: uses the Stauffer & Grimson Multiple
 % Gaussian approach to segment a video frame between background and
 % foreground.
-    % check if we want to use colour
-    if ~exist('colorTransform', 'var')
-        colorTransform = @(x) x;
-    end
-    
-    if ~exist('colorIm', 'var')
-        colorIm = false;
-    end
-    
     if ~exist('verbose', 'var')
         verbose = false;
     end

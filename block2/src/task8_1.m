@@ -28,8 +28,8 @@ pathTrafficResults = [ pathTrafficResults testId ];
 
 %% Evaluation
 colorIm = true;
-colorTransform = @rgb2yuv; 
-colorSpace = 'yuv'; % Change this variable along colorTransform, so the F1Scores
+colorTransform = @rgb2lab; 
+colorSpace = 'lab'; % Change this variable along colorTransform, so the F1Scores
                     % saved have a filename that identifies the color space used
  
 offsetDesynch = 0; % offsetDesynch = 0 --> Synchronized
