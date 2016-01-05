@@ -86,11 +86,12 @@ fprintf('Best Number of Gaussians = %f for Traffic (F1-score = %f)\n', bestTh, f
 bestF1ScoresSG = [max(f1Scores(:,1)); max(f1Scores(:,2)); max(f1Scores(:,3))];
 save([savedResultsFolder 'bestF1ScoresSG.mat'], 'bestF1ScoresSG' ); %Save in case it's needed later
 load([savedResultsFolder 'bestF1Scores1G_NR_grey.mat']);
+load([savedResultsFolder 'bestF1Scores1G_R_grey.mat']);
 fig = figure('Visible','off', 'PaperUnits', 'centimeters', 'PaperPosition', [0 0 12.5 10.5]); 
-bar([bestF1Scores1G_NR_grey(:,1) bestF1ScoresSG]);
-title('One Gaussian VS Stauffer & Grimson');
+bar([bestF1Scores1G_NR_grey(:,1) bestF1Scores1G_R_grey(1,:)' bestF1ScoresSG ]);
+title('1G Non Recursive VS 1G Recursive VS Stauffer & Grimson');
 labels = {'Highway', 'Fall', 'Traffic'};
 set(gca, 'XTickLabel',labels, 'XTick',1:numel(labels));
 ylabel('F1-Score'); 
-legend({'One Gaussian (Non Recursive)', 'Stauffer&Grimson'});
+legend({'One Gaussian (Non Recursive)', 'One Gaussian (Recursive)', 'Stauffer&Grimson'});
 print(fig,[ figuresFolder 'Task6_1GvsSG' ],'-dpng');
