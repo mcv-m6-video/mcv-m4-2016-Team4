@@ -29,37 +29,37 @@ for th = thList
     % Highway
     bkgRatio = 0.5;
     lrRate = 0.008;
-    staufferGrimsonMultipleGaussian( highway , pathHighwayInput , fileFormat , pathHighwayResults , nGaussians , bkgRatio, lrRate);
+    staufferGrimsonMultipleGaussian( highway , pathHighwayInput , fileFormat , pathHighwayResults , th , bkgRatio, lrRate);
     
     % Evaluate
     [ tp , fp , fn , tn , ~ , ~ ] =  ...
         segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId , 0 , VERBOSE );
-    [ ~ , ~ , f1ScoreAux ] = getMetrics( tp , fp , fn , tn );
-    f1Scores(count,1) = mean(f1ScoreAux);
+    [ ~ , ~ , f1ScoreAux ] = getMetrics( sum(tp) , sum(fp) , sum(fn) , sum(tn) );
+    f1Scores(count,1) = f1ScoreAux;
     
     % Fall
     bkgRatio = 0.8;
     lrRate = 0.012;
-    staufferGrimsonMultipleGaussian( fall , pathFallInput , fileFormat , pathFallResults , nGaussians , bkgRatio, lrRate);
+    staufferGrimsonMultipleGaussian( fall , pathFallInput , fileFormat , pathFallResults , th , bkgRatio, lrRate);
     
     % Evaluate
     [ tp , fp , fn , tn , ~ , ~ ] =  ...
         segmentationEvaluation( pathFallGroundtruth , pathFallResults , testId , 0 , VERBOSE );
     
-    [ ~ , ~ , f1ScoreAux ] = getMetrics( tp , fp , fn , tn );
-    f1Scores(count,2) = mean(f1ScoreAux);
+    [ ~ , ~ , f1ScoreAux ] = getMetrics( sum(tp) , sum(fp) , sum(fn) , sum(tn) );
+    f1Scores(count,2) = f1ScoreAux;
     
     % Traffic
     bkgRatio = 0.7;
     lrRate = 0.016;
-    staufferGrimsonMultipleGaussian( traffic , pathTrafficInput , fileFormat , pathTrafficResults , nGaussians , bkgRatio, lrRate);
+    staufferGrimsonMultipleGaussian( traffic , pathTrafficInput , fileFormat , pathTrafficResults , th , bkgRatio, lrRate);
     
     % Evaluate
     [ tp , fp , fn , tn , ~ , ~ ] =  ...
         segmentationEvaluation( pathTrafficGroundtruth , pathTrafficResults , testId , 0 , VERBOSE );
     
-    [ ~ , ~ , f1ScoreAux ] = getMetrics( tp , fp , fn , tn );
-    f1Scores(count,3) = mean(f1ScoreAux);
+    [ ~ , ~ , f1ScoreAux ] = getMetrics( sum(tp) , sum(fp) , sum(fn) , sum(tn) );
+    f1Scores(count,3) = f1ScoreAux;
     count = count + 1;
 end % for
 
