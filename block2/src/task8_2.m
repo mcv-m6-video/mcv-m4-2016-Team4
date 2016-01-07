@@ -53,7 +53,7 @@ tp2 = zeros(szMetricsAlpha, szMetricsRho); tn2 = zeros(szMetricsAlpha, szMetrics
 prec3 = zeros(szMetricsAlpha, szMetricsRho); rec3 = zeros(szMetricsAlpha, szMetricsRho); f1score3 = zeros(szMetricsAlpha, szMetricsRho);
 tp3 = zeros(szMetricsAlpha, szMetricsRho); tn3 = zeros(szMetricsAlpha, szMetricsRho); fp3 = zeros(szMetricsAlpha, szMetricsRho); fn3 = zeros(szMetricsAlpha, szMetricsRho);
 
-addpath('./../../evaluation')
+addpath('./../../src/evaluation')
 k=0;
 for alpha = minAlpha:stepAlpha:maxAlpha
     countRho = 1;

@@ -45,7 +45,7 @@ tp2 = zeros(szMetrics,1); tn2 = zeros(szMetrics,1); fp2 = zeros(szMetrics,1); fn
 prec3 = zeros(szMetrics,1); rec3 = zeros(szMetrics,1); f1score3 = zeros(szMetrics,1);
 tp3 = zeros(szMetrics,1); tn3 = zeros(szMetrics,1); fp3 = zeros(szMetrics,1); fn3 = zeros(szMetrics,1);
 
-addpath('./../../evaluation')
+addpath('./../../src/evaluation')
 for alpha = minAlpha:stepAlpha:maxAlpha
     
     % Highway

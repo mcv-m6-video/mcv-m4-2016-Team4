@@ -20,7 +20,7 @@ minGaussians = 3;
 maxGaussians = 6;
 f1Scores = zeros(length(minGaussians:maxGaussians), 3);
 count = 1;
-addpath('../../evaluation');
+addpath('../../src/evaluation');
 nGaussians = 3;
 minTh = 3; stepTh = 1; maxTh = 6;
 thList = minTh:stepTh:maxTh;

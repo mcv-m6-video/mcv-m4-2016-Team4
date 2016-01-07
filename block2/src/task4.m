@@ -49,7 +49,7 @@ tp2 = zeros(szMetricsRho,1); tn2 = zeros(szMetricsRho,1); fp2 = zeros(szMetricsR
 prec3 = zeros(szMetricsRho,1); rec3 = zeros(szMetricsRho,1); f1score3 = zeros(szMetricsRho,1);
 tp3 = zeros(szMetricsRho,1); tn3 = zeros(szMetricsRho,1); fp3 = zeros(szMetricsRho,1); fn3 = zeros(szMetricsRho,1);
 
-addpath('./../../evaluation')
+addpath('./../../src/evaluation')
 for rho = minRho:stepRho:maxRho
     % Highway
     oneGaussianBackgroundAdaptive( highway , pathHighwayInput , fileFormat , pathHighwayResults , alpha1, rho);
