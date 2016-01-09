@@ -13,6 +13,6 @@ if ~exist([seq.basePaths{1} folderBaseResults ], 'dir')
 end
 
 % Task 1
-connectivity = 4;
+connectivity = [4 , 8];
 task1(connectivity, seq, folderBaseResults)
 
