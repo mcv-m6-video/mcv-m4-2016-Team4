@@ -14,7 +14,7 @@ end
 
 % Task 1
 connectivity = [4 , 8];
-task1(connectivity, seq, folderBaseResults);
+task1(connectivity, seq, fileFormat, colorIm, colorTransform, 0:1:9);
 
 % Task 2
 folderBestResultsT1 = 'resultsImFill_4/';
