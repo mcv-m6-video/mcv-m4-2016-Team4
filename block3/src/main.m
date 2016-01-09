@@ -13,16 +13,24 @@ if ~exist([seq.basePaths{1} folderBaseResults ], 'dir')
 end
 
 % Task 1
-taskId = '1';
 minAlpha=0; stepAlpha=0.5; maxAlpha=10;
 alphaValues = minAlpha:stepAlpha:maxAlpha;
-connectivity = [4 , 8];
-morphFunction = @applyMorphoTask1;
-evaluateMorpho(seq, fileFormat, alphaValues, connectivity, morphFunction, colorIm, colorTransform, taskId);
+if ~exist(['savedResults' filesep 'dataTask1.mat'], 'file')
+    taskId = '1';
+    connectivity = [4 , 8];
+    morphFunction = @applyMorphoTask1;
+    evaluateMorpho(seq, fileFormat, alphaValues, connectivity, morphFunction, colorIm, colorTransform, taskId);
+else
+   disp('Task 1 results found (savedResults/dataTask1.mat). Skipping Task 1...'); 
+end
 
 % Task 2
-taskId = '2';
-minPixels = 1; stepPixels = 10; maxPixels = 100;
-pixels = minPixels:stepPixels:maxPixels;
-morphFunction = @applyMorphoTask2;
-evaluateMorpho(seq, fileFormat, alphaValues, pixels, morphFunction, colorIm, colorTransform, taskId);
+if ~exist(['savedResults' filesep 'dataTask2.mat'], 'file')
+    taskId = '2';
+    minPixels = 1; stepPixels = 10; maxPixels = 100;
+    pixels = minPixels:stepPixels:maxPixels;
+    morphFunction = @applyMorphoTask2;
+    evaluateMorpho(seq, fileFormat, alphaValues, pixels, morphFunction, colorIm, colorTransform, taskId);
+else
+   disp('Task 2 results found (savedResults/dataTask2.mat). Skipping Task 2...');  
+end
