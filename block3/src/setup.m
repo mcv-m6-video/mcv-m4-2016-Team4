@@ -11,8 +11,7 @@ colorTransform = @rgb2lab;
 %  Check if exist a matlab buildin function. If it does not exist, a matlab
 %  exchange file is used
 if ~exist('colorTransform', 'builtin')
-    addpath('../../src/RGB2Lab');
-    colorTransform = @RGB2Lab;
+    colorTransform = @(image) (applycform(im2double(image), makecform('srgb2lab')));
 end
 pathDatasets = ['..' filesep '..' filesep 'datasets' filesep];
 folderInput = [ 'input' filesep 'in' ];
