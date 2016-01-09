@@ -16,3 +16,8 @@ end
 connectivity = [4 , 8];
 task1(connectivity, seq, folderBaseResults);
 
+% Task 2
+folderBestResultsT1 = 'resultsImFill_4/';
+minPixels = 1; stepPixels = 10; maxPixels = 100;
+pixels = minPixels:stepPixels:maxPixels;
+task2(pixels , seq , folderBestResultsT1);
