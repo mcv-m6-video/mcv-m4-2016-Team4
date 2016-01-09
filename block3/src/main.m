@@ -9,10 +9,10 @@ setup;
 
 %% Set up enviroment and get the best model from the block 2
 if ~exist([seq.basePaths{1} folderBaseResults ], 'dir')
-    obtainBestResultsB2(seq, folderBaseResults, fileFormat, colorIm, colorTransform);
+    allSequencesSegmentation(seq, folderBaseResults, fileFormat, colorIm, colorTransform);
 end
 
 % Task 1
 connectivity = [4 , 8];
-task1(connectivity, seq, folderBaseResults)
+task1(connectivity, seq, folderBaseResults);
 
