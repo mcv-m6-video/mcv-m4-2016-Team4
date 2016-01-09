@@ -22,7 +22,6 @@ evaluateMorpho(seq, fileFormat, alphaValues, connectivity, morphFunction, colorI
 
 % Task 2
 taskId = '2';
-folderBestResultsT1 = 'resultsImFill_4/';
 minPixels = 1; stepPixels = 10; maxPixels = 100;
 pixels = minPixels:stepPixels:maxPixels;
 morphFunction = @applyMorphoTask2;

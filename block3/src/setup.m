@@ -2,6 +2,7 @@
 
 %% General parameters
 VERBOSE = false;
+addpath('../../src');
 addpath('../../src/backgroundSegmentation');
 addpath('../../src/evaluation');
 testId = '';

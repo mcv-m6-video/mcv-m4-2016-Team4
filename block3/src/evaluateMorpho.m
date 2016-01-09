@@ -31,10 +31,16 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
     prec2 = zeros(seq.nSequences, length(alphaValues), length(morphThresholds)); 
     rec2= zeros(seq.nSequences, length(alphaValues), length(morphThresholds)); 
     f1score2 = zeros(seq.nSequences, length(alphaValues), length(morphThresholds));
-
-   % Apply the algorithm to each sequence
+    
+    % Initialize verbose stuff
+    dispstat('','init');
+    dispstat(['Initiating Task ' task],'keepthis');
+    dispstat(sprintf('\tProgress: 0%%'));
+    totalIterations = seq.nSequences*length(alphaValues)*length(morphThresholds);
+    
+    % Apply the algorithm to each sequence
     for i=1:seq.nSequences
-        k=1;
+        j=1;
         for alpha=alphaValues(:)'
             % Calculate Block 2 results using this alpha
             [masks, maskNames] = oneGaussianBackgroundAdaptive( seq.framesInd{i}, seq.inputFolders{i},...
@@ -45,10 +51,10 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
                 segmentationEvaluation(seq.gtFolders{i}, masks, maskNames);
             tp = sum(tpAux); fp = sum(fpAux); fn = sum(fnAux); tn = sum(tnAux);
             [ precAux , recAux , f1Aux ] = getMetrics( tp , fp , fn , tn );
-            prec1(i, k) = precAux; rec1(i, k) = recAux; f1score1(i, k) = f1Aux;
+            prec1(i, j) = precAux; rec1(i, j) = recAux; f1score1(i, j) = f1Aux;
 
             % Apply the algorithm to all the morphThreshold options
-            j = 1;
+            k = 1;
             for morphTh = morphThresholds
                 % Apply the morphology methods specified in morphFunction
                 masksMorph = morphFunction(masks, morphTh);
@@ -58,11 +64,12 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
                     segmentationEvaluation(seq.gtFolders{i}, masksMorph, maskNames);
                 tp = sum(tpAux); fp = sum(fpAux); fn = sum(fnAux); tn = sum(tnAux);
                 [ precAux , recAux , f1Aux ] = getMetrics( tp , fp , fn , tn );
-                prec2(i, k, j) = precAux; rec2(i, k, j) = recAux; f1score2(i, k, j) = f1Aux;
+                prec2(i, j, k) = precAux; rec2(i, j, k) = recAux; f1score2(i, j, k) = f1Aux;
 
-                j = j + 1;
+                k = k + 1;
+                dispstat(sprintf('\tProgres: %.2f%%', 100*((i*j*k)/totalIterations)));
             end
-            k = k + 1;
+            j = j + 1;
         end
     end
 
