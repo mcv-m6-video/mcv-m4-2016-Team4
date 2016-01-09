@@ -8,6 +8,12 @@ addpath('../../src/evaluation');
 %% General configuration of the model (common for each sequence)
 colorIm = true;
 colorTransform = @rgb2lab;
+%  Check if exist a matlab buildin function. If it does not exist, a matlab
+%  exchange file is used
+if ~exist('colorTransform', 'builtin')
+    addpath('../../src/RGB2Lab');
+    colorTransform = @RGB2Lab;
+end
 pathDatasets = ['..' filesep '..' filesep 'datasets' filesep];
 folderInput = [ 'input' filesep 'in' ];
 folderGroundtruth = [ 'groundtruth' filesep 'gt' ];
