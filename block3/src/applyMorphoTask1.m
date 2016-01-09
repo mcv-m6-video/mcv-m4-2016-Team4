@@ -1,11 +1,6 @@
-function applyMorphoTask1(folderIn, folderResults, connectivity) 
-    listImagesResult = dir([folderIn '*.png']);
-    for j=1:length(listImagesResult)
-        nameImage = listImagesResult(j).name;
-        image = imread([folderIn nameImage])==1;
-        
+function masks = applyMorphoTask1(masks, connectivity) 
+    for i=1:size(masks,3)
         % Apply imfill
-        imageResult = imfill(image, connectivity, 'holes');
-        imwrite(imageResult, [folderResults nameImage]);
+        masks(:,:,i) = imfill(masks(:,:,i), connectivity, 'holes');
     end
 end

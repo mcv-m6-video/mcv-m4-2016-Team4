@@ -13,8 +13,10 @@ if ~exist([seq.basePaths{1} folderBaseResults ], 'dir')
 end
 
 % Task 1
+alphaValues = 0:0.5:10;
 connectivity = [4 , 8];
-task1(connectivity, seq, fileFormat, colorIm, colorTransform, 0:1:9);
+morphFunction = @applyMorphoTask1;
+evaluateMorpho(seq, fileFormat, alphaValues, connectivity, morphFunction, colorIm, colorTransform);
 
 % Task 2
 folderBestResultsT1 = 'resultsImFill_4/';

@@ -4,6 +4,8 @@
 VERBOSE = false;
 addpath('../../src/backgroundSegmentation');
 addpath('../../src/evaluation');
+testId = '';
+offsetDesynch = 0;
 
 %% General configuration of the model (common for each sequence)
 colorIm = true;
@@ -40,6 +42,3 @@ seq.framesInd = {1050:1350; 1460:1560; 950:1050};
 % Best Rhos and Alphas for every sequence (1G Recursive)
 seq.rhos = [0.2, 0.1, 0.2];
 seq.alphas = [3, 3, 4];
-
-testId = '';
-offsetDesynch = 0;
