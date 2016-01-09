@@ -67,7 +67,7 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
                 prec2(i, j, k) = precAux; rec2(i, j, k) = recAux; f1score2(i, j, k) = f1Aux;
 
                 k = k + 1;
-                dispstat(sprintf('\tProgres: %.2f%%', 100*((i*j*k)/totalIterations)));
+                dispstat(sprintf('\tProgress: %.2f%%', 100*((i*j*k)/totalIterations)));
             end
             j = j + 1;
         end
