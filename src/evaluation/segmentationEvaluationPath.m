@@ -1,4 +1,4 @@
-function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationEvaluation( pathGroundtruth , pathResults , testId , offsetDesynch , VERBOSE )
+function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationEvaluationPath( pathGroundtruth , pathResults , testId , offsetDesynch , VERBOSE )
 %SEGMENTATIONEVALUATION Evaluates one folder
 %   Recieve the information:
 %       * pathGroundtruth: Path to the ground truth.

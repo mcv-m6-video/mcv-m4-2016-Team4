@@ -53,7 +53,7 @@ for alpha = minAlpha:stepAlpha:maxAlpha
     
     % Evaluate
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-        segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId , offsetDesynch , VERBOSE );
+        segmentationEvaluationPath( pathHighwayGroundtruth , pathHighwayResults , testId , offsetDesynch , VERBOSE );
     tp1(count) = sum(tpAux); fp1(count) = sum(fpAux); fn1(count) = sum(fnAux); tn1(count) = sum(tnAux);
     [ precAux , recAux , f1Aux ] = getMetrics( tp1(count) , fp1(count) , fn1(count) , tn1(count) );
     prec1(count) = precAux; rec1(count) = recAux; f1score1(count) = f1Aux;
@@ -63,7 +63,7 @@ for alpha = minAlpha:stepAlpha:maxAlpha
 
     % Evaluate
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-        segmentationEvaluation( pathFallGroundtruth , pathFallResults , testId , offsetDesynch , VERBOSE );
+        segmentationEvaluationPath( pathFallGroundtruth , pathFallResults , testId , offsetDesynch , VERBOSE );
     tp2(count) = sum(tpAux); fp2(count) = sum(fpAux); fn2(count) = sum(fnAux); tn2(count) = sum(tnAux);    
     [ precAux , recAux , f1Aux ] = getMetrics( tp2(count) , fp2(count) , fn2(count) , tn2(count) );
     prec2(count) = precAux; rec2(count) = recAux; f1score2(count) = f1Aux;
@@ -73,7 +73,7 @@ for alpha = minAlpha:stepAlpha:maxAlpha
     
     % Evaluate
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-        segmentationEvaluation( pathTrafficGroundtruth , pathTrafficResults , testId , offsetDesynch , VERBOSE );
+        segmentationEvaluationPath( pathTrafficGroundtruth , pathTrafficResults , testId , offsetDesynch , VERBOSE );
     tp3(count) = sum(tpAux); fp3(count) = sum(fpAux); fn3(count) = sum(fnAux); tn3(count) = sum(tnAux);    
     [ precAux , recAux , f1Aux ] = getMetrics( tp3(count) , fp3(count) , fn3(count) , tn3(count) );
     prec3(count) = precAux; rec3(count) = recAux; f1score3(count) = f1Aux;

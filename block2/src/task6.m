@@ -33,7 +33,7 @@ for th = thList
     
     % Evaluate
     [ tp , fp , fn , tn , ~ , ~ ] =  ...
-        segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId , 0 , VERBOSE );
+        segmentationEvaluationPath( pathHighwayGroundtruth , pathHighwayResults , testId , 0 , VERBOSE );
     [ ~ , ~ , f1ScoreAux ] = getMetrics( sum(tp) , sum(fp) , sum(fn) , sum(tn) );
     f1Scores(count,1) = f1ScoreAux;
     
@@ -44,7 +44,7 @@ for th = thList
     
     % Evaluate
     [ tp , fp , fn , tn , ~ , ~ ] =  ...
-        segmentationEvaluation( pathFallGroundtruth , pathFallResults , testId , 0 , VERBOSE );
+        segmentationEvaluationPath( pathFallGroundtruth , pathFallResults , testId , 0 , VERBOSE );
     
     [ ~ , ~ , f1ScoreAux ] = getMetrics( sum(tp) , sum(fp) , sum(fn) , sum(tn) );
     f1Scores(count,2) = f1ScoreAux;
@@ -56,7 +56,7 @@ for th = thList
     
     % Evaluate
     [ tp , fp , fn , tn , ~ , ~ ] =  ...
-        segmentationEvaluation( pathTrafficGroundtruth , pathTrafficResults , testId , 0 , VERBOSE );
+        segmentationEvaluationPath( pathTrafficGroundtruth , pathTrafficResults , testId , 0 , VERBOSE );
     
     [ ~ , ~ , f1ScoreAux ] = getMetrics( sum(tp) , sum(fp) , sum(fn) , sum(tn) );
     f1Scores(count,3) = f1ScoreAux;

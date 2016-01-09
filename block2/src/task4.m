@@ -56,7 +56,7 @@ for rho = minRho:stepRho:maxRho
     
     % Evaluate
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-        segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId , offsetDesynch , VERBOSE );
+        segmentationEvaluationPathPath( pathHighwayGroundtruth , pathHighwayResults , testId , offsetDesynch , VERBOSE );
     tp1(countRho) = sum(tpAux); fp1(countRho) = sum(fpAux); fn1(countRho) = sum(fnAux); tn1(countRho) = sum(tnAux);
     [ precAux , recAux , f1Aux ] = getMetrics( tp1(countRho) , fp1(countRho) , fn1(countRho) , tn1(countRho) );
     prec1(countRho) = precAux; rec1(countRho) = recAux; f1score1(countRho) = f1Aux;
@@ -66,7 +66,7 @@ for rho = minRho:stepRho:maxRho
 
     % Evaluate
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-        segmentationEvaluation( pathFallGroundtruth , pathFallResults , testId , offsetDesynch , VERBOSE );
+        segmentationEvaluationPathPath( pathFallGroundtruth , pathFallResults , testId , offsetDesynch , VERBOSE );
     tp2(countRho) = sum(tpAux); fp2(countRho) = sum(fpAux); fn2(countRho) = sum(fnAux); tn2(countRho) = sum(tnAux);    
     [ precAux , recAux , f1Aux ] = getMetrics( tp2(countRho) , fp2(countRho) , fn2(countRho) , tn2(countRho) );
     prec2(countRho) = precAux; rec2(countRho) = recAux; f1score2(countRho) = f1Aux;
@@ -76,7 +76,7 @@ for rho = minRho:stepRho:maxRho
     
     % Evaluate
     [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-        segmentationEvaluation( pathTrafficGroundtruth , pathTrafficResults , testId , offsetDesynch , VERBOSE );
+        segmentationEvaluationPathPath( pathTrafficGroundtruth , pathTrafficResults , testId , offsetDesynch , VERBOSE );
     tp3(countRho) = sum(tpAux); fp3(countRho) = sum(fpAux); fn3(countRho) = sum(fnAux); tn3(countRho) = sum(tnAux);    
     [ precAux , recAux , f1Aux ] = getMetrics( tp3(countRho) , fp3(countRho) , fn3(countRho) , tn3(countRho) );
     prec3(countRho) = precAux; rec3(countRho) = recAux; f1score3(countRho) = f1Aux;
@@ -144,7 +144,7 @@ for alpha = minAlpha:stepAlpha:maxAlpha
 
         % Evaluate
         [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-            segmentationEvaluation( pathHighwayGroundtruth , pathHighwayResults , testId , offsetDesynch , VERBOSE );
+            segmentationEvaluationPathPath( pathHighwayGroundtruth , pathHighwayResults , testId , offsetDesynch , VERBOSE );
         tp1(countAlpha, countRho) = sum(tpAux); fp1(countAlpha, countRho) = sum(fpAux); fn1(countAlpha, countRho) = sum(fnAux); tn1(countAlpha, countRho) = sum(tnAux);
         [ precAux , recAux , f1Aux ] = getMetrics( tp1(countAlpha, countRho) , fp1(countAlpha, countRho) , fn1(countAlpha, countRho) , tn1(countAlpha, countRho) );
         prec1(countAlpha, countRho) = precAux; rec1(countAlpha, countRho) = recAux; f1score1(countAlpha, countRho) = f1Aux;
@@ -154,7 +154,7 @@ for alpha = minAlpha:stepAlpha:maxAlpha
 
         % Evaluate
         [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-            segmentationEvaluation( pathFallGroundtruth , pathFallResults , testId , offsetDesynch , VERBOSE );
+            segmentationEvaluationPathPath( pathFallGroundtruth , pathFallResults , testId , offsetDesynch , VERBOSE );
         tp2(countAlpha, countRho) = sum(tpAux); fp2(countAlpha, countRho) = sum(fpAux); fn2(countAlpha, countRho) = sum(fnAux); tn2(countAlpha, countRho) = sum(tnAux);    
         [ precAux , recAux , f1Aux ] = getMetrics( tp2(countAlpha, countRho) , fp2(countAlpha, countRho) , fn2(countAlpha, countRho) , tn2(countAlpha, countRho) );
         prec2(countAlpha, countRho) = precAux; rec2(countAlpha, countRho) = recAux; f1score2(countAlpha, countRho) = f1Aux;
@@ -164,7 +164,7 @@ for alpha = minAlpha:stepAlpha:maxAlpha
 
         % Evaluate
         [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...
-            segmentationEvaluation( pathTrafficGroundtruth , pathTrafficResults , testId , offsetDesynch , VERBOSE );
+            segmentationEvaluationPathPath( pathTrafficGroundtruth , pathTrafficResults , testId , offsetDesynch , VERBOSE );
         tp3(countAlpha, countRho) = sum(tpAux); fp3(countAlpha, countRho) = sum(fpAux); fn3(countAlpha, countRho) = sum(fnAux); tn3(countAlpha, countRho) = sum(tnAux);    
         [ precAux , recAux , f1Aux ] = getMetrics( tp3(countAlpha, countRho) , fp3(countAlpha, countRho) , fn3(countAlpha, countRho) , tn3(countAlpha, countRho) );
         prec3(countAlpha, countRho) = precAux; rec3(countAlpha, countRho) = recAux; f1score3(countAlpha, countRho) = f1Aux;
