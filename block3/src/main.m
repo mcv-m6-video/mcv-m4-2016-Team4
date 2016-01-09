@@ -13,13 +13,17 @@ if ~exist([seq.basePaths{1} folderBaseResults ], 'dir')
 end
 
 % Task 1
-alphaValues = 0:0.5:10;
+taskId = '1';
+minAlpha=0; stepAlpha=0.5; maxAlpha=10;
+alphaValues = minAlpha:stepAlpha:maxAlpha;
 connectivity = [4 , 8];
 morphFunction = @applyMorphoTask1;
-evaluateMorpho(seq, fileFormat, alphaValues, connectivity, morphFunction, colorIm, colorTransform);
+evaluateMorpho(seq, fileFormat, alphaValues, connectivity, morphFunction, colorIm, colorTransform, taskId);
 
 % Task 2
+taskId = '2';
 folderBestResultsT1 = 'resultsImFill_4/';
 minPixels = 1; stepPixels = 10; maxPixels = 100;
 pixels = minPixels:stepPixels:maxPixels;
-task2(pixels , seq , folderBestResultsT1);
+morphFunction = @applyMorphoTask2;
+evaluateMorpho(seq, fileFormat, alphaValues, pixels, morphFunction, colorIm, colorTransform, taskId);

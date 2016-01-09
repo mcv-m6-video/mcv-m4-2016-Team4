@@ -1,4 +1,4 @@
-function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunction, colorIm, colorTransform)
+function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunction, colorIm, colorTransform, task)
     %% evaluateMorpho
     % Iterate through all sequences and apply a morphological operation
     % specified by morphFunction (which, at the same time, will iterate in
@@ -10,23 +10,27 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
     %                        will be saved.
     %   - morphFunction: function that will apply a morphological operation
     %                    to each resulting mask. Parameters of morphFunction
-    %                    have to be (masks, morphThreshold(i))                    
+    %                    have to be like (masks, morphThreshold(i))                    
     %   - morphThresholds: thresholds used to iterate through morphFunction.
-    %   
+    %   - task: string indicating the task id that will be used to store
+    %     the results.
     
     if ~exist('morphFunction','var')
         morphFunction = @(x)x;
     end
+    if ~exist('task','var')
+        task = '';
+    end
     
     saveIm = false; % We don't want to store any masks for this evaluation
     
-    precB2 = zeros(seq.nSequences, length(alphaValues)); 
-    recB2= zeros(seq.nSequences, length(alphaValues)); 
-    f1scoreB2 = zeros(seq.nSequences, length(alphaValues));
+    prec1 = zeros(seq.nSequences, length(alphaValues)); 
+    rec1= zeros(seq.nSequences, length(alphaValues)); 
+    f1score1 = zeros(seq.nSequences, length(alphaValues));
     
-    precT1 = zeros(seq.nSequences, length(alphaValues), length(morphThresholds)); 
-    recT1= zeros(seq.nSequences, length(alphaValues), length(morphThresholds)); 
-    f1scoreT1 = zeros(seq.nSequences, length(alphaValues), length(morphThresholds));
+    prec2 = zeros(seq.nSequences, length(alphaValues), length(morphThresholds)); 
+    rec2= zeros(seq.nSequences, length(alphaValues), length(morphThresholds)); 
+    f1score2 = zeros(seq.nSequences, length(alphaValues), length(morphThresholds));
 
    % Apply the algorithm to each sequence
     for i=1:seq.nSequences
@@ -41,13 +45,12 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
                 segmentationEvaluation(seq.gtFolders{i}, masks, maskNames);
             tp = sum(tpAux); fp = sum(fpAux); fn = sum(fnAux); tn = sum(tnAux);
             [ precAux , recAux , f1Aux ] = getMetrics( tp , fp , fn , tn );
-            precB2(i, k) = precAux; recB2(i, k) = recAux; f1scoreB2(i, k) = f1Aux;
+            prec1(i, k) = precAux; rec1(i, k) = recAux; f1score1(i, k) = f1Aux;
 
-            % Apply the algorithm to all the connectivity options asked in
-            % optConnectivity.
+            % Apply the algorithm to all the morphThreshold options
             j = 1;
             for morphTh = morphThresholds
-                % Apply the morphology methods in the task 1
+                % Apply the morphology methods specified in morphFunction
                 masksMorph = morphFunction(masks, morphTh);
 
                 % Evaluate the morphoTask1 results
@@ -55,7 +58,7 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
                     segmentationEvaluation(seq.gtFolders{i}, masksMorph, maskNames);
                 tp = sum(tpAux); fp = sum(fpAux); fn = sum(fnAux); tn = sum(tnAux);
                 [ precAux , recAux , f1Aux ] = getMetrics( tp , fp , fn , tn );
-                precT1(i, k, j) = precAux; recT1(i, k, j) = recAux; f1scoreT1(i, k, j) = f1Aux;
+                prec2(i, k, j) = precAux; rec2(i, k, j) = recAux; f1score2(i, k, j) = f1Aux;
 
                 j = j + 1;
             end
@@ -67,6 +70,6 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
     if ~exist('savedResults','dir')
         mkdir('savedResults');
     end
-    save(['savedResults' filesep 'dataTask1'], 'precB2', 'recB2', 'f1scoreB2', 'precT1', 'recT1', 'f1scoreT1', 'alphaValues', 'morphThresholds');
+    save(['savedResults' filesep 'dataTask' task], 'prec1', 'rec1', 'f1score1', 'prec2', 'rec2', 'f1score2', 'alphaValues', 'morphThresholds');
     
 end
