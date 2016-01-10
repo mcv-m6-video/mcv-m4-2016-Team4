@@ -2,11 +2,19 @@ function [auc1, auc2] = calculateAUCs(seq, results, folderFigures, legendStr, ta
     % calculateAUCs: calculate the Area Under the Curve (AUC) given the
     % precision and recall of each sequence.
     % Also, figures are stored at folderFigures if specified.
-    colorList = ['r', 'b', 'g', 'm', 'y', 'c', 'k'];
+    
+    % Change the color list depending on the number of lines to plot and
+    % the colormap.
+    colorList = lines(size(results.prec2,3)+1);
     
     saveFigures = true;
     if ~exist('folderFigures','var')
         saveFigures = false;
+    else
+        % Check and create the file where the figures should be stored
+        if ~exist(folderFigures, 'dir')
+            mkdir(folderFigures);
+        end
     end
     
     % AUC of original sequence
@@ -24,14 +32,14 @@ function [auc1, auc2] = calculateAUCs(seq, results, folderFigures, legendStr, ta
           xlabel('Recall'); ylabel('Precision');
           legendAux{1} = [legendStr{1} sprintf(' (AUC: %.4f)', auc1(i))];
           xlim([0 1]); ylim([0 1]);
-          plot(r1, p1, colorList(1));
+          plot(r1, p1, 'Color', colorList(1,:));
        end
        for j=1:size(results.prec2,3)
             p2 = results.prec2(i,:,j); r2 = results.rec2(i,:,j);
             auc2(i,j) = abs(trapz(r2, p2));
             if saveFigures
-               plot(r2, p2, colorList(j+1)); 
-               legendAux{j+1} = [legendStr{j+1} sprintf(' (AUC: %.4f)', auc2(i,j))];
+               plot(r2, p2, 'Color', colorList(j+1,:)); 
+               legendAux{j+1} = [legendStr{j+1} sprintf(' (AUC: %.4f , %+.4f)', auc2(i,j) , auc2(i,j)-auc1(i))];
             end
        end
        

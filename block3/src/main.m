@@ -28,13 +28,13 @@ end
 % Generate figures and calculate AUC
 results = load(['savedResults' filesep 'dataTask1']);
 legendStr = {'Baseline', 'Connectivity=4', 'Connectivity=8'};
-[AUCs1, AUCs2] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
+[AUCs1B2, AUCs2T1] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
 
 %% Task 2
+taskId = '2';
+minPixels = 1; stepPixels = 10; maxPixels = 100;
+pixels = minPixels:stepPixels:maxPixels;
 if ~exist(['savedResults' filesep 'dataTask2.mat'], 'file')
-    taskId = '2';
-    minPixels = 1; stepPixels = 10; maxPixels = 100;
-    pixels = minPixels:stepPixels:maxPixels;
     morphFunction = @applyMorphoTask2;
     evaluateMorpho(seq, fileFormat, alphaValues, pixels, morphFunction, colorIm, colorTransform, taskId);
 else
@@ -43,4 +43,9 @@ end
 
 % Generate figures and calculate AUC
 results = load(['savedResults' filesep 'dataTask2']);
-AUCs = calculateAUCs(seq, results);
+legendStr = {'Baseline'};
+% The pixels will change depending on the parameters
+for p = pixels
+    legendStr{end+1} = sprintf('Pixels=%d',p);
+end
+[~, AUCs2T2] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
