@@ -103,7 +103,7 @@ end
 % Generate figures and calculate AUC
 results = load(['savedResults' filesep 'dataTask4']);
 legendStr = {'Baseline', 'Optional 4'};
-[AUCsB2, AUCsT4] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
+[~, AUCsT4] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
 
 % Get best connectivity and metrics
 [maxAUCT4, bestIndTask4] = max(mean(AUCsT4));
