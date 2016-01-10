@@ -17,8 +17,8 @@ end
 minAlpha=0; stepAlpha=0.5; maxAlpha=10;
 alphaValues = minAlpha:stepAlpha:maxAlpha;
 taskId = '1';
+connectivity = [4 , 8];
 if ~exist(['savedResults' filesep 'dataTask1.mat'], 'file')
-    connectivity = [4 , 8];
     morphFunction = @applyMorphoTask1;
     evaluateMorpho(seq, fileFormat, alphaValues, connectivity, morphFunction, colorIm, colorTransform, taskId);
 else
@@ -28,14 +28,14 @@ end
 % Generate figures and calculate AUC
 results = load(['savedResults' filesep 'dataTask1']);
 legendStr = {'Baseline', 'Connectivity=4', 'Connectivity=8'};
-[AUCs1B2, AUCs2T1] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
+[AUCsB2, AUCsT1] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
 
 % Get best connectivity and metrics
-[~, bestIndTask1] = max(mean(AUCs2T1));
+[maxAUCT1, bestIndTask1] = max(mean(AUCsT1));
 task1BestResults.prec = results.prec2(:,:,bestIndTask1);
 task1BestResults.rec = results.rec2(:,:,bestIndTask1);
 task1BestResults.f1score = results.f1score2(:,:,bestIndTask1);
-bestConnectivity = bestIndTask1*4;
+bestConnectivity = connectivity(bestIndTask1);
 
 disp(['Task 1 best connectivity is ' num2str(bestConnectivity)]); 
 %% Task 2
@@ -61,6 +61,32 @@ legendStr = {'Baseline Task1'};
 for p = pixels
     legendStr{end+1} = sprintf('Pixels=%d',p);
 end
-[~ , AUCs2T2] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
+[~ , AUCsT2] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
 
-plotAucCurve(seq, pixels, AUCs2T2, folderFigures, taskId);
+plotAucCurve(seq, pixels, AUCsT2, folderFigures, taskId);
+
+% Get best number of pixels and metrics
+[maxAUCT2, bestIndTask2] = max(mean(AUCsT2));
+bestPixels = pixels(bestIndTask2);
+
+disp(['Task 2 best number of pixels is ' num2str(bestPixels)]);
+
+%% Task 3
+taskId = '3';
+legendStr = {'Baseline'};
+if maxAUCT2>maxAUCT1
+    results = load(['savedResults' filesep 'dataTask2']);
+    legendStr{end+1} = 'Task2';
+    bestInd = bestIndTask2;
+else
+    results = load(['savedResults' filesep 'dataTask1']);
+    legendStr{end+1} = 'Task1';
+    bestInd = bestIndTask1;
+end
+results.prec2 = results.prec2(:,:,bestInd);
+results.rec2 = results.rec2(:,:,bestInd);
+results.f1score2 = results.f1score2(:,:,bestInd);
+
+calculateAUCs(seq, results, folderFigures, legendStr, taskId);
+
+disp(['The best result is obtained with ' num2str(legendStr{2})]);
