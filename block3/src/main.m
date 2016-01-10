@@ -14,7 +14,7 @@ end
 
 %% Task 1
 % Generate precision and recall
-minAlpha=0; stepAlpha=1; maxAlpha=20;
+minAlpha=0; stepAlpha=1; maxAlpha=25;
 alphaValues = minAlpha:stepAlpha:maxAlpha;
 taskId = '1';
 connectivity = [4 , 8];
@@ -28,14 +28,14 @@ end
 % Generate figures and calculate AUC
 results = load(['savedResults' filesep 'dataTask1']);
 legendStr = {'Baseline', 'Connectivity=4', 'Connectivity=8'};
-[AUCsB2, AUCsT4] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
+[AUCsB2, AUCsT1] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
 
 % Get best connectivity and metrics
-[maxAUCT4, bestIndTask4] = max(mean(AUCsT4));
-task4BestResults.prec = results.prec2(:,:,bestIndTask4);
-task4BestResults.rec = results.rec2(:,:,bestIndTask4);
-task4BestResults.f1score = results.f1score2(:,:,bestIndTask4);
-bestConnectivity = connectivity(bestIndTask4);
+[maxAUCT1, bestIndTask1] = max(mean(AUCsT1));
+task1BestResults.prec = results.prec2(:,:,bestIndTask1);
+task1BestResults.rec = results.rec2(:,:,bestIndTask1);
+task1BestResults.f1score = results.f1score2(:,:,bestIndTask1);
+bestConnectivity = connectivity(bestIndTask1);
 
 disp(['Task 1 best connectivity is ' num2str(bestConnectivity)]); 
 %% Task 2
@@ -52,9 +52,9 @@ end
 % Generate figures and calculate AUC
 % To compare with task one best result we have to change the baseline
 results = load(['savedResults' filesep 'dataTask2']);
-results.prec1 = task4BestResults.prec;
-results.rec1 = task4BestResults.rec;
-results.f1score1 = task4BestResults.f1score;
+results.prec1 = task1BestResults.prec;
+results.rec1 = task1BestResults.rec;
+results.f1score1 = task1BestResults.f1score;
 
 legendStr = {'Baseline Task1'};
 % The pixels will change depending on the parameters
@@ -74,14 +74,14 @@ disp(['Task 2 best number of pixels is ' num2str(bestPixels)]);
 %% Task 3
 taskId = '3';
 legendStr = {'Baseline'};
-if maxAUCT2>maxAUCT4
+if maxAUCT2>maxAUCT1
     results = load(['savedResults' filesep 'dataTask2']);
     legendStr{end+1} = 'Task2';
     bestInd = bestIndTask2;
 else
     results = load(['savedResults' filesep 'dataTask1']);
     legendStr{end+1} = 'Task1';
-    bestInd = bestIndTask4;
+    bestInd = bestIndTask1;
 end
 results.prec2 = results.prec2(:,:,bestInd);
 results.rec2 = results.rec2(:,:,bestInd);
