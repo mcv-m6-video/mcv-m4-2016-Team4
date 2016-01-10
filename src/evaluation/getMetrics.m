@@ -12,9 +12,11 @@ function [ p , r , f1 ] = getMetrics( tp , fp , fn , tn )
 
     % Precision
     p = tp./(tp + fp);
+    p(isnan(p)) = 1;
 
     % Recall
     r = tp./(tp + fn);
+    r(isnan(r)) = 1;
     
     % F1-score
     f1 = 2.*( p .* r )./(p + r);
