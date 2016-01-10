@@ -14,7 +14,7 @@ end
 
 %% Task 1
 % Generate precision and recall
-minAlpha=0; stepAlpha=0.5; maxAlpha=10;
+minAlpha=0; stepAlpha=1; maxAlpha=25;
 alphaValues = minAlpha:stepAlpha:maxAlpha;
 taskId = '1';
 connectivity = [4 , 8];
