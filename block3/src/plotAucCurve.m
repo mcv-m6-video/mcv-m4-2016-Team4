@@ -15,9 +15,10 @@ function plotAucCurve(seq, pixels, AUC, folderFigures, taskId)
     xlabel('#pixels(P)'); ylabel('AUC');
     legendAux = {};
     for sequence = 1:seq.nSequences
-        legendAux{end+1} = getTitle(sequence);
+        legendAux{end+1} = [getTitle(sequence) ' (' num2str(max(AUC(sequence,:))) ')'];
         plot(pixels, AUC(sequence,:), 'Color', colorList(sequence,:));
     end
-    savefig(fig, [folderFigures 'Task' taskId '_AUCvsPixels.fig']);
+    legend(legendAux, 'Location', 'southeast'); hold off;
+    saveas(fig, [folderFigures 'Task' taskId '_AUCvsPixels.fig']);
     print(fig,[folderFigures 'Task' taskId '_' '_AUCvsPixels'],'-dpng')
 end

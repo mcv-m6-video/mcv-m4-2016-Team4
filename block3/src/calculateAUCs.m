@@ -46,7 +46,7 @@ function [auc1, auc2] = calculateAUCs(seq, results, folderFigures, legendStr, ta
        % Store figure, if specified
        if saveFigures
           legend(legendAux, 'Location', 'southwest'); hold off; 
-          savefig(fig, [folderFigures 'Task' taskId '_' getTitle(i) '_PRCurve.fig']);
+          saveas(fig, [folderFigures 'Task' taskId '_' getTitle(i) '_PRCurve.fig']);
           print(fig,[folderFigures 'Task' taskId '_' getTitle(i) '_PRCurve'],'-dpng')
        end
        
