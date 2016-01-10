@@ -75,6 +75,13 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
         end
     end
 
+    % Eliminate NaN positions, if any
+    nonNanMask = not(isnan(prec1) | isnan(rec1) | isnan(f1score1));
+    prec1 = prec1(nonNanMask); rec1 = rec1(nonNanMask); f1score1 = f1score1(nonNanMask);
+    
+    nonNanMask = not(isnan(prec2) | isnan(rec2) | isnan(f1score2));
+    prec2 = prec2(nonNanMask); rec2 = rec2(nonNanMask); f1score2 = f1score2(nonNanMask);
+    
     % Comparation results
     if ~exist('savedResults','dir')
         mkdir('savedResults');
