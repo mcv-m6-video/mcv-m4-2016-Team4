@@ -53,16 +53,3 @@ function [auc1, auc2] = calculateAUCs(seq, results, folderFigures, legendStr, ta
     end
 
 end
-
-function str = getTitle(id)
-    switch id
-        case 1
-            str = 'Highway';
-        case 2
-            str = 'Fall';
-        case 3
-            str = 'Traffic';
-        otherwise
-            error('Unknown id.');
-    end
-end

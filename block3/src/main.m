@@ -30,22 +30,37 @@ results = load(['savedResults' filesep 'dataTask1']);
 legendStr = {'Baseline', 'Connectivity=4', 'Connectivity=8'};
 [AUCs1B2, AUCs2T1] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
 
+% Get best connectivity and metrics
+[~, bestIndTask1] = max(mean(AUCs2T1));
+task1BestResults.prec = results.prec2(:,:,bestIndTask1);
+task1BestResults.rec = results.rec2(:,:,bestIndTask1);
+task1BestResults.f1score = results.f1score2(:,:,bestIndTask1);
+bestConnectivity = bestIndTask1*4;
+
+disp(['Task 1 best connectivity is ' num2str(bestConnectivity)]); 
 %% Task 2
 taskId = '2';
 minPixels = 1; stepPixels = 10; maxPixels = 100;
 pixels = minPixels:stepPixels:maxPixels;
 if ~exist(['savedResults' filesep 'dataTask2.mat'], 'file')
-    morphFunction = @applyMorphoTask2;
+    morphFunction = @(masks,p) applyMorphoTask2(masks, p, bestConnectivity);
     evaluateMorpho(seq, fileFormat, alphaValues, pixels, morphFunction, colorIm, colorTransform, taskId);
 else
    disp('Task 2 results found (savedResults/dataTask2.mat). Skipping Task 2...');  
 end
 
 % Generate figures and calculate AUC
+% To compare with task one best result we have to change the baseline
 results = load(['savedResults' filesep 'dataTask2']);
-legendStr = {'Baseline'};
+results.prec1 = task1BestResults.prec;
+results.rec1 = task1BestResults.rec;
+results.f1score1 = task1BestResults.f1score;
+
+legendStr = {'Baseline Task1'};
 % The pixels will change depending on the parameters
 for p = pixels
     legendStr{end+1} = sprintf('Pixels=%d',p);
 end
-[~, AUCs2T2] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
+[~ , AUCs2T2] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
+
+plotAucCurve(seq, pixels, AUCs2T2, folderFigures, taskId);
