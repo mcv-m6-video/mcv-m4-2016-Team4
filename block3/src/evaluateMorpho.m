@@ -39,6 +39,7 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
     totalIterations = seq.nSequences*length(alphaValues)*length(morphThresholds);
     
     % Apply the algorithm to each sequence
+    count = 1;
     for i=1:seq.nSequences
         j=1;
         for alpha=alphaValues(:)'
@@ -67,7 +68,8 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
                 prec2(i, j, k) = precAux; rec2(i, j, k) = recAux; f1score2(i, j, k) = f1Aux;
 
                 k = k + 1;
-                dispstat(sprintf('\tProgress: %.2f%%', 100*((i*j*k)/totalIterations)));
+                dispstat(sprintf('\tProgress: %.2f%%', 100*(count/totalIterations)));
+                count = count + 1;
             end
             j = j + 1;
         end
