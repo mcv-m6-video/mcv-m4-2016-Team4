@@ -26,7 +26,7 @@ function [auc1, auc2] = calculateAUCs(seq, results, folderFigures, legendStr, ta
        p1 = results.prec1(i,:); r1 = results.rec1(i,:);
        auc1(i) = abs(trapz(r1,p1));
        if saveFigures
-          fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 10 8.4]);
+          fig = figure('Visible','off','PaperUnits','centimeters','PaperPosition',[0 0 12.5 10]);
           hold on; 
           title([getTitle(i) ' Precision Recall Curve'], 'FontWeight', 'Bold');
           xlabel('Recall'); ylabel('Precision');
@@ -45,7 +45,7 @@ function [auc1, auc2] = calculateAUCs(seq, results, folderFigures, legendStr, ta
        
        % Store figure, if specified
        if saveFigures
-          legend(legendAux, 'Location', 'southwest'); hold off; 
+          legend(legendAux, 'Location', 'southeast'); hold off; 
           saveas(fig, [folderFigures 'Task' taskId '_' getTitle(i) '_PRCurve.fig']);
           print(fig,[folderFigures 'Task' taskId '_' getTitle(i) '_PRCurve'],'-dpng')
        end

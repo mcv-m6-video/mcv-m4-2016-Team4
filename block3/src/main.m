@@ -40,7 +40,7 @@ bestConnectivity = connectivity(bestIndTask1);
 disp(['Task 1 best connectivity is ' num2str(bestConnectivity)]); 
 %% Task 2
 taskId = '2';
-minPixels = 1; stepPixels = 10; maxPixels = 100;
+minPixels = 1; stepPixels = 100; maxPixels = 1001;
 pixels = minPixels:stepPixels:maxPixels;
 if ~exist(['savedResults' filesep 'dataTask2.mat'], 'file')
     morphFunction = @(masks,p) applyMorphoTask2(masks, p, bestConnectivity);
