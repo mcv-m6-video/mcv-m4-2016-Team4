@@ -94,8 +94,8 @@ disp(['The best result is obtained with ' num2str(legendStr{2})]);
 %% Task 4
 taskId = '4';
 if ~exist(['savedResults' filesep 'dataTask4.mat'], 'file')
-    morphFunction = @(masks,x) applyMorphoTask4(masks, bestPixels, bestConnectivity);
-    evaluateMorpho(seq, fileFormat, alphaValues, [1], morphFunction, colorIm, colorTransform, taskId);
+    morphFunction = @(masks,x) applyMorphoTask4(masks, bestPixels, bestConnectivity, x);
+    evaluateMorpho(seq, fileFormat, alphaValues, [5], morphFunction, colorIm, colorTransform, taskId);
 else
    disp('Task 4 results found (savedResults/dataTask4.mat). Skipping Task 4...'); 
 end
