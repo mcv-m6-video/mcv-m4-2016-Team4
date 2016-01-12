@@ -1,33 +1,41 @@
-function [ p , r , f1 ] = getFwMesure( groundTruth , foregroundMap )
-%GETMETRICS Compute the metrics depending on the input arguments
-%   Recieve the metrics:
-%       * True Positives (TP)
-%       * False Positives (FP)
-%       * True Negatives (FN)
-%       * False Negatives (TN)
-%   The output are:
-%       * Precision (P)
-%       * Recall (R)
-%       * F1-score (F1)
+function [ fwMesure ] = getFwMesure( groundTruth , foregroundMap , beta , alpha , sigma_sq )
     
-    % LetG1×N denotethecolumn-stackrepresentationofthe binary ground-truth, where N is the number of pixels in the image. Let D1×N denote the non-binary map to be evalu- ated against the ground-truth.
-    g = groundTruth(:);
-    d = foregroundMap(:);
+    % Parameters
+    if ~exist('alpha','var')
+        alpha = log(0.5)/5;
+    end
+    if ~exist('sigma_sq','var')
+        sigma_sq = 5;
+    end
+    if ~exist('beta','var')
+        beta = 1;
+    end
+    
+    % LetG1×N denote the column-stack representation of the binary ground-truth, where N is the number of pixels in the image. Let D1×N denote the non-binary map to be evalu- ated against the ground-truth.
+    g = groundTruth(:)';
+    d = foregroundMap(:)';
     
     % Absolute error of detection (1xN)
     e = abs(g-d);
     
-    % Incorporating pixel dependency
+    % Incorporating pixel dependency (NxN)
     A = diag(g==0);
-    sigma_sq = 5;
+    A = double(sparse(A));
     
-    % Incorporating pixels of varying importance 
-    B = G==1;
-    alpha = log(0.5)/5;
-    B(B==0) = 2;
+    ind = find(g);
+    d = dist(ind',ind',size(groundTruth));
+    val = 1/sqrt(2*pi*sigma_sq)*exp(-(d^2)/(2*sigma_sq));
+    A(ind,ind) = val;  
+    
+    % Incorporating pixels of varying importance (Nx1)
+    B = double(g==1)';
+    ind = find(g~=1);
+    d = dist(ind', find(g==1)',size(groundTruth));
+    deltaI = min(d,[],2);
+    B(ind) = 2-exp(alpha*deltaI);
     
     % Weighting error map
-    eW = min(e,e*A)*B;
+    eW = min(e,(e'*A)')*B;
     
     % Quantities redefined
     tpW = (1-eW)*g;
@@ -44,7 +52,7 @@ function [ p , r , f1 ] = getFwMesure( groundTruth , foregroundMap )
     recW(isnan(recW)) = 1;
     
     % weighted Fb-score
-    f1 = (1+beta^2)*(precW*recW)/(beta^2*precW+recW);
+    fwMesure = (1+beta^2)*(precW*recW)/(beta^2*precW+recW);
     
 end % function
 
