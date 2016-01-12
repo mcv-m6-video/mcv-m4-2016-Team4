@@ -1,4 +1,4 @@
-function [ segmentedMasks, maskNames ] = oneGaussianBackgroundAdaptive( sequence , folderPath , fileFormat , alpha , rho , colorIm , colorTransform , saveIm , pathResults)
+function [ segmentedMasks, maskNames ] = oneGaussianBackgroundAdaptive( sequence , folderPath , fileFormat , alpha , rho , colorIm , colorTransform , saveIm , pathResults, morphoFunction, shadowRemove)
 %ONEGAUSSIANBACKGROUND Summary of this function goes here
 %   Input: 
 %       - saveIm: instead of returning the masks (segmentedMasks), they
@@ -17,6 +17,13 @@ function [ segmentedMasks, maskNames ] = oneGaussianBackgroundAdaptive( sequence
     % check if we want to use colour
     if ~exist('colorTransform', 'var')
         colorTransform = @(x) x;
+        colorInverseTransform = @(x) x;
+    else
+        if length(colorTransform) > 1
+            colorInverseTransform = colorTransform{2};
+            colorTransform = colorTransform{1};
+        end
+        
     end
     if ~exist('colorIm', 'var')
         colorIm = false;
@@ -24,6 +31,14 @@ function [ segmentedMasks, maskNames ] = oneGaussianBackgroundAdaptive( sequence
     
     if ~exist('saveIm', 'var')
         saveIm = true;
+    end
+    
+    if ~exist('morphoFunction', 'var')
+        morphoFunction = @(x)x;
+    end
+    
+    if ~exist('shadowRemove', 'var')
+        shadowRemove = false;
     end
     
     % First 50% of the test sequence to model the background
@@ -77,6 +92,7 @@ function [ segmentedMasks, maskNames ] = oneGaussianBackgroundAdaptive( sequence
         imName = sprintf('%06d', sequence(i));
         fileName = [ folderPath , imName , fileFormat ];
         im = imread( fileName );
+        imOrig = im;
         if ~colorIm
             im = rgb2gray( im );
         else
@@ -89,6 +105,14 @@ function [ segmentedMasks, maskNames ] = oneGaussianBackgroundAdaptive( sequence
         % In case of color images, if any dimension falls outside the
         % gaussian, it will be considered as foreground
         background = any(background,3);
+        
+        % Removal Shadow
+        if ~islogical(shadowRemove)
+            background = shadowRemove(imOrig, background, colorInverseTransform(mu));
+        end
+        
+        % Apply morpho function
+        background = morphoFunction(background);
         
         applyRho = repmat( (~background).*rho,[1,1,size(im,3)] );
         

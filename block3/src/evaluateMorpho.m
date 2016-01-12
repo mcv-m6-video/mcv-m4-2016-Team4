@@ -1,4 +1,4 @@
-function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunction, colorIm, colorTransform, task)
+function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunction, colorIm, colorTransform, shadowRemove, task)
     %% evaluateMorpho
     % Iterate through all sequences and apply a morphological operation
     % specified by morphFunction (which, at the same time, will iterate in
@@ -17,6 +17,9 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
     
     if ~exist('morphFunction','var')
         morphFunction = @(x)x;
+    end
+    if ~exist('shadowRemove','var')
+        morphFunction = false;
     end
     if ~exist('task','var')
         task = '';
@@ -58,7 +61,9 @@ function evaluateMorpho(seq, fileFormat, alphaValues, morphThresholds, morphFunc
             k = 1;
             for morphTh = morphThresholds
                 % Apply the morphology methods specified in morphFunction
-                masksMorph = morphFunction(masks, morphTh);
+                
+                [masksMorph, maskNames] = oneGaussianBackgroundAdaptive( seq.framesInd{i}, seq.inputFolders{i},...
+                    fileFormat, alpha, seq.rhos(i), colorIm , colorTransform, saveIm, '', @(x) morphFunction(x, morphTh), shadowRemove);   
 
                 % Evaluate the morphoTask1 results
                 [ tpAux , fpAux , fnAux , tnAux , ~ , ~ ] =  ...

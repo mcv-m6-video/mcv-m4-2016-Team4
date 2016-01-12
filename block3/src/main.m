@@ -20,7 +20,7 @@ taskId = '1';
 connectivity = [4 , 8];
 if ~exist(['savedResults' filesep 'dataTask1.mat'], 'file')
     morphFunction = @applyMorphoTask1;
-    evaluateMorpho(seq, fileFormat, alphaValues, connectivity, morphFunction, colorIm, colorTransform, taskId);
+    evaluateMorpho(seq, fileFormat, alphaValues, connectivity, morphFunction, colorIm, colorTransform, false, taskId);
 else
    disp('Task 1 results found (savedResults/dataTask1.mat). Skipping Task 1...'); 
 end
@@ -44,7 +44,7 @@ minPixels = 1; stepPixels = 100; maxPixels = 1001;
 pixels = minPixels:stepPixels:maxPixels;
 if ~exist(['savedResults' filesep 'dataTask2.mat'], 'file')
     morphFunction = @(masks,p) applyMorphoTask2(masks, p, bestConnectivity);
-    evaluateMorpho(seq, fileFormat, alphaValues, pixels, morphFunction, colorIm, colorTransform, taskId);
+    evaluateMorpho(seq, fileFormat, alphaValues, pixels, morphFunction, colorIm, colorTransform, false, taskId);
 else
    disp('Task 2 results found (savedResults/dataTask2.mat). Skipping Task 2...');  
 end
@@ -95,7 +95,7 @@ disp(['The best result is obtained with ' num2str(legendStr{2})]);
 taskId = '4';
 if ~exist(['savedResults' filesep 'dataTask4.mat'], 'file')
     morphFunction = @(masks,x) applyMorphoTask4(masks, bestPixels, bestConnectivity, x);
-    evaluateMorpho(seq, fileFormat, alphaValues, [5], morphFunction, colorIm, colorTransform, taskId);
+    evaluateMorpho(seq, fileFormat, alphaValues, [5], morphFunction, colorIm, colorTransform, false, taskId);
 else
    disp('Task 4 results found (savedResults/dataTask4.mat). Skipping Task 4...'); 
 end

@@ -20,6 +20,17 @@ if (~islogical(GT))
     error('GT should be of type: logical');
 end
 
+% Parametres (added by Pau Guim Adria)
+if ~exist('alpha','var')
+    alpha = log(0.5)/5;
+end
+if ~exist('sigma_sq','var')
+    sigma_sq = 5;
+end
+if ~exist('Beta','var')
+    Beta = 1;
+end
+
 dGT = double(GT); %Use double for computations.
 
 
@@ -28,7 +39,7 @@ E = abs(FG-dGT);
 
 [Dst,IDXT] = bwdist(dGT);
 %Pixel dependency
-K = fspecial('gaussian',7,5);
+K = fspecial('gaussian',7,sigma_sq);
 Et = E;
 Et(~GT)=Et(IDXT(~GT)); %To deal correctly with the edges of the foreground region
 EA = imfilter(Et,K);
@@ -36,7 +47,7 @@ MIN_E_EA = E;
 MIN_E_EA(GT & EA<E) = EA(GT & EA<E);
 %Pixel importance
 B = ones(size(GT));
-B(~GT) = 2-1*exp(log(1-0.5)/5.*Dst(~GT));
+B(~GT) = 2-1*exp(alpha.*Dst(~GT));
 Ew = MIN_E_EA.*B;
 
 TPw = sum(dGT(:)) - sum(sum(Ew(GT))); 
@@ -45,6 +56,6 @@ FPw = sum(sum(Ew(~GT)));
 R = 1- mean2(Ew(GT)); %Weighed Recall
 P = TPw./(eps+TPw+FPw); %Weighted Precision
 
-Q = (2)*(R*P)./(eps+R+P); %Beta=1;
-% Q = (1+Beta^2)*(R*P)./(eps+R+(Beta.*P));
+% Q = (2)*(R*P)./(eps+R+P); %Beta=1;
+Q = (1+Beta^2)*(R*P)./(eps+R+(Beta.*P));
 end

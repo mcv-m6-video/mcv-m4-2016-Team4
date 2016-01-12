@@ -29,7 +29,7 @@ function [ shadowMask ] = shadowRemoval( imOrig, mask, background, alpha, beta, 
     % Work in HSV colorspace
     im = rgb2hsv( imOrig );
     H = im(:,:,1); S = im(:,:,2); V = im(:,:,3);        
-    B = rgb2hsv(lab2rgb(background));
+    B = rgb2hsv(background);
     
     % Three conditions to be background
     Cond1_value = (V)./(B(:,:,3)); % Value
