@@ -93,7 +93,7 @@ disp(['The best result is obtained with ' num2str(legendStr{2})]);
 
 %% Task 4
 taskId = '4';
-pixelsClose = [1,2,3,4,5];
+pixelsClose = [1,3,5];
 if ~exist(['savedResults' filesep 'dataTask4.mat'], 'file')
     morphFunction = @(masks,x) applyMorphoTask4(masks, bestPixels, bestConnectivity, x);
     evaluateMorpho(seq, fileFormat, alphaValues, pixelsClose, morphFunction, colorIm, colorTransform, false, taskId);
