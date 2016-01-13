@@ -93,16 +93,21 @@ disp(['The best result is obtained with ' num2str(legendStr{2})]);
 
 %% Task 4
 taskId = '4';
+pixelsClose = [1,2,3,4,5];
 if ~exist(['savedResults' filesep 'dataTask4.mat'], 'file')
     morphFunction = @(masks,x) applyMorphoTask4(masks, bestPixels, bestConnectivity, x);
-    evaluateMorpho(seq, fileFormat, alphaValues, [5], morphFunction, colorIm, colorTransform, false, taskId);
+    evaluateMorpho(seq, fileFormat, alphaValues, pixelsClose, morphFunction, colorIm, colorTransform, false, taskId);
 else
    disp('Task 4 results found (savedResults/dataTask4.mat). Skipping Task 4...'); 
 end
 
 % Generate figures and calculate AUC
 results = load(['savedResults' filesep 'dataTask4']);
-legendStr = {'Baseline', 'Optional 4'};
+legendStr = {'Baseline'};
+% The pixels will change depending on the parameters
+for p = pixelsClose
+    legendStr{end+1} = sprintf('Pixels=%d',p);
+end
 [~, AUCsT4] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
 
 % Get best connectivity and metrics
@@ -110,4 +115,26 @@ legendStr = {'Baseline', 'Optional 4'};
 task4BestResults.prec = results.prec2(:,:,bestIndTask4);
 task4BestResults.rec = results.rec2(:,:,bestIndTask4);
 task4BestResults.f1score = results.f1score2(:,:,bestIndTask4);
-bestConnectivity = connectivity(bestIndTask4);
+bestClose = pixelsClose(bestIndTask4);
+
+%% Task 5
+taskId = '5';
+colorTransformCell = {colorTransform, @(x) applycform(x, makecform('lab2srgb'))};
+if ~exist(['savedResults' filesep 'dataTask5.mat'], 'file')
+    morphFunction = @(masks, x) applyMorphoTask4(masks, bestPixels, bestConnectivity, bestClose);
+    evaluateMorpho(seq, fileFormat, alphaValues, [NaN], morphFunction, colorIm, colorTransformCell, @shadowRemoval, taskId);
+else
+   disp('Task 5 results found (savedResults/dataTask5.mat). Skipping Task 5...'); 
+end
+
+% Generate figures and calculate AUC
+results = load(['savedResults' filesep 'dataTask5']);
+legendStr = {'Baseline', 'Optional 5'};
+[~, AUCsT5] = calculateAUCs(seq, results, folderFigures, legendStr, taskId);
+
+% Get best connectivity and metrics
+[maxAUCT5, bestIndTask5] = max(mean(AUCsT5));
+task5BestResults.prec = results.prec2(:,:,bestIndTask5);
+task5BestResults.rec = results.rec2(:,:,bestIndTask5);
+task5BestResults.f1score = results.f1score2(:,:,bestIndTask5);
+%bestConnectivity = connectivity(bestIndTask5);

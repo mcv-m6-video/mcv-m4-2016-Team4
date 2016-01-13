@@ -42,6 +42,6 @@ function [ shadowMask ] = shadowRemoval( imOrig, mask, background, alpha, beta, 
     Cond3 = (Cond3_value<=threshH);
 
     % Apply all the conditions and restringe it to the mask 
-    shadowMask = Cond1.*Cond2.*Cond3.*mask;
+    shadowMask = mask - Cond1.*Cond2.*Cond3.*mask;
 end
 
