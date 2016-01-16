@@ -1,7 +1,7 @@
 %%% SETUP ENVIRONMENT %%%
 
 %% General parameters
-VERBOSE = false;
+VERBOSE = true;
 addpath('../../src');
 addpath('../../src/backgroundSegmentation');
 addpath('../../src/evaluation');

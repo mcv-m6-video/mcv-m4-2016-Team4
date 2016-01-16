@@ -19,9 +19,12 @@ function [  ] = opticalFlowTest( opticalFlowFunc, flow, outputPath, pepnThresh, 
                 end
                 frames(:,:,k) = frame;
             end
-            opticalFlowFunc(uint8(frames), [ outputPath imName])
+            opticalFlowFunc(uint8(frames), [ outputPath imName], flow.framesOrder)
         end
-        [ msen , pepn ] = opticalFlowEvaluation( flow.gtFolders , pathDataStereoResults , '' , pepnThresh , VERBOSE );
+        [ msen , pepn ] = opticalFlowEvaluation( flow.gtFolders , outputPath , '' , pepnThresh , VERBOSE );
+        if VERBOSE
+            fprintf('AVERAGE:\n\tMSEN= %f\n\tPEPN = %f\n', mean(msen),mean(pepn));
+        end
     end
 end
 

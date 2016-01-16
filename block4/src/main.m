@@ -8,8 +8,7 @@
 setup;
 
 %% Task 1
-optFlowFunc = @applyOpticalFlowTask1;
-opticalFlowTest(optFlowFunc, flow, pepnThresh, VERBOSE);
+
 %% Task 2
 taskId = 'B4_task2';
 optFlowFunc = @applyOpticalFlowTask2;

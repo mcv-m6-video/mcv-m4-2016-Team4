@@ -1,4 +1,4 @@
-function [  ] = applyOpticalFlowTask2( frames, outputPath )
+function [  ] = applyOpticalFlowTask2( frames, outputPath, orderId )
 %APPLYOPTICALFLOWTASK2 Apply Lucas-Kanade
     
     if ~exist('VERBOSE','var')
@@ -45,7 +45,7 @@ function [  ] = applyOpticalFlowTask2( frames, outputPath )
         flow_im(:,:,1) = (64*flow.Vx+2^15);
         flow_im(:,:,2) = (64*flow.Vy+2^15);
         flow_im(:,:,3) = ones(size(flow_im(:,:,3)));
-        imwrite(flow_im, [outputPath, '_', num2str(i) '.png']);
+        imwrite(flow_im, [outputPath, orderId(i-1,:) '.png']);
     end
 
 end

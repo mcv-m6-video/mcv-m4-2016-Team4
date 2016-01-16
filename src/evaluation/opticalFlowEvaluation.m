@@ -25,8 +25,13 @@ function [ msen , pepn ] = opticalFlowEvaluation( pathGroundtruth , pathResults 
     end % if
     
     % List of files for the test
-    filesResultsTest = dir([ pathResults filesep testId  '*' ]);
-
+    list = dir([ pathResults filesep testId  '*' ]);
+    isfile= ~[list.isdir]; %determine index of files vs folders
+    filesResultsTest={list(isfile).name}; %create cell array of file names
+    % filter files starting with '.'
+    filesResultsTestInd = cellfun(@(x) x(1)=='.',filesResultsTest);
+    filesResultsTest = filesResultsTest(~filesResultsTestInd);
+    
     % Setup variables
     msen = zeros( length(filesResultsTest) , 1 );
     pepn = zeros( length(filesResultsTest) , 1 );
@@ -42,10 +47,10 @@ function [ msen , pepn ] = opticalFlowEvaluation( pathGroundtruth , pathResults 
 %     valid(u,v)  = (bool)I(u,v,3);
     for i = 1:length(filesResultsTest)
         % Read test image
-        [testU , testV , ~ ] = readFlow( [ pathResults filesep filesResultsTest(i).name ] );
+        [testU , testV , ~ ] = readFlow( [ pathResults filesResultsTest{i} ] );
         
         % Read groundtruth
-        nameGroundtruth = strrep(filesResultsTest(i).name , testId , '');
+        nameGroundtruth = strrep(filesResultsTest{i} , testId , '');
         [gtU , gtV , gtVal ] = readFlow( [ pathGroundtruth filesep nameGroundtruth] );
         
         % Mean square error
@@ -58,7 +63,7 @@ function [ msen , pepn ] = opticalFlowEvaluation( pathGroundtruth , pathResults 
         pepn(i) = sum(pepnAux(:))/sum(gtVal(:));
         msen(i) = sum(msenAux(:))/sum(gtVal(:));
         if VERBOSE
-            fprintf( 'Evaluation %s:\n' , filesResultsTest(i).name)
+            fprintf( 'Evaluation %s:\n' , filesResultsTest{i})
             fprintf( '\tMSEN = %f\n\tPEPN = %f\n' , msen(i) , pepn(i))
         end % if
     end % for
