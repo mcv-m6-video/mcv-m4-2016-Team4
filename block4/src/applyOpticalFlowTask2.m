@@ -12,15 +12,21 @@ function [  ] = applyOpticalFlowTask2( frames )
     % Create optical flow Lucas Kanade object
     opticFlow = opticalFlowLK('NoiseThreshold',NoiseThreshold);
     
+    % The first frames is used as baseline
+    frame = frames(:,:,1);
+
+    % Get and store estimation
+    estimateFlow(opticFlow,frame);
+    
     % Apply the optical flow estimation to each frame
-    for i = 1:size(frames,4)
-        frameRGB = frames(:,:,:,i);
+    for i = 2:size(frames,3)
+        frame = frames(:,:,i);
 
         % Get and store estimation
-        flow = estimateFlow(opticFlow,frameGray);
+        flow = estimateFlow(opticFlow,frame);
 
         if VERBOSE
-            imshow(frameRGB)
+            imshow(frame)
             hold on
             plot(flow,'DecimationFactor',[5 5],'ScaleFactor',10)
             hold off

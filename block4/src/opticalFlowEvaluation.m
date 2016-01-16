@@ -19,7 +19,7 @@ function [  ] = opticalFlowEvaluation( opticalFlowFunc, flow, VERBOSE )
                 end
                 frames(:,:,k) = frame;
             end
-            opticalFlowFunc(frames)
+            opticalFlowFunc(uint8(frames))
         end
     end
 end
