@@ -5,11 +5,14 @@
 % 
 
 %% Setup
+setup;
 
 %% Task 1
-
+optFlowFunc = @applyOpticalFlowTask1;
+evalOpticalFlow(optFlowFunc);
 %% Task 2
-
+optFlowFunc = @applyOpticalFlowTask2;
+opticalFlowEvaluation(optFlowFunc);
 %% Task 3
 
 %% Task 4
