@@ -9,10 +9,15 @@ setup;
 
 %% Task 1
 optFlowFunc = @applyOpticalFlowTask1;
-opticalFlowEvaluation(optFlowFunc, flow);
+opticalFlowTest(optFlowFunc, flow, pepnThresh, VERBOSE);
 %% Task 2
+taskId = 'B4_task2';
 optFlowFunc = @applyOpticalFlowTask2;
-opticalFlowEvaluation(optFlowFunc, flow);
+outputPath = [ flow.resultsFolders taskId filesep];
+if ~exist(outputPath, 'dir')
+    mkdir(outputPath);
+end
+opticalFlowTest(optFlowFunc, flow, outputPath, pepnThresh, VERBOSE);
 %% Task 3
 
 %% Task 4

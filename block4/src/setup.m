@@ -7,6 +7,7 @@ addpath('../../src/backgroundSegmentation');
 addpath('../../src/evaluation');
 testId = '';
 offsetDesynch = 0;
+pepnThresh = 3;
 
 %% General configuration of the model (common for each sequence)
 colorIm = true;
@@ -48,6 +49,7 @@ seq.alphas = [3, 3, 4];
 flow.basePaths = [ pathDatasets 'data_stereo_flow' filesep 'training' filesep 'image_0' ];
 flow.nSequences = size(flow.basePaths,1);
 flow.gtFolders = [ pathDatasets 'data_stereo_flow' filesep 'training' filesep 'flow_noc' ];
+flow.resultsFolders = [ pathDatasets 'data_stereo_flow' filesep 'results' ];
 flow.framesInd = [ 45 , 157 ];
 flow.framesOrder = ['_10'; '_11'];
 

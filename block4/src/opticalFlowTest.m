@@ -1,4 +1,4 @@
-function [  ] = opticalFlowEvaluation( opticalFlowFunc, flow, VERBOSE )
+function [  ] = opticalFlowTest( opticalFlowFunc, flow, outputPath, pepnThresh, VERBOSE )
 %OPTICALFLOWEVALUATION Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -12,15 +12,16 @@ function [  ] = opticalFlowEvaluation( opticalFlowFunc, flow, VERBOSE )
             frames = [];
             % Read all the consecutive frames
             for k = 1:size(flow.framesOrder,1)
-                fileName = [ flow.basePaths filesep imName flow.framesOrder(k,:) '.png' ];
+                fileName = [ flow.basePaths(i,:) filesep imName flow.framesOrder(k,:) '.png' ];
                 frame = imread(fileName);
                 if size(frame,3)==3
                     frame = rgb2gray(frame);
                 end
                 frames(:,:,k) = frame;
             end
-            opticalFlowFunc(uint8(frames))
+            opticalFlowFunc(uint8(frames), [ outputPath imName])
         end
+        [ msen , pepn ] = opticalFlowEvaluation( flow.gtFolders , pathDataStereoResults , '' , pepnThresh , VERBOSE );
     end
 end
 
