@@ -1,37 +1,47 @@
-function [  ] = applyOpticalFlowTask2( frames, outputPath, orderId, NoiseThreshold )
-%APPLYOPTICALFLOWTASK2 Apply Lucas-Kanade
+function [  ] = applyOpticalFlowTask1( frames, outputPath, orderId, compensation, areaSearch, blockSize )
+%APPLYOPTICALFLOWTASK1 Block matching optical flow
     
     if ~exist('VERBOSE','var')
         VERBOSE = 0;
     end
-    
-    if ~exist('NoiseThreshold','var')
-        NoiseThreshold = 0.009;
+    if ~exist('compensation','var')
+        compensation = 'forward';
+    end    % Typical setup
+    if ~exist('blockSize','var')
+        blockSize = 16;
+    end
+    if ~exist('araeSearch','var')
+        araeSearch = 2*blockSize+blockSize;
     end
     
-    % Create optical flow Lucas Kanade object
-    opticFlow = opticalFlowLK('NoiseThreshold',NoiseThreshold);
+    switch(compensation)
+        case 'forward'
+            % Forward compensation
+            iterator = 2:size(frames,3);
+            indFirst = 1;
+        case 'backward'
+            % Backward compensation
+            iterator = size(frames,3)-1:1;
+            indFirst = size(frames,3);
+    end
     
     % The first frames is used as baseline
-    frame = frames(:,:,1);
+    frame = frames(:,:,indFirst);
 
-    % Get and store estimation
-    estimateFlow(opticFlow,frame);
     
     % Apply the optical flow estimation to each frame
-    for i = 2:size(frames,3)
+    for i = iterator
         frame = frames(:,:,i);
 
-        % Get and store estimation
-        flow = estimateFlow(opticFlow,frame);
-
+        % Block Matching
+        
         if VERBOSE
             imshow(frame)
             hold on
             plot(flow,'DecimationFactor',[5 5],'ScaleFactor',10)
             hold off
         end
-        
+        flow;
         %     Optical flow maps are saved as 3-channel uint16 PNG images: The first channel
         %     contains the u-component, the second channel the v-component and the third
         %     channel denotes if a valid ground truth optical flow value exists for that
