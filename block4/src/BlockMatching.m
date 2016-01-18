@@ -59,12 +59,14 @@ function results = BlockMatching(frame1, frame2, params)
                 mse = sum(diff.*diff)./numel(diff);
                 
                 if mse < minBlock.mse
-                    minBlock.relativeLocation = [i,j] - offset; % Posicion respecto frame1
-                    minBlock.absoluteLocation = [i,j] + areaSearch(1:2) -1; % Posicion absoluta en frame2
+                    minBlock.relativeLocation = [i,j] - offset - 1; % Posicion respecto frame1
+                    minBlock.absoluteLocation = [i,j] + areaSearch(1:2) - 1; % Posicion absoluta en frame2
                     minBlock.mse = mse;
                 end
             end
         end
+        
+        imshow(block_struct.data)
         
         % Devolvemos el objeto en formato de "imagen"
         data = zeros(1,1,5);
