@@ -1,6 +1,6 @@
 function results = BlockMatching(frame1, frame2, params)
     % Busca bloques del frame1 en el frame 2
-    blockResult = blockproc(frame, params.blockSize, @searchSimilarBlock);
+    blockResult = blockproc(frame1, params.blockSize, @searchSimilarBlock);
     
     % Creamos los resultados
     results.absoluteLocation = blockResult(:,:,4:5);
@@ -19,7 +19,7 @@ function results = BlockMatching(frame1, frame2, params)
             centerBlock(2) + params.radiousSearch];
         % Restringimos la busqueda respecto la region de la imagen
         areaSearch = [max(1, areaSearch(1)), max(1, areaSearch(2)), ...
-            min(size(x2,1), areaSearch(3)), min(size(x2,2), areaSearch(4))];
+            min(size(frame2,1), areaSearch(3)), min(size(frame2,2), areaSearch(4))];
         % Convertimos a y,x,altura, anchura
         areaSearch = [areaSearch(1), areaSearch(2), areaSearch(3) - areaSearch(1), areaSearch(4) - areaSearch(2)];
         % imCrop requiere que este en formato x,y,anchura altura, lo
@@ -31,7 +31,7 @@ function results = BlockMatching(frame1, frame2, params)
         offset = block_struct.location - areaSearch(1:2);
         
         % Recortamos la seccion de busqueda
-        imToSearch = imcrop(x2, areaSearchFliped);
+        imToSearch = imcrop(frame2, areaSearchFliped);
         
         % Creamos el objeto que nos permitira obtener los datos que
         % necesitamos
@@ -56,7 +56,7 @@ function results = BlockMatching(frame1, frame2, params)
                 
                 % Calculamos el MSE
                 diff = blockA(:) - blockB(:);
-                mse = sum(diff.*diff);
+                mse = sum(diff.*diff)./numel(diff);
                 
                 if mse < minBlock.mse
                     minBlock.relativeLocation = [i,j] - offset; % Posicion respecto frame1
