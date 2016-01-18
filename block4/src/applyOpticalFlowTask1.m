@@ -1,4 +1,4 @@
-function [  ] = applyOpticalFlowTask1( frames, outputPath, orderId, compensation, areaSearch, blockSize )
+function [  ] = applyOpticalFlowTask1( frames, outputPath, orderId, compensation, areaSearch, blockSize, StepSlidingWindow )
 %APPLYOPTICALFLOWTASK1 Block matching optical flow
     
     if ~exist('VERBOSE','var')
@@ -10,30 +10,44 @@ function [  ] = applyOpticalFlowTask1( frames, outputPath, orderId, compensation
     if ~exist('blockSize','var')
         blockSize = 16;
     end
-    if ~exist('araeSearch','var')
-        araeSearch = 2*blockSize+blockSize;
+    if ~exist('areaSearch','var')
+        areaSearch = 2*blockSize+blockSize;
     end
+    
+    if ~exist('StepSlidingWindow','var')
+        areaSearch = 20;
+    end
+    
+    % BlockMatching params
+    params.blockSize = blockSize;
+    params.radiousSearch = areaSearch;
+    params.StepSlidingWindow = StepSlidingWindow;
     
     switch(compensation)
         case 'forward'
             % Forward compensation
-            iterator = 2:size(frames,3);
-            indFirst = 1;
+            %iterator = 2:size(frames,3);
+            %indFirst = 1;
+            iterator = 1:size(frames,3);
         case 'backward'
             % Backward compensation
-            iterator = size(frames,3)-1:1;
-            indFirst = size(frames,3);
+            %iterator = size(frames,3)-1:1;
+            %indFirst = size(frames,3);
+            iterator = size(frames, 3):-1:1;
     end
     
     % The first frames is used as baseline
-    frame = frames(:,:,indFirst);
+    %frame = frames(:,:,indFirst);
 
     
     % Apply the optical flow estimation to each frame
-    for i = iterator
-        frame = frames(:,:,i);
-
+    for i = 1:(length(iterator)-1)
+        frame = frames(:,:,iterator(i));
+        framePlus = frames(:,:,iterator(i+1));
+        
         % Block Matching
+        results = BlockMatching(frame, framePlus, params);
+        
         
         if VERBOSE
             imshow(frame)

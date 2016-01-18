@@ -11,11 +11,12 @@ setup;
 taskId = 'B4_task2';
 %%%%%%% SpecialParameters applyOpticalFlowTask1
 compensation = 'forward'; % 'backward'
-areaSearch = ;
-blockSize = ;
+areaSearch = 200;
+blockSize = 50;
+StepSlidingWindow = 20;
 %%%%%%%
 optFlowFunc = @(frames, outputPath, orderId) applyOpticalFlowTask1(frames, ...
-    outputPath, orderId, compensation, areaSearch, blockSize);
+    outputPath, orderId, compensation, areaSearch, blockSize, StepSlidingWindow);
 outputPath = [ flow.resultsFolders taskId filesep];
 if ~exist(outputPath, 'dir')
     mkdir(outputPath);
