@@ -5,6 +5,7 @@ VERBOSE = true;
 addpath('../../src');
 addpath('../../src/backgroundSegmentation');
 addpath('../../src/evaluation');
+addpath('../../src/GTOpticalFlowProcessing');
 testId = '';
 offsetDesynch = 0;
 pepnThresh = 3;

@@ -1,4 +1,4 @@
-function [ msen , pepn ] = opticalFlowEvaluation( pathGroundtruth , pathResults , testId , pepnThresh , VERBOSE )
+function [ msen , pepn ] = opticalFlowEvaluationPath( pathGroundtruth , pathResults , testId , pepnThresh , VERBOSE )
 %OPTICALFLOWEVALUATION Evaluates one folder of optical flow
 %   Recieve the information:
 %       * pathGroundtruth: Path to the ground truth.

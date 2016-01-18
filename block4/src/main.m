@@ -28,11 +28,13 @@ taskId = 'B4_task2';
 NoiseThreshold = 0.009;
 %%%%%%%
 optFlowFunc = @(frames, outputPath, orderId) applyOpticalFlowTask2(frames, outputPath, orderId, NoiseThreshold);
+optFlowFunc = @(frames, outputPath, orderId) applyOpticalFlowTask2(frames, outputPath, orderId, NoiseThreshold, VERBOSE);
 outputPath = [ flow.resultsFolders taskId filesep];
 if ~exist(outputPath, 'dir')
     mkdir(outputPath);
 end
 opticalFlowTest(optFlowFunc, flow, outputPath, pepnThresh, VERBOSE);
+
 %% Task 3
 
 %% Task 4

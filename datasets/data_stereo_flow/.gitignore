@@ -1,2 +1,9 @@
-/testing
-/training
+# Ignore everything
+*
+
+# But not this files...
+!linkToDownload.txt
+# etc...
+
+# ...even if they are in subdirectories
+!*/
