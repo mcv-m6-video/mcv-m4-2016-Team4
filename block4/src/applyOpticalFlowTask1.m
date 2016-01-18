@@ -1,4 +1,4 @@
-function [  ] = applyOpticalFlowTask1( frames, outputPath, orderId, compensation, areaSearch, blockSize, StepSlidingWindow )
+function [ flow, GTfiles ] = applyOpticalFlowTask1( frames, outputPath, orderId, compensation, areaSearch, blockSize, stepSlidingWindow )
 %APPLYOPTICALFLOWTASK1 Block matching optical flow
     
     if ~exist('VERBOSE','var')
@@ -8,20 +8,20 @@ function [  ] = applyOpticalFlowTask1( frames, outputPath, orderId, compensation
         compensation = 'forward';
     end    % Typical setup
     if ~exist('blockSize','var')
-        blockSize = 16;
+        blockSize = [16, 16];
     end
     if ~exist('areaSearch','var')
-        areaSearch = 2*blockSize+blockSize;
+        areaSearch = blockSize(1)+blockSize(1)/2;
     end
     
-    if ~exist('StepSlidingWindow','var')
-        areaSearch = 20;
+    if ~exist('stepSlidingWindow','var')
+        stepSlidingWindow = 20;
     end
     
     % BlockMatching params
     params.blockSize = blockSize;
     params.radiousSearch = areaSearch;
-    params.StepSlidingWindow = StepSlidingWindow;
+    params.stepSlidingWindow = stepSlidingWindow;
     
     switch(compensation)
         case 'forward'
@@ -47,6 +47,13 @@ function [  ] = applyOpticalFlowTask1( frames, outputPath, orderId, compensation
         
         % Block Matching
         results = BlockMatching(frame, framePlus, params);
+        
+        flow.Vx = results.imRelative(:,:,1);
+        flow.Vy = results.imRelative(:,:,2);
+        
+        % Get associated GT file name
+        tmp = strsplit(outputPath, filesep);
+        GTfiles{i} = [tmp{end} orderId(i,:) '.png'];
         
         
         if VERBOSE

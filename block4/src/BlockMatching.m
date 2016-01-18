@@ -3,9 +3,25 @@ function results = BlockMatching(frame1, frame2, params)
     blockResult = blockproc(frame1, params.blockSize, @searchSimilarBlock);
     
     % Creamos los resultados
+    results.blockSize = blockResult(:,:,6:7);
     results.absoluteLocation = blockResult(:,:,4:5);
     results.relativeLocation = blockResult(:,:,2:3);
     results.mse = blockResult(:,:,1);
+    
+    imAbsolute = cell(size(results.blockSize,1), size(results.blockSize,2));
+    imRelative = cell(size(results.blockSize,1), size(results.blockSize,2));
+    for k=1:size(imAbsolute,1),
+        for w=1:size(imAbsolute,2),
+            imAbsolute{k, w} = repmat(results.absoluteLocation(k,w,:), [squeeze(results.blockSize(k,w,:))', 1]).*ones([squeeze(results.blockSize(k,w,:))', size(results.absoluteLocation,3)]);
+            imRelative{k, w} = repmat(results.relativeLocation(k,w,:), [squeeze(results.blockSize(k,w,:))', 1]).*ones([squeeze(results.blockSize(k,w,:))', size(results.absoluteLocation,3)]);
+        end
+    end
+    
+    results.imAbsolute = cell2mat(imAbsolute);  
+    results.imRelative = cell2mat(imRelative);
+    
+    
+    
     
     function data = searchSimilarBlock(block_struct)
         % Se calcula el centro del bloque
@@ -35,11 +51,11 @@ function results = BlockMatching(frame1, frame2, params)
         
         % Creamos el objeto que nos permitira obtener los datos que
         % necesitamos
-        minBlock = struct('absoluteLocation', [1 1],'relativeLocation', [1 1], 'mse', Inf);
+        minBlock = struct('absoluteLocation', [1 1],'relativeLocation', [1 1], 'mse', Inf, 'blockSize', [0, 0]);
         
         % Recorremos la region de busqueda
-        for i=1:params.StepSlidingWindow:(size(imToSearch, 1) - block_struct.blockSize(1)),
-            for j=1:params.StepSlidingWindow:(size(imToSearch, 2) - block_struct.blockSize(2)),
+        for i=1:params.stepSlidingWindow:(size(imToSearch, 1) - block_struct.blockSize(1)),
+            for j=1:params.stepSlidingWindow:(size(imToSearch, 2) - block_struct.blockSize(2)),
                 % bloque A (bloque del frame 1)
                 blockA = block_struct.data;
                 % bloque B (bloque del frame 2 que analizamos)
@@ -59,6 +75,7 @@ function results = BlockMatching(frame1, frame2, params)
                 mse = sum(diff.*diff)./numel(diff);
                 
                 if mse < minBlock.mse
+                    minBlock.blockSize = size(blockB);
                     minBlock.relativeLocation = [i,j] - offset - 1; % Posicion respecto frame1
                     minBlock.absoluteLocation = [i,j] + areaSearch(1:2) - 1; % Posicion absoluta en frame2
                     minBlock.mse = mse;
@@ -66,12 +83,11 @@ function results = BlockMatching(frame1, frame2, params)
             end
         end
         
-        imshow(block_struct.data)
-        
         % Devolvemos el objeto en formato de "imagen"
         data = zeros(1,1,5);
         data(:,:,1) = minBlock.mse;
         data(:,:,2:3) = minBlock.relativeLocation;
         data(:,:,4:5) = minBlock.absoluteLocation;
+        data(:,:,6:7) = minBlock.blockSize;
     end
 end
