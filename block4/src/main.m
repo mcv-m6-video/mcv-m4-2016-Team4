@@ -58,6 +58,7 @@ optFlowFunc = @(frames, outputPath, orderId) applyOpticalFlowTask3(frames, outpu
 task3(seq.inputFolders{3}, seq.framesInd{3}, seq.gtFolders{3}, optFlowFunc, fileFormat)
 
 %% Task 4
+task4;
 
 %% Task 5
 
