@@ -1,7 +1,7 @@
 function outputVideo = stabilizeVideo(video, optFlow)
 % Stabilizes video with opticalFlowFunc.
-% Input: - video: NxMxK matrix where NxM is the size of the frames and K is
-%                 the total amount of frames.
+% Input: - video: NxMxOxK matrix where NxMxO is the size of the frames and
+%                 K is the total amount of frames.
 %        - optFlow: optical flow estimation for every pair of frames.
     
     outputVideo = zeros(size(video),'like',video);
@@ -11,7 +11,7 @@ function outputVideo = stabilizeVideo(video, optFlow)
                                      s*sin(theta)  s*cos(theta)  0;
                                      tx            ty            1];
     
-    outputVideo(:,:,1) = video(:,:,1);
+    outputVideo(:,:,:,1) = video(:,:,:,1);
     % Matrix that will define the transformation from a frame t+1 to a
     % frame t
     tform = affine2d(eye(3));
@@ -28,31 +28,28 @@ function outputVideo = stabilizeVideo(video, optFlow)
         tform.T = tform.T*simMatrix(-tx, -ty, 0, 1);
         % El imwarp retorna una imatge que pot ser de dimensions diferents
         % que l'outputVideo, s'ha de retallar
-        Rinput = imref2d(size(video(:,:,i+1)));
+        Rinput = imref2d(size(video(:,:,:,i+1)));
         
         % Creem una imatge del tamany de la original pero amb RGB
         % R sera el video en escala de grisos original
         % G els valors omplerts
         % B es redundant
-        imAux = zeros(size(video(:,:,i+1),1), size(video(:,:,i+1),2), 3);
+        imAux = zeros(size(video(:,:,:,i+1),1), size(video(:,:,:,i+1),2), size(video(:,:,:,i+1),3), 3, 'like', video);
         % Assignem la imatge original al canal R
-        imAux(:,:,1) = video(:,:,i+1);
+        imAux(:,:,:,1) = video(:,:,:,i+1);
         % Apliquem el warp
-        outputAux = imwarp(imAux, tform,'OutputView',Rinput, 'FillValues', [255; 255; 255]); %imwarp(video(:,:,i+1), tform,'OutputView',Rinput);
+        outputAux = imwarp(imAux, tform,'OutputView',Rinput, 'FillValues', 255);
         
         % Definim novament els canals B els valors omplerts, R la imatge
         % original
-        notFilledValues = outputAux(:,:,2);  
-        imStabilizedAux = outputAux(:,:,1);
-        
-        % Mirem quins valors no s'han omplert
-        ind = notFilledValues ~= 255;
+        filledValues = outputAux(:,:,:,2)~=255;  
+        imStabilizedAux = outputAux(:,:,:,1);
         
         % apliquem a la imatge original els valors que NO s'han omplert de
         % forma que evitem que la imatge de sortida tingui "negre" i
         % conservi com a fons la imatge original.
-        initialImage = video(:,:,i+1);
-        initialImage(ind) = imStabilizedAux(ind);
-        outputVideo(:,:,i+1) = initialImage;      
+        initialImage = video(:,:,:,i+1);
+        initialImage(filledValues) = imStabilizedAux(filledValues );
+        outputVideo(:,:,:,i+1) = initialImage;      
     end
 end

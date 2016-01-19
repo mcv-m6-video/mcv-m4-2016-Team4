@@ -1,5 +1,5 @@
 function [ flow, GTfiles ] = applyOpticalFlowTask3( frames, outputPath, orderId, blockSize, areaSearch, saveIm, VERBOSE )
-%APPLYOPTICALFLOWTASK2 Apply Lucas-Kanade
+%APPLYOPTICALFLOWTASK3 Apply Block-Matching
     
     if ~exist('VERBOSE','var')
         VERBOSE = 0;
@@ -16,6 +16,19 @@ function [ flow, GTfiles ] = applyOpticalFlowTask3( frames, outputPath, orderId,
     if ~exist('saveIm','var')
         saveIm = false;
     end
+    
+    if size(frames, 3) == 3
+        colorIm = true;
+        % Convert all frames to grayscale
+        framesAux = zeros(size(frames,1),size(frames,2),1,size(frames,4),'like', frames);
+        for i=1:size(frames, 4) 
+            framesAux(:,:,:,i) = rgb2gray(frames(:,:,:,i));
+        end
+        frames = framesAux;
+    else
+        colorIm = false;
+    end
+    
     % Create the blockmatching
     bm = vision.BlockMatcher('ReferenceFrameSource', 'Input port', ...
     'BlockSize', blockSize, ...
