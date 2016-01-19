@@ -1,5 +1,9 @@
-function [ flow, GTfiles ] = applyOpticalFlowTask1( frames, outputPath, orderId, compensation, areaSearch, blockSize, stepSlidingWindow )
+function [ flow, GTfiles ] = applyOpticalFlowTask1( frames, outputPath, orderId, compensation, areaSearch, blockSize, stepSlidingWindow, saveIm, VERBOSE )
 %APPLYOPTICALFLOWTASK1 Block matching optical flow
+    
+    if ~exist('saveIm','var')
+        saveIm = false;
+    end
     
     if ~exist('VERBOSE','var')
         VERBOSE = 0;
@@ -61,20 +65,11 @@ function [ flow, GTfiles ] = applyOpticalFlowTask1( frames, outputPath, orderId,
             plot(flow{i},'DecimationFactor',[5 5],'ScaleFactor',10)
             hold off
         end
-        %     Optical flow maps are saved as 3-channel uint16 PNG images: The first channel
-        %     contains the u-component, the second channel the v-component and the third
-        %     channel denotes if a valid ground truth optical flow value exists for that
-        %     pixel (1 if true, 0 otherwise). To convert the u-/v-flow into floating point
-        %     values, convert the value to float, subtract 2^15 and divide the result by 64:
-        % 
-        %     flow_u(u,v) = ((float)I(u,v,1)-2^15)/64.0;
-        %     flow_v(u,v) = ((float)I(u,v,2)-2^15)/64.0;
-        %     valid(u,v)  = (bool)I(u,v,3);
-%         flow_im = uint16(zeros(size(flow.Vx,1),size(flow.Vx,2),3));
-%         flow_im(:,:,1) = (64*flow.Vx+2^15);
-%         flow_im(:,:,2) = (64*flow.Vy+2^15);
-%         flow_im(:,:,3) = ones(size(flow_im(:,:,3)));
-        %imwrite(flow_im, [outputPath, orderId(i-1,:) '.png']);
+        
+        if saveIm
+            tmp = opticalFlow2GT(flow{i-1}.Vx, flow{i-1}.Vy, indicateValidPixels);
+            imwrite([outputPath, orderId(i-1,:) '.png'], tmp)
+        end
     end
 
 end

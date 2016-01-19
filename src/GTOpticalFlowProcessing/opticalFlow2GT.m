@@ -17,7 +17,5 @@ function flow_im = opticalFlow2GT(Vx, Vy, indicateValidPixels)
     else
         flow_im(:,:,3) = ones(size(flow_im(:,:,3)));
     end
-    
-    return flow_im
-        
+            
 end

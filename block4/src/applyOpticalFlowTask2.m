@@ -9,7 +9,7 @@ function [ flow, GTfiles ] = applyOpticalFlowTask2( frames, outputPath, orderId,
         NoiseThreshold = 0.009;
     end
     
-    if ~exist('save','var')
+    if ~exist('saveIm','var')
         saveIm = false;
     end
     
@@ -41,8 +41,8 @@ function [ flow, GTfiles ] = applyOpticalFlowTask2( frames, outputPath, orderId,
         end
 
         if saveIm
-            tmp = opticalFlow2GT(flow{i-1}.Vx, flow{i-1}.Vy, indicateValidPixels);
-            imwrite([outputPath, orderId(i-1,:) '.png'], tmp)
+            tmp = opticalFlow2GT(flow{i-1}.Vx, flow{i-1}.Vy);
+            imwrite(tmp , [outputPath, orderId(i-1,:) '.png'])
         end
         
     end

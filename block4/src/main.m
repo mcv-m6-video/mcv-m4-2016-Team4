@@ -8,11 +8,26 @@
 setup;
 
 %% Task 1
-taskId = 'B4_task2';
+taskId = 'B4_task1A';
 %%%%%%% SpecialParameters applyOpticalFlowTask1
 compensation = 'forward'; % 'backward'
-areaSearch = 16+8;
 blockSize = [16, 16];
+areaSearch = blockSize(1)+blockSize(1)/2;
+stepSlidingWindow = 1;
+%%%%%%%
+optFlowFunc = @(frames, outputPath, orderId) applyOpticalFlowTask1(frames, ...
+    outputPath, orderId, compensation, areaSearch, blockSize, stepSlidingWindow);
+outputPath = [ flow.resultsFolders taskId filesep];
+if ~exist(outputPath, 'dir')
+    mkdir(outputPath);
+end
+opticalFlowTest(optFlowFunc, flow, outputPath, pepnThresh, VERBOSE);
+%%
+taskId = 'B4_task1B';
+%%%%%%% SpecialParameters applyOpticalFlowTask1
+compensation = 'backward';
+blockSize = [16, 16];
+areaSearch = blockSize(1)+blockSize(1)/2;
 stepSlidingWindow = 1;
 %%%%%%%
 optFlowFunc = @(frames, outputPath, orderId) applyOpticalFlowTask1(frames, ...
