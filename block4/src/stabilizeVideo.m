@@ -18,29 +18,41 @@ function outputVideo = stabilizeVideo(video, optFlow)
     for i = 1:length(optFlow) 
         % Note: opticalFlow{i} corresponds to the optFlow of frame i to
         % frame i+1
-        tx = mean(mean(optFlow{i}.Vx));
-        ty = mean(mean(optFlow{i}.Vy));
+        tx = mode(optFlow{i}.Vx(:));
+        ty = mode(optFlow{i}.Vy(:));
         %theta = mean(mean(optFlow{i}.Orientation));
-        
-%         x = sum(cos(optFlow{i}.Orientation(:)))/numel(optFlow{i}.Orientation(:));
-%         y = sum(sin(optFlow{i}.Orientation(:)))/numel(optFlow{i}.Orientation(:));
-% 
-%         theta = atan2(y, x);
-        theta = 0;
         % Acumulate transformation in the transformation matrix so that
         % frame T is warped to frame 1.
         %NO FUNCIONA BÉ ENCARA. Crec que les coordenades del LK no són les
         %correctes. La theta també és molt exagerada, rota molt la imatge.
-        %tform.T = tform.T*simMatrix(-tx, -ty, -theta, 1);
-
-        [X,Y] = meshgrid(1:size(optFlow{i}.Vx,2), 1:size(optFlow{i}.Vx,1));
-        M=[X(:), Y(:)];
-        M2=[double(optFlow{i}.Vx(:)), double(optFlow{i}.Vy(:))];
-        aux = estimateGeometricTransform(M+M2, M, 'affine');
-        tform.T = tform.T*aux.T;
+        tform.T = tform.T*simMatrix(-tx, -ty, 0, 1);
         % El imwarp retorna una imatge que pot ser de dimensions diferents
         % que l'outputVideo, s'ha de retallar
-        Rinput = imref2d(size(video(:,:,i)));
-        outputVideo(:,:,i+1) = imwarp(video(:,:,i+1), tform,'OutputView',Rinput);
+        Rinput = imref2d(size(video(:,:,i+1)));
+        
+        % Creem una imatge del tamany de la original pero amb RGB
+        % R sera el video en escala de grisos original
+        % G els valors omplerts
+        % B es redundant
+        imAux = zeros(size(video(:,:,i+1),1), size(video(:,:,i+1),2), 3);
+        % Assignem la imatge original al canal R
+        imAux(:,:,1) = video(:,:,i+1);
+        % Apliquem el warp
+        outputAux = imwarp(imAux, tform,'OutputView',Rinput, 'FillValues', [255; 255; 255]); %imwarp(video(:,:,i+1), tform,'OutputView',Rinput);
+        
+        % Definim novament els canals B els valors omplerts, R la imatge
+        % original
+        notFilledValues = outputAux(:,:,2);  
+        imStabilizedAux = outputAux(:,:,1);
+        
+        % Mirem quins valors no s'han omplert
+        ind = notFilledValues ~= 255;
+        
+        % apliquem a la imatge original els valors que NO s'han omplert de
+        % forma que evitem que la imatge de sortida tingui "negre" i
+        % conservi com a fons la imatge original.
+        initialImage = video(:,:,i+1);
+        initialImage(ind) = imStabilizedAux(ind);
+        outputVideo(:,:,i+1) = initialImage;      
     end
 end

@@ -12,8 +12,12 @@ function task3(seqPath, seqFramesInd, gtPath, opticalFlowFunction, fileFormat)
     
     %% Stabilize
     % Extract the optical flow from the video
-    noiseThreshold = 0.009;
-    flow = opticalFlowFunction(uint8(video), '', zeros(size(video,3),1), noiseThreshold);
+    blockSize = [17 17];
+    areaSearch = [7, 7];
+    
+
+
+    flow = opticalFlowFunction(uint8(video), '', zeros(size(video,3),1));
     % Now we can call the stabilization video function
     videoStab = stabilizeVideo(video, flow);
     

@@ -51,7 +51,10 @@ end
 opticalFlowTest(optFlowFunc, flow, outputPath, pepnThresh, VERBOSE);
 
 %% Task 3
-optFlowFunc = @(frames, outputPath, orderId, noiseThreshold) applyOpticalFlowTask2(frames, outputPath, orderId, noiseThreshold, false);
+blockSize = [17 17];
+areaSearch = [7, 7];
+
+optFlowFunc = @(frames, outputPath, orderId) applyOpticalFlowTask3(frames, outputPath, orderId, blockSize, areaSearch, false);
 task3(seq.inputFolders{3}, seq.framesInd{3}, seq.gtFolders{3}, optFlowFunc, fileFormat)
 
 %% Task 4
