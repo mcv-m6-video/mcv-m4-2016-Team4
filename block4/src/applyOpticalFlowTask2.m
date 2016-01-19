@@ -36,7 +36,7 @@ function [ flow, GTfiles ] = applyOpticalFlowTask2( frames, outputPath, orderId,
         if VERBOSE
             imshow(frame);
             hold on;
-            plot(flow,'DecimationFactor',[5 5],'ScaleFactor',10);
+            plot(flow{i-1},'DecimationFactor',[5 5],'ScaleFactor',10);
             hold off;
         end
 

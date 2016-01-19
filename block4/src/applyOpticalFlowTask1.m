@@ -48,8 +48,7 @@ function [ flow, GTfiles ] = applyOpticalFlowTask1( frames, outputPath, orderId,
         % Block Matching
         results = BlockMatching(frame, framePlus, params);
         
-        flow.Vx = results.imRelative(:,:,1);
-        flow.Vy = results.imRelative(:,:,2);
+        flow{i} = opticalFlow(results.imRelative(:,:,1), results.imRelative(:,:,2));
         
         % Get associated GT file name
         tmp = strsplit(outputPath, filesep);
@@ -59,10 +58,9 @@ function [ flow, GTfiles ] = applyOpticalFlowTask1( frames, outputPath, orderId,
         if VERBOSE
             imshow(frame)
             hold on
-            plot(flow,'DecimationFactor',[5 5],'ScaleFactor',10)
+            plot(flow{i},'DecimationFactor',[5 5],'ScaleFactor',10)
             hold off
         end
-        flow;
         %     Optical flow maps are saved as 3-channel uint16 PNG images: The first channel
         %     contains the u-component, the second channel the v-component and the third
         %     channel denotes if a valid ground truth optical flow value exists for that
@@ -72,11 +70,11 @@ function [ flow, GTfiles ] = applyOpticalFlowTask1( frames, outputPath, orderId,
         %     flow_u(u,v) = ((float)I(u,v,1)-2^15)/64.0;
         %     flow_v(u,v) = ((float)I(u,v,2)-2^15)/64.0;
         %     valid(u,v)  = (bool)I(u,v,3);
-        flow_im = uint16(zeros(size(flow.Vx,1),size(flow.Vx,2),3));
-        flow_im(:,:,1) = (64*flow.Vx+2^15);
-        flow_im(:,:,2) = (64*flow.Vy+2^15);
-        flow_im(:,:,3) = ones(size(flow_im(:,:,3)));
-        imwrite(flow_im, [outputPath, orderId(i-1,:) '.png']);
+%         flow_im = uint16(zeros(size(flow.Vx,1),size(flow.Vx,2),3));
+%         flow_im(:,:,1) = (64*flow.Vx+2^15);
+%         flow_im(:,:,2) = (64*flow.Vy+2^15);
+%         flow_im(:,:,3) = ones(size(flow_im(:,:,3)));
+        %imwrite(flow_im, [outputPath, orderId(i-1,:) '.png']);
     end
 
 end

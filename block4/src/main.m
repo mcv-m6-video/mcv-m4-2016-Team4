@@ -13,7 +13,7 @@ taskId = 'B4_task2';
 compensation = 'forward'; % 'backward'
 areaSearch = 16+8;
 blockSize = [16, 16];
-stepSlidingWindow = 20;
+stepSlidingWindow = 1;
 %%%%%%%
 optFlowFunc = @(frames, outputPath, orderId) applyOpticalFlowTask1(frames, ...
     outputPath, orderId, compensation, areaSearch, blockSize, stepSlidingWindow);
