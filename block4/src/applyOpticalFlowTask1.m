@@ -30,14 +30,12 @@ function [ flow, GTfiles ] = applyOpticalFlowTask1( frames, outputPath, orderId,
     switch(compensation)
         case 'forward'
             % Forward compensation
-            %iterator = 2:size(frames,3);
-            %indFirst = 1;
             iterator = 1:size(frames,3);
+            direction = 1;
         case 'backward'
             % Backward compensation
-            %iterator = size(frames,3)-1:1;
-            %indFirst = size(frames,3);
             iterator = size(frames, 3):-1:1;
+            direction = -1;
     end
     
     % The first frames is used as baseline
@@ -52,7 +50,7 @@ function [ flow, GTfiles ] = applyOpticalFlowTask1( frames, outputPath, orderId,
         % Block Matching
         results = BlockMatching(frame, framePlus, params);
         
-        flow{i} = opticalFlow(results.imRelative(:,:,1), results.imRelative(:,:,2));
+        flow{i} = opticalFlow(results.imRelative(:,:,1)*direction, results.imRelative(:,:,2)*direction);
         
         % Get associated GT file name
         tmp = strsplit(outputPath, filesep);
