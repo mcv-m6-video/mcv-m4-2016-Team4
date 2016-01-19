@@ -18,17 +18,29 @@ function outputVideo = stabilizeVideo(video, optFlow)
     for i = 1:length(optFlow) 
         % Note: opticalFlow{i} corresponds to the optFlow of frame i to
         % frame i+1
-        tx = mean((mean(optFlow{i}.Vx)));
-        ty = mean((mean(optFlow{i}.Vy)));
-        theta = mean(mean(optFlow{i}.Orientation));
+        tx = mean(mean(optFlow{i}.Vx));
+        ty = mean(mean(optFlow{i}.Vy));
+        %theta = mean(mean(optFlow{i}.Orientation));
+        
+%         x = sum(cos(optFlow{i}.Orientation(:)))/numel(optFlow{i}.Orientation(:));
+%         y = sum(sin(optFlow{i}.Orientation(:)))/numel(optFlow{i}.Orientation(:));
+% 
+%         theta = atan2(y, x);
+        theta = 0;
         % Acumulate transformation in the transformation matrix so that
         % frame T is warped to frame 1.
         %NO FUNCIONA BÉ ENCARA. Crec que les coordenades del LK no són les
         %correctes. La theta també és molt exagerada, rota molt la imatge.
-        tform.T = tform.T*simMatrix(-tx, -ty, -theta, 1);
+        %tform.T = tform.T*simMatrix(-tx, -ty, -theta, 1);
+
+        [X,Y] = meshgrid(1:size(optFlow{i}.Vx,2), 1:size(optFlow{i}.Vx,1));
+        M=[X(:), Y(:)];
+        M2=[double(optFlow{i}.Vx(:)), double(optFlow{i}.Vy(:))];
+        aux = estimateGeometricTransform(M+M2, M, 'affine');
+        tform.T = tform.T*aux.T;
         % El imwarp retorna una imatge que pot ser de dimensions diferents
         % que l'outputVideo, s'ha de retallar
-        Rinput = imref2d(size(video(:,:,i+1)));
+        Rinput = imref2d(size(video(:,:,i)));
         outputVideo(:,:,i+1) = imwarp(video(:,:,i+1), tform,'OutputView',Rinput);
     end
 end
