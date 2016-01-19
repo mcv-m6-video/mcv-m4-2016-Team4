@@ -1,2 +1,4 @@
 *.asv
 block3/figures/
+datasets/middlebury/other-data-gray/
+datasets/middlebury/other-gt-flow/
