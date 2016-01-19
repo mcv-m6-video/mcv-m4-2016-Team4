@@ -39,7 +39,7 @@ function [ flow, GTfiles ] = applyOpticalFlowTask3( frames, outputPath, orderId,
     
 
     % Apply the optical flow estimation to each frame
-    for i = 2:size(frames,3)
+    for i = 2:size(frames,4)
         auxResult = step(bm, frames(:,:,i-1), frames(:,:,i));
         flow{i-1} = opticalFlow(double(real(auxResult)), double(imag(auxResult)));
         
