@@ -28,6 +28,7 @@ function outputVideo = stabilizeVideo(video, optFlow)
         tform.T = tform.T*simMatrix(-tx, -ty, -theta, 1);
         % El imwarp retorna una imatge que pot ser de dimensions diferents
         % que l'outputVideo, s'ha de retallar
-        outputVideo(:,:,i+1) = imwarp(video(:,:,i+1), tform);
+        Rinput = imref2d(size(video(:,:,i+1)));
+        outputVideo(:,:,i+1) = imwarp(video(:,:,i+1), tform,'OutputView',Rinput);
     end
 end
