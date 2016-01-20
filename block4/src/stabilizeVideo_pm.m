@@ -1,4 +1,4 @@
-function outputVideo = stabilizeVideo_pm(video)
+function [outputVideo, outputGt] = stabilizeVideo_pm(video, gt)
     
     %% Step 6. Run on the Full Video
     % Now we apply the above steps to smooth a video sequence. For readability,
@@ -28,7 +28,8 @@ function outputVideo = stabilizeVideo_pm(video)
     correctedMean = imgBp;
     
     outputVideo = imgB;
-    
+    outputGt = gt(:,:,:,1);
+
     ii = 2;
     Hcumulative = eye(3);
     while ii <= size(video,4)
@@ -39,18 +40,15 @@ function outputVideo = stabilizeVideo_pm(video)
         movMean = movMean + imgB;
 
         % Estimate transform from frame A to frame B, and fit as an s-R-t
-        try
-            H = cvexEstStabilizationTform_pm(imgA,imgB,0.00001, 0.00001);
-        catch
-            aaa=1;
-        end
+        H = cvexEstStabilizationTform_pm(imgA,imgB,0.00001, 0.00001);
             
         HsRt = cvexTformToSRT(H);
         Hcumulative = HsRt * Hcumulative;
         imgBp = imwarp(imgB,affine2d(Hcumulative),'OutputView',imref2d(size(imgB)));
         
         outputVideo(:,:,ii) = imgBp;
-        
+        outputGt(:,:,ii) = imwarp(gt(:,:,:,ii),affine2d(Hcumulative),'OutputView',imref2d(size(imgB)));
+
         % Display as color composite with last corrected frame
         correctedMean = correctedMean + imgBp;
 

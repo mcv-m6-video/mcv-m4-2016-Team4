@@ -1,4 +1,4 @@
-function tform = cvexEstStabilizationTform_pm(leftI,rightI,ptThresh, minQuality)
+function H = cvexEstStabilizationTform_pm(leftI,rightI,ptThresh, minQuality)
 %Get inter-image transform and aligned point features.
 %  H = cvexEstStabilizationTform(leftI,rightI) returns an affine transform
 %  between leftI and rightI using the |estimateGeometricTransform|

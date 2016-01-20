@@ -7,34 +7,38 @@ function task5(seqPath, seqFramesInd, gtPath, fileFormat, folderFigures)
     %                 to video sequence and the others are irrelevant. Given 
     %                 a video sequence, it returns its optical flow.
     
-    if ~exist(['savedResults' filesep 'dataTask3.mat'], 'file')
+    if ~exist(['savedResults' filesep 'dataTask5.mat'], 'file')
         %% Read sequence
         colorIm = true;
         video = readVideo(seqPath, seqFramesInd, fileFormat, colorIm);
 
+        % Read GT.
+        videoGT = readVideo(gtPath, seqFramesInd, '.png', false);
+
         %% Stabilize
         % Now we can call the stabilization video function
-        videoStab = stabilizeVideo_pm(video);
+        [videoStab, videoGTStab] = stabilizeVideo_pm(video, videoGT);
 
         %% Evaluation: compare the stabilized video with the original
         % In order to evaluate the stabilized video, it is necessary to
         % stabilize the ground truth, too.
 
-        % Read GT.
-        videoGT = readVideo(gtPath, seqFramesInd, '.png', false);
+        videoStab = reshape(videoStab, size(videoStab,1), size(videoStab,2), 1, size(videoStab,3));
+        videoGTStab = reshape(videoGTStab, size(videoGTStab,1), size(videoGTStab,2), 1, size(videoGTStab,3));
         
-        % Apply the same stabilization applied at the original video
-        videoGTStab = stabilizeVideo(videoGT, flow);
-
+        newVideo = zeros(size(video,1), size(video,2), 1, size(video,4), 'like', rgb2gray(video(:,:,:,1)));
+        for i = 1:size(video,4)
+            newVideo(:,:,:,i) = rgb2gray(video(:,:,:,i));
+        end
         % Get precision and recall from both sequences
-        [prec, rec, f1] = applyBestSegmentation(video, videoGT);
+        [prec, rec, f1] = applyBestSegmentation(newVideo, videoGT);
         [precStab, recStab, f1Stab] = applyBestSegmentation(videoStab, videoGTStab);
         
         % Save results
         if ~exist('savedResults','dir')
             mkdir('savedResults');
         end
-        save('savedResults/dataTask3.mat', 'prec', 'rec', 'f1', 'precStab', 'recStab', 'f1Stab');
+        save('savedResults/dataTask5.mat', 'prec', 'rec', 'f1', 'precStab', 'recStab', 'f1Stab');
         
     else
        load('savedResults/dataTask3.mat');
@@ -43,7 +47,7 @@ function task5(seqPath, seqFramesInd, gtPath, fileFormat, folderFigures)
    
     %% Plot evaluation results
     % Plot both PR curves and AUC
-    taskId = '3';
+    taskId = '5';
     legendStr = {'No stabilization', 'Stabilization'};
     [aucs] = calculateAUCs([prec precStab], [rec recStab], folderFigures, legendStr, taskId);
     fprintf('AUC (no stabilization): %.4f\nAUC (stabilization): %.4f\n', aucs(1), aucs(2));

@@ -50,7 +50,9 @@ function [ segmentedMasks ] = oneGaussianBackgroundAdaptiveIm( masks , alpha , r
     for i = 1:floor(size(masks,4)/2)
         im = masks(:,:,:,i);
         if ~colorIm
-            im = rgb2gray( im );
+            if size(im,3)>1
+                im = rgb2gray( im );
+            end
         else
             im = colorTransform( im );
         end
@@ -83,7 +85,9 @@ function [ segmentedMasks ] = oneGaussianBackgroundAdaptiveIm( masks , alpha , r
         im = masks(:,:,:,i);
         imOrig = im;
         if ~colorIm
-            im = rgb2gray( im );
+            if size(im,3)>1
+                im = rgb2gray( im );
+            end
         else
             im = colorTransform( im );
         end
