@@ -24,7 +24,7 @@ function task4
                 'Grove2', 'Grove3', 'Urban2', 'Urban3', ...
                 'Walking', 'Beanbags',     'DogDance',     'MiniCooper'};
     
-    for iSeq=2:length(subPath),
+    for iSeq=1:length(subPath),
         disp(['Sequence : ' subPath{iSeq}]);
         imagesList = dir([imgFilePath subPath{iSeq} filesep '*.png']);
         
