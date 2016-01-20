@@ -30,12 +30,19 @@ function task3(seqPath, seqFramesInd, gtPath, opticalFlowFunction, fileFormat, f
         
         % Apply the same stabilization applied at the original video
         videoGTStab = stabilizeVideo(videoGT, flow);
-        
+
         % Get precision and recall from both sequences
         [prec, rec, f1] = applyBestSegmentation(video, videoGT);
         [precStab, recStab, f1Stab] = applyBestSegmentation(videoStab, videoGTStab);
         
+        % Save results
+        if ~exist('savedResults','dir')
+            mkdir('savedResults');
+        end
+        save('savedResults/dataTask3.mat', 'prec', 'rec', 'f1', 'precStab', 'recStab', 'f1Stab');
+        
     else
+       load('savedResults/dataTask3.mat');
        disp('Task 3 results found (savedResults/dataTask3.mat). Skipping computation of results...');  
     end
    

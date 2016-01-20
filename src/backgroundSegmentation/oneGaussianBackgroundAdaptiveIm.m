@@ -47,8 +47,6 @@ function [ segmentedMasks ] = oneGaussianBackgroundAdaptiveIm( masks , alpha , r
         cumpixel = cell(1,1);
     end
     
-    segmentedMasks = [];
-    
     for i = 1:floor(size(masks,4)/2)
         im = masks(:,:,:,i);
         if ~colorIm
@@ -71,11 +69,9 @@ function [ segmentedMasks ] = oneGaussianBackgroundAdaptiveIm( masks , alpha , r
         mu = cat(3 , mu , muAux{i} );
         sigma_square = cat(3 , sigma_square , sigmaAux{i} );
     end
-    
-    if ~saveIm
-        % Read image to know size of the masks
-        segmentedMasks = false(size(im,1), size(im,2), floor(size(masks,4)/2));
-    end
+
+    % Read image to know size of the masks
+    segmentedMasks = false(size(im,1), size(im,2), floor(size(masks,4)/2)+1);
     
     % Second 50% to segment the foreground
     count = 1;

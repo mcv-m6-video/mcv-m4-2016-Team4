@@ -16,7 +16,12 @@ function [precision, recall, f1score] = applyBestSegmentation(video, videoGT)
     if size(video,3) == 3
         colorIm = true;
     end
-
+    % Reshape videoGT (NxMxOxK) to NxMxK, because GT images are greyscaled.
+    masksGT = reshape(videoGT, size(videoGT,1), size(videoGT,2), size(videoGT,4));
+    
+    % Cut masksGT in a half, since it contains the frames used for evaluation
+    masksGT = masksGT(:,:,floor(size(masksGT,3)/2)+1:size(masksGT,3));
+    
     % Set best parameters from the previous Block 3 (shadow removal +
     % morpho + one gaussian adaptative + colorspave luv)
     bestPixels = 300; bestConnectivity = 4; bestClose = 3; bestRho = 0.2;
@@ -29,14 +34,14 @@ function [precision, recall, f1score] = applyBestSegmentation(video, videoGT)
         masks = oneGaussianBackgroundAdaptiveIm( video, alpha, bestRho, colorIm , colorTransformCell, morphFunc, shadowRemove, saveIm);
         
         % Evaluate results
-        [ tp , fp , fn , tn, ~ , ~ ] = segmentationEvaluation( videoGT, masks );
+        [ tp , fp , fn , tn, ~ , ~ ] = segmentationEvaluation( masksGT, masks );
         tp = sum(tp); fp = sum(fp); fn = sum(fn); tn = sum(tn);
         
         % Extract precision, recall and F1-Score
         [ precAux , recAux , f1Aux ] = getMetrics( tp , fp , fn , tn );
         precision(i) = precAux; recall(i) = recAux; f1score(i) = f1Aux;
         
-        i = 1 + 1;
+        i = i + 1;
     end
 
 end
