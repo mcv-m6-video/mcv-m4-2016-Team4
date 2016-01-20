@@ -62,4 +62,6 @@ task4;
 
 %% Task 5
 
+task5(seq.inputFolders{3}, seq.framesInd{3}, seq.gtFolders{3}, fileFormat, folderFigures)
+
 %% Task 6
