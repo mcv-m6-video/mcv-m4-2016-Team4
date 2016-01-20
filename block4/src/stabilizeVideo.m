@@ -47,8 +47,8 @@ function outputVideo = stabilizeVideo(video, optFlow)
         
         % apliquem a la imatge original els valors que NO s'han omplert de
         % forma que evitem que la imatge de sortida tingui "negre" i
-        % conservi com a fons la imatge anterior.
-        initialImage = outputVideo(:,:,:,i-1);
+        % conservi com a fons la imatge original.
+        initialImage = video(:,:,:,i+1);
         initialImage(filledValues) = imStabilizedAux(filledValues );
         outputVideo(:,:,:,i+1) = initialImage;      
     end
