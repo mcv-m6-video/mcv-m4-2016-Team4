@@ -1,7 +1,6 @@
 function task4
     addpath('flow_code');
     addpath(genpath('flow_code/utils'));
-    
     if ~exist( 'pepnThresh' , 'var' )
         pepnThresh = 3;
     end % if
@@ -21,8 +20,14 @@ function task4
 
     
     subPath = {'Venus', 'Dimetrodon',   'Hydrangea',    'RubberWhale',...
-                'Grove2', 'Grove3', 'Urban2', 'Urban3', ...
-                'Walking', 'Beanbags',     'DogDance',     'MiniCooper'};
+                'Grove2', 'Grove3', 'Urban2', 'Urban3'};%, ...
+                %NO TIENEN GT 'Walking', 'Beanbags',     'DogDance',     'MiniCooper'};
+    
+    allPepnA = {};
+    allPepnB = {};
+    
+    allMsenA = {};
+    allMsenB = {};
     
     for iSeq=1:length(subPath),
         disp(['Sequence : ' subPath{iSeq}]);
@@ -31,38 +36,53 @@ function task4
         % Read the video-images and groundtruth
         frameFirst = imread([imgFilePath subPath{iSeq} filesep imagesList(1).name]);
         video = zeros(size(frameFirst, 1), size(frameFirst, 2), length(imagesList));
+        tuv = zeros(size(frameFirst, 1), size(frameFirst, 2), 2, length(imagesList)-1);
         for j=1:length(imagesList)
             video(:,:,j) = imread([imgFilePath subPath{iSeq} filesep imagesList(j).name]);
+            id = regexp(imagesList(1).name, 'frame(?<id>[0-9]+)\.png','names');
+            
+            % Siempre habra un optical flow menos que el tamano total de
+            % imagenes
+            if j<length(imagesList)
+                flowFilename = [flowFilePath subPath{iSeq} filesep 'flow' id.id '.flo'];
+                tuv(:,:,:,j) = readFlowFile(flowFilename);
+            end
             
             
         end
-        flowFilename = [flowFilePath subPath{iSeq} filesep 'flow10.flo'];
-        tuv = readFlowFile(flowFilename);
         
         % obtain the opticalFlow for MODEL A
         flowA = applyOpticalFlowTask4a(uint8(video), '', zeros(size(video,3),1));
+        
         
         % obtain the opticalFlow for MODEL B
         flowB = applyOpticalFlowTask4b(uint8(video), '', zeros(size(video,3),1));
         
         % Evaluate the results
-        evalutateResults('A', flowA, tuv, iSeq, 1);
-        evalutateResults('B', flowB, tuv, iSeq, 1);
+        [pepnA, msenA] = evalutateResults('A', flowA, tuv, iSeq, 1);
+        [pepnB, msenB] = evalutateResults('B', flowB, tuv, iSeq, 1);
         disp('---------------------------');
         
+        allPepnA{iSeq} = pepnA;
+        allPepnB{iSeq} = pepnB;
         
+        allMsenA{iSeq} = msenA;
+        allMsenB{iSeq} = msenB;
     end
     
+    % Saving the results
+    save('TASK4_RESULTS', 'allPepnA', 'allPepnB', 'allMsenA', 'allMsenB', 'subPath');
+    
     % Function to evaluate the results
-    function evalutateResults(strm, flow, tuv, iSeq, VERBOSE)
+    function [pepn, msen] = evalutateResults(strm, flow, tuv, iSeq, VERBOSE)
         for i = 1:size(flow,1)
             % Read test image
             testU = flow{i}.Vx;
             testV = flow{i}.Vy;
 
             % Mean square error
-            gtU = tuv(:,:,1);
-            gtV = tuv(:,:,2);
+            gtU = squeeze(tuv(:,:,1,:));
+            gtV = squeeze(tuv(:,:,2,:));
             
             msenAux = sqrt((testU - gtU).^2 + (testV - gtV).^2);          
             gtNotVal = abs(gtU)>1e9 | abs(gtV)>1e9;
@@ -79,4 +99,5 @@ function task4
             end % if
         end % for
     end
+    rmpath(genpath('flow_code'));
 end

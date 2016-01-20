@@ -34,22 +34,22 @@ function outputVideo = stabilizeVideo(video, optFlow)
         % R sera el video en escala de grisos original
         % G els valors omplerts
         % B es redundant
-        imAux = zeros(size(video(:,:,:,i+1),1), size(video(:,:,:,i+1),2), size(video(:,:,:,i+1),3), 3, 'like', video);
         % Assignem la imatge original al canal R
-        imAux(:,:,:,1) = video(:,:,:,i+1);
+        imAux = video(:,:,:,i+1);
         % Apliquem el warp
-        outputAux = imwarp(imAux, tform,'OutputView',Rinput, 'FillValues', 255);
+        warning('off','all'); rmpath(genpath('flow_code')); % Mejor prevenir que curar
+        imStabilizedAux = imwarp(imAux, tform);
+        maskAux = imwarp(uint8(255*ones(size(imAux, 1), size(imAux, 2))), tform, 'FillValues', 0);
         
         % Definim novament els canals B els valors omplerts, R la imatge
         % original
-        filledValues = outputAux(:,:,:,2)~=255;  
-        imStabilizedAux = outputAux(:,:,:,1);
+        filledValues = maskAux ~= 0;  
+        maskColor = repmat(~filledValues, [1,1,size(imStabilizedAux, 3)]);
         
         % apliquem a la imatge original els valors que NO s'han omplert de
         % forma que evitem que la imatge de sortida tingui "negre" i
         % conservi com a fons la imatge original.
         initialImage = video(:,:,:,i+1);
-        initialImage(filledValues) = imStabilizedAux(filledValues );
-        outputVideo(:,:,:,i+1) = initialImage;      
+        outputVideo(:,:,:,i+1) = uint8(~maskColor).*initialImage + uint8(maskColor).*imStabilizedAux;     
     end
 end
