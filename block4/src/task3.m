@@ -1,4 +1,4 @@
-function task3(seqPath, seqFramesInd, gtPath, opticalFlowFunction, fileFormat)
+function task3(seqPath, seqFramesInd, gtPath, opticalFlowFunction, fileFormat, folderFigures)
     % Reads the sequence (frames located at 'seqPath' and indicated by 
     % seqFramesInd), stabilize it using 'opticalFlowFunction', and finally, 
     % evaluate theresults with the  original jittering sequence (PR curve, 
@@ -26,24 +26,27 @@ function task3(seqPath, seqFramesInd, gtPath, opticalFlowFunction, fileFormat)
         % stabilize the ground truth, too.
 
         % Read GT.
-        videoGT = readVideo(gtPath, seqFramesInd, '.png');
-
+        videoGT = readVideo(gtPath, seqFramesInd, '.png', false);
+        
         % Apply the same stabilization applied at the original video
         videoGTStab = stabilizeVideo(videoGT, flow);
         
-        % Get precision and recall from both of the sequences
-        [prec, rec] = applyBestSegmentation(video, videoGT);
-        [precStab, recStab] = applyBestSegmentation(videoStab, videoGTStab);
+        % Get precision and recall from both sequences
+        [prec, rec, f1] = applyBestSegmentation(video, videoGT);
+        [precStab, recStab, f1Stab] = applyBestSegmentation(videoStab, videoGTStab);
         
     else
        disp('Task 3 results found (savedResults/dataTask3.mat). Skipping computation of results...');  
     end
    
-    %% Plot results of the evaluation
+    %% Plot evaluation results
     % Plot both PR curves and AUC
+    taskId = '3';
+    legendStr = {'No stabilization', 'Stabilization'};
+    [aucs] = calculateAUCs([prec precStab], [rec recStab], folderFigures, legendStr, taskId);
+    fprintf('AUC (no stabilization): %.4f\nAUC (stabilization): %.4f\n', aucs(1), aucs(2));
     
-
     % F1-Score for the best threshold
-    
+    fprintf('Best F1-Score (no stabilization): %.2f%%\nBest F1-Score (stabilization): %.2f%%\n', max(f1)*100, max(f1Stab)*100);
 
 end

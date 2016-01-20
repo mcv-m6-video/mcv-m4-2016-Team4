@@ -1,7 +1,7 @@
-function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationEvaluation( pathGroundtruth, masks , maskNames , VERBOSE )
+function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationEvaluation( groundtruth, masks , maskNames , VERBOSE )
 %SEGMENTATIONEVALUATION Evaluates one folder
 %   Recieve the information:
-%       * pathGroundtruth: Path to the ground truth.
+%       * groundtruth: Path to the ground truth or ground truth itself (NxMxK matrix, like 'masks').
 %       * masks: NxMxK matrix, where N and M are the size of the
 %            frames processed and K are the numbers of frames. For example, 
 %            300x300x10 means that there are 10 frames of size 300x300.
@@ -16,6 +16,24 @@ function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationE
     if ~exist( 'VERBOSE' , 'var' )
         VERBOSE = false;
     end % if
+    
+    % Read ground truth
+    if ischar(groundtruth)
+       % The ground truth is a path. We must load all GT masks.
+       gtMasks = zeros(size(masks), 'like', masks);
+       for i=1:size(masks,3)
+           if ~exists('maskNames','var')
+               error('If groundtruth is a path, maskNames parameter needs to be specified.');
+           end
+            % Read Ground truth image
+            numFile = maskNames{i};
+            nameGroundtruth = [numFile '.png'];
+            gtMasks(:,:,i) = imread( [ pathGroundtruth  nameGroundtruth] );
+       end
+    else
+        % The ground truth is already loaded
+        gtMasks = groundtruth;
+    end
     
     % Setup variables
     tp = zeros(size(masks,3),1);
@@ -39,10 +57,8 @@ function [ tp , fp , fn , tn, totalForeground, totalBackground ] = segmentationE
         % Read test image
         im_test = masks(:,:,i);
 
-        % Read Ground truth image
-        numFile = maskNames{i};
-        nameGroundtruth = [numFile '.png'];
-        im_gt = imread( [ pathGroundtruth  nameGroundtruth] );
+        % Segment Ground truth image
+        im_gt = gtMasks(:,:,i);
         foreground = im_gt == 255;
         background = im_gt==0 | im_gt==50;
 

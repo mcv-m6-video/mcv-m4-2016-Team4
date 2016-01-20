@@ -55,7 +55,7 @@ blockSize = [17 17];
 areaSearch = [7, 7];
 
 optFlowFunc = @(frames, outputPath, orderId) applyOpticalFlowTask3(frames, outputPath, orderId, blockSize, areaSearch, false);
-task3(seq.inputFolders{3}, seq.framesInd{3}, seq.gtFolders{3}, optFlowFunc, fileFormat)
+task3(seq.inputFolders{3}, seq.framesInd{3}, seq.gtFolders{3}, optFlowFunc, fileFormat, folderFigures)
 
 %% Task 4
 task4;
