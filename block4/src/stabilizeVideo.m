@@ -38,8 +38,8 @@ function outputVideo = stabilizeVideo(video, optFlow)
         imAux = video(:,:,:,i+1);
         % Apliquem el warp
         warning('off','all'); rmpath(genpath('flow_code')); % Mejor prevenir que curar
-        imStabilizedAux = imwarp(imAux, tform);
-        maskAux = imwarp(uint8(255*ones(size(imAux, 1), size(imAux, 2))), tform, 'FillValues', 0);
+        imStabilizedAux = imwarp(imAux, tform,'OutputView',Rinput, 'FillValues', 255);
+        maskAux = imwarp(uint8(255*ones(size(imAux, 1), size(imAux, 2))), tform, 'OutputView',Rinput,'FillValues', 0);
         
         % Definim novament els canals B els valors omplerts, R la imatge
         % original
