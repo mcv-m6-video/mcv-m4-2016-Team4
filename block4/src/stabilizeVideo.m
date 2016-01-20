@@ -44,7 +44,7 @@ function outputVideo = stabilizeVideo(video, optFlow)
         % Definim novament els canals B els valors omplerts, R la imatge
         % original
         filledValues = maskAux ~= 0;  
-        maskColor = repmat(~filledValues, [1,1,size(imStabilizedAux, 3)]);
+        maskColor = repmat(filledValues, [1,1,size(imStabilizedAux, 3)]);
         
         % apliquem a la imatge original els valors que NO s'han omplert de
         % forma que evitem que la imatge de sortida tingui "negre" i
