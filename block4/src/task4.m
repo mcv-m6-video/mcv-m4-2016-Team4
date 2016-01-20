@@ -65,9 +65,10 @@ function task4
             gtV = tuv(:,:,2);
             
             msenAux = sqrt((testU - gtU).^2 + (testV - gtV).^2);          
-            gtVal = gtU==0 & gtV==0;
+            gtNotVal = abs(gtU)>1e9 | abs(gtV)>1e9;
+            gtVal = ~gtNotVal;
             
-            msenAux( gtVal==0 ) = 0;
+            msenAux( gtNotVal ) = 0;
 
             pepnAux = msenAux>pepnThresh;
             pepn(i) = sum(pepnAux(:))/sum(gtVal(:));
