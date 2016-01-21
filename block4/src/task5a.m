@@ -1,4 +1,4 @@
-function task5(seqPath, seqFramesInd, gtPath, fileFormat, folderFigures)
+function task5a(seqPath, seqFramesInd, gtPath, fileFormat, folderFigures)
     % Reads the sequence (frames located at 'seqPath' and indicated by 
     % seqFramesInd), stabilize it using 'opticalFlowFunction', and finally, 
     % evaluate theresults with the  original jittering sequence (PR curve, 
@@ -7,7 +7,7 @@ function task5(seqPath, seqFramesInd, gtPath, fileFormat, folderFigures)
     %                 to video sequence and the others are irrelevant. Given 
     %                 a video sequence, it returns its optical flow.
     
-    if ~exist(['savedResults' filesep 'dataTask5.mat'], 'file')
+    if ~exist(['savedResults' filesep 'dataTask5a.mat'], 'file')
         %% Read sequence
         colorIm = true;
         video = readVideo(seqPath, seqFramesInd, fileFormat, colorIm);
@@ -38,16 +38,16 @@ function task5(seqPath, seqFramesInd, gtPath, fileFormat, folderFigures)
         if ~exist('savedResults','dir')
             mkdir('savedResults');
         end
-        save('savedResults/dataTask5.mat', 'prec', 'rec', 'f1', 'precStab', 'recStab', 'f1Stab');
+        save('savedResults/dataTask5a.mat', 'prec', 'rec', 'f1', 'precStab', 'recStab', 'f1Stab');
         
     else
-       load('savedResults/dataTask3.mat');
-       disp('Task 3 results found (savedResults/dataTask3.mat). Skipping computation of results...');  
+       load('savedResults/dataTask5a.mat');
+       disp('Task 3 results found (savedResults/dataTask5a.mat). Skipping computation of results...');  
     end
    
     %% Plot evaluation results
     % Plot both PR curves and AUC
-    taskId = '5';
+    taskId = '5a';
     legendStr = {'No stabilization', 'Stabilization'};
     [aucs] = calculateAUCs([prec precStab], [rec recStab], folderFigures, legendStr, taskId);
     fprintf('AUC (no stabilization): %.4f\nAUC (stabilization): %.4f\n', aucs(1), aucs(2));
