@@ -17,7 +17,7 @@ function task5b(seqPath, seqFramesInd, gtPath, fileFormat, folderFigures)
 
         %% Stabilize
         % Now we can call the stabilization video function
-        [videoStab, videoGTStab] = stabilizeVideo_videostabilization(video, videoGT);
+        [videoStab, videoGTStab] = stabilizeVideo_ROI(video, videoGT);
 
         %% Evaluation: compare the stabilized video with the original
         % In order to evaluate the stabilized video, it is necessary to

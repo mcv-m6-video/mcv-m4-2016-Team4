@@ -1,4 +1,4 @@
-function [outputVideo, gtStabilizedVideo] = stabilizeVideo_videostabilization(video, gtvideo)
+function [outputVideo, gtStabilizedVideo] = stabilizeVideo_ROI(video, gtvideo)
     %% Video Stabilization
     % This example shows how to remove the effect of camera motion from a video stream.
 
