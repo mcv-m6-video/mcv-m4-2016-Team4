@@ -1,4 +1,4 @@
-classdef oneGaussianBackgroundAdaptiveModel
+classdef oneGaussianBackgroundAdaptiveModel<handle
     properties(Access = private)
         alpha
         rho
@@ -132,12 +132,9 @@ classdef oneGaussianBackgroundAdaptiveModel
 
                 obj.mu = (1-applyRho).*obj.mu + applyRho.*im;
                 obj.sigma_square = (1-applyRho).*obj.sigma_square + applyRho.*((im - obj.mu).^2);
-                if saveIm
-                    imwrite(background , [ pathResults , imName , '.png' ] );
-                else
-                    segmentedMasks(:,:,count) = background;
-                    count = count + 1;
-                end
+                
+                segmentedMasks(:,:,count) = background;
+                count = count + 1;
             end % for
             
             segmentedMasks = squeeze(segmentedMasks);

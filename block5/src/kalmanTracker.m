@@ -51,7 +51,7 @@ classdef kalmanTracker
             R = 5; % La varianza en las estimaciones son de 5. Es tu margen de error, 5 pixeles.
 
             % El estado inicial del objeto a seguir
-            estadoInicial = [objeto.pos, objeto.vel];
+            estadoInicial = [objeto.Centroid, 0, 0];
 
             % Iniciamos kalman
             obj.kalman = vision.KalmanFilter(obj.estadoModelo, obj.medidasModelo, 'ProcessNoise', Q, 'MeasurementNoise', R, 'State', estadoInicial);
@@ -59,7 +59,7 @@ classdef kalmanTracker
         
         % anadir una nueva medida al modelo
         function update(obj, objeto)
-            correct(obj.kalman, objeto.pos);
+            correct(obj.kalman, objeto.Centroid);
         end
         
         % predecir la posicion
@@ -69,7 +69,7 @@ classdef kalmanTracker
         
         % distancia entre una medida i la estimacion
         function d = distance(obj, objeto)
-            d = distance(obj.kalman, objeto.pos);
+            d = distance(obj.kalman, objeto.Centroid);
         end
 end
     

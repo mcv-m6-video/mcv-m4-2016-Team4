@@ -8,9 +8,9 @@
 setup;
 
 %% Config
-enable_homography = true;
+enable_homography = 'false'; % 'before', 'false'
 
-%% Morpho to detect objects
+%% Morpho to detect objects !! FALTA DEFINIRLA
 morphoFunction = @detectionMorpho;
 
 %% Learn foreground estimator and apply homography
@@ -19,7 +19,7 @@ learnDetector;
 
 
 %% Read the rest of the sequence
-idSequenceDemo = {1:1700 - setdiff(idSequenceLearn{1}); 1:1570 - setdiff(idSequenceLearn{2})};
+idSequenceDemo = {setdiff(1:1700, idSequenceLearn{1}); setdiff(1:1570, idSequenceLearn{2})};
 
 % El pipeline debera ser:
 % - Segmentar la imagen (usando el detector de foreground)
@@ -35,3 +35,58 @@ idSequenceDemo = {1:1700 - setdiff(idSequenceLearn{1}); 1:1570 - setdiff(idSeque
 %       supondra que el coche ha desaparecido y ya no hace falta seguirlo
 %       O del mismo modo que si la estimación hace que se salga de los
 %       rangos de la imagen.
+limits = [0, sizeIm(2); 0, sizeIm(1)];
+maxDistanceMeasurement = 50;
+minDistanceMerge = 20;
+mergePenalize = 16;
+maxLive = 10;
+stepLive = 2;
+trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive);
+
+for iSeq = 1:length(inputFolders),
+    for id=idSequenceDemo{iSeq}
+            imName = sprintf('%06d', id);
+            fileName = [ inputFolders{iSeq} , imName , fileFormat ];
+            % Si esta activada aplicamos la tform a cada imagen
+            im = imread( fileName );
+            imOrig = im;
+            
+            % Aplicamos la homografia antes de la mascara
+            if strcmp(enable_homography, 'before')
+                im = imwarp(im, tform{iSeq});
+            end
+            
+            % obtenemos la mascara
+            mask = detector{iSeq}.detectForeground(im);
+            
+            % Aplicamos la homografia despues de la mascara
+            if strcmp(enable_homography, 'after')
+                mask = imwarp(mask, tform{iSeq});
+            end
+           
+            %subplot(1,2,1), imshow(imOrig,[]), subplot(1,2,2), imshow(imOut,[]), pause(0.001);
+            
+            % Aplicamos el pipeline
+            [objects, CC] = getCentroids(mask);
+            trackers.checkMeasurements(objects, CC);
+            
+            positions = trackers.getTrackers();
+            
+            
+            
+            imshow(mask), hold on;
+            %disp('----------');
+            for i=1:length(positions)
+                aux = positions{i};
+                
+                %aux
+                
+                plot(aux(1), aux(2), 'r*');
+            end
+            %disp('----------');
+            hold off;
+            pause(0.001);
+            
+    end
+    
+end
