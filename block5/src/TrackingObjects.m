@@ -9,6 +9,7 @@ classdef TrackingObjects<handle
         limits
         timeThres
         timeStopThres
+        velocityEstimator
     end
     
     methods
@@ -18,7 +19,7 @@ classdef TrackingObjects<handle
         % considera que esta dentro de ese objeto.
         %   a) Si es mas pequeño se actualiza el tracking de ese objeto.
         %   b) Sino se crea otro tracking distinto
-        function obj = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres)
+        function obj = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator)
             obj.trackers = {};
             obj.maxDistanceMeasurement = maxDistanceMeasurement;
             obj.minDistanceMerge = minDistanceMerge^2;
@@ -28,31 +29,39 @@ classdef TrackingObjects<handle
             obj.limits = limits;
             obj.timeThres = timeThres;
             obj.timeStopThres = timeStopThres;
+            obj.velocityEstimator = velocityEstimator;
+        end
+        
+        function [S, CC] = getCentroidsAndCC(obj, mask)
+            CC = bwconncomp(mask);
+            S = regionprops(CC,'Centroid', 'BoundingBox');
         end
         
         % Comprovar las medidas y si existe ya un tracking de ese objeto
-        function checkMeasurements(obj, objects, CC)
+        function checkMeasurements(obj, mask)
+            % Obtenemos los centroides i lac
+            [objects, CC] = obj.getCentroidsAndCC(mask);
             
             % Creamos una lista de los objetos usados
             objectsUsed = logical(zeros(size(objects, 1), 1, 'uint8'));
             if length(obj.trackers) > 0
-                % Eliminamos los objetos que ya pertenecen a un tracker
-                for i=1:length(obj.trackers)
-                    posx = round(obj.trackers{i}.lastpredict(1));
-                    posy = round(obj.trackers{i}.lastpredict(2));
-                    
-                    delObjectsIndex = [];
-                    for j=1:size(objects, 1)
-                        try
-                            if CC(posx, posy) == CC(round(objects.Centroids(1)), round(objects.Centroids(2)))
-                                delObjectsIndex(end+1) = j;
-                            end
-                        catch
-                            continue
-                        end
-                    end
-                    objects(delObjectsIndex) = [];
-                end
+%                 % Eliminamos los objetos que ya pertenecen a un tracker
+%                 for i=1:length(obj.trackers)
+%                     posx = round(obj.trackers{i}.lastpredict(1));
+%                     posy = round(obj.trackers{i}.lastpredict(2));
+%                     
+%                     delObjectsIndex = [];
+%                     for j=1:size(objects, 1)
+%                         try
+%                             if CC(posx, posy) == CC(round(objects.Centroids(1)), round(objects.Centroids(2)))
+%                                 delObjectsIndex(end+1) = j;
+%                             end
+%                         catch
+%                             continue
+%                         end
+%                     end
+%                     objects(delObjectsIndex) = [];
+%                 end
                 
                 % Consideramos medidas aquellos objetos que estan cerca
                 % Obtenemos todas las distancias
@@ -70,13 +79,13 @@ classdef TrackingObjects<handle
                 % Comprovamos cuales de los objectos puedne assignare como
                 % "medida" a un tracker (Lo podemos hacer tantas vecemos como
                 % trackers haya (O si hay menos objectos que trackers, pues el
-                % numero de objectos).
-                for i=1:min(length(obj.trackers), size(objects, 1)),
+                % numero de objectos).                
+                for i=1:min(length(obj.trackers), size(objects, 1))
                     [minDistance, ind] = min(matrix(:));
                     [idtracker, idobject] = ind2sub(size(matrix), ind);
 
                     % El objeto mas cercano comprovamos si esta lo
-                    % suficientemente cerca del tracker              
+                    % suficientemente cerca del tracker
                     if minDistance < obj.maxDistanceMeasurement
                        % Indicamos que ese objeto ya no puede ser usado y
                        % tampoco el tracker
@@ -86,8 +95,13 @@ classdef TrackingObjects<handle
 
                        % Actualizamos el tracker
                        obj.trackers{idtracker}.tracker.update(objects(idobject));
+                       % Creamos nuevamente la bb
+                       obj.trackers{idtracker}.bb = objects(idobject).BoundingBox(3:4);
+                       
                        % Le anadimos vida, para que siga funcionando
                        obj.trackers{idtracker}.live = obj.trackers{idtracker}.live + obj.stepLive;
+                       
+                       % Incrementamos i
                     end
                 end
             end
@@ -107,7 +121,7 @@ classdef TrackingObjects<handle
         
         % Crear un nuevo tracker 
         function tracker = createNewTracker(obj, object)
-            tracker = struct('live', obj.maxLive, 'tracker', kalmanTracker(object), 'lastpredict', [object.Centroid(1), object.Centroid(2)], 'antlastpredict', [Inf Inf], 'time', 0, 'timeStop', 0);
+            tracker = struct('live', obj.maxLive, 'tracker', kalmanTracker(object), 'lastpredict', [object.Centroid(1), object.Centroid(2)], 'antlastpredict', [Inf Inf], 'time', 0, 'timeStop', 0, 'bb', object.BoundingBox(3:4), 'accVel', 0);
         end
         
         % Deja passar solo aquellos que tienen vida o se salen de la imagen
@@ -161,7 +175,7 @@ classdef TrackingObjects<handle
         end
         
         % Obtenemos todos los trackers y predecimos
-        function positions = getTrackers(obj)
+        function positions = getTrackers(obj, homography)
             % Eliminamos aquellos que no tengan vida
             obj.filterTrackers();
             
@@ -182,17 +196,94 @@ classdef TrackingObjects<handle
                     code = 'active';
                 end
                 
+                % Estimacion de la velocidad
+                velocity = obj.predictVelocity(homography, obj.trackers{i});
+                obj.trackers{i}.accVel = obj.trackers{i}.accVel + velocity;
                 
                 
-                positions{i} = struct('location', prediccion, 'code', code);
+                positions{i} = struct('location', prediccion, 'code', code, 'bb', obj.trackers{i}.bb, 'vel', velocity, 'avgVel', obj.trackers{i}.accVel/obj.trackers{i}.time);
                 % Quitamos vida a todos los trackers
                 obj.trackers{i}.live = obj.trackers{i}.live - 1;
                 obj.trackers{i}.time = obj.trackers{i}.time + 1;
                 
             end
-            
-            
         end
+        
+        
+        % Predict velocity
+        % Para predecir la velocidad haremos uso de la homografia
+        function vel = predictVelocity(obj, homography, tracker)
+            velP = [tracker.lastpredict; tracker.antlastpredict];
+            velPReal = homography.pointsImage2H(velP);
+            
+            vel = (velPReal(1,:) - velPReal(2,:));
+            vel = sqrt(sum(vel.*vel))*obj.velocityEstimator;
+        end
+        
+        
+        % Mostramos los resultados
+        function showTrackers(obj, im, mask, positions)
+            % Imagen Original
+            subplot(1,2,1), imshow(im), hold on;
+            codes = {};
+            
+            k = 0;
+            for i=1:length(positions)
+                pos = positions{i};
+                loc = pos.location;
+                code = pos.code;
+
+                if strcmp(code, 'inactive')
+                    n = 'Inactive';
+                    c = 'r';
+                elseif strcmp(code, 'notVehicleYet')
+                    n = 'Not Vehicle Yet';
+                    c = 'b';
+                elseif strcmp(code, 'active')
+                    k = k + 1;
+                    n = 'Active';
+                    c = 'g';
+                end
+                plot(loc(1), loc(2), [c '*']);
+                codes{end+1} = n;
+                
+                if strcmp(code, 'active')
+                    codes{end} = [codes{end} '  num: ' num2str(k) ', vel: ' num2str(round(positions{i}.vel)) ', avgVel: ', num2str(round(positions{i}.avgVel))];
+                end
+                
+                if strcmp('Active', n)
+                    thisBB = positions{i}.bb;
+                    rectangle('Position', [loc(1) - thisBB(1)/2, loc(2) - thisBB(2)/2, thisBB(1), thisBB(2)], 'EdgeColor',c,'LineWidth',2);
+                end
+            end
+            legend(codes, 'Location', 'NorthOutside')
+            hold off;
+
+            % Mascara
+            subplot(1,2,2), imshow(mask), hold on;
+            for i=1:length(positions)
+                pos = positions{i};
+                loc = pos.location;
+                code = pos.code;
+
+                if strcmp(code, 'inactive')
+                    c = 'r*';
+                elseif strcmp(code, 'notVehicleYet')
+                    c = 'b*';
+                elseif strcmp(code, 'active')
+                    c = 'g*';
+                end
+                plot(loc(1), loc(2), c);
+            end
+            hold off;
+
+            pause(0.00001);
+        end
+        
+        
+        
+        
+        
     end
     
 end

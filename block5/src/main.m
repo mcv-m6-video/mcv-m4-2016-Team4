@@ -36,44 +36,31 @@ idSequenceDemo = {setdiff(1:1700, idSequenceLearn{1}); setdiff(1:1570, idSequenc
 %       O del mismo modo que si la estimación hace que se salga de los
 %       rangos de la imagen.
 limits = [0, sizeIm(2); 0, sizeIm(1)];
-maxDistanceMeasurement = 50;
+maxDistanceMeasurement = 20;
 minDistanceMerge = 20;
 mergePenalize = 16;
 maxLive = 10;
 stepLive = 1;
 timeThres = 16;
 timeStopThres = 15;
-trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres);
+velocityEstimator = 360;
+trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator);
 
 for iSeq = 1:length(inputFolders),
     for id=idSequenceDemo{iSeq}
             imName = sprintf('%06d', id);
-            fileName = [ inputFolders{iSeq} , imName , fileFormat ];
+            fileName = [inputFolders{iSeq}, imName, fileFormat];
             % Si esta activada aplicamos la tform a cada imagen
-            im = imread( fileName );
-            imOrig = im;
-            
-            % Aplicamos la homografia antes de la mascara
-            if strcmp(enable_homography, 'before')
-                im = imwarp(im, tform{iSeq});
-            end
-            
+            im = imread(fileName);
+
             % obtenemos la mascara
             mask = detector{iSeq}.detectForeground(im);
             
-            % Aplicamos la homografia despues de la mascara
-            if strcmp(enable_homography, 'after')
-                mask = imwarp(mask, tform{iSeq});
-            end
-           
-            %subplot(1,2,1), imshow(imOrig,[]), subplot(1,2,2), imshow(imOut,[]), pause(0.001);
-            
             % Aplicamos el pipeline
-            [objects, CC] = getCentroids(mask);
-            trackers.checkMeasurements(objects, CC);
+            trackers.checkMeasurements(mask);
             
-            positions = trackers.getTrackers();
-            showTrackers(im, mask, positions);
+            positions = trackers.getTrackers(homographySeq{iSeq});
+            trackers.showTrackers(im, mask, positions);
             
     end
     
