@@ -40,8 +40,10 @@ maxDistanceMeasurement = 50;
 minDistanceMerge = 20;
 mergePenalize = 16;
 maxLive = 10;
-stepLive = 2;
-trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive);
+stepLive = 1;
+timeThres = 16;
+timeStopThres = 15;
+trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres);
 
 for iSeq = 1:length(inputFolders),
     for id=idSequenceDemo{iSeq}
@@ -71,21 +73,7 @@ for iSeq = 1:length(inputFolders),
             trackers.checkMeasurements(objects, CC);
             
             positions = trackers.getTrackers();
-            
-            
-            
-            imshow(mask), hold on;
-            %disp('----------');
-            for i=1:length(positions)
-                aux = positions{i};
-                
-                %aux
-                
-                plot(aux(1), aux(2), 'r*');
-            end
-            %disp('----------');
-            hold off;
-            pause(0.001);
+            showTrackers(im, mask, positions);
             
     end
     
