@@ -56,6 +56,17 @@ classdef Homography<handle
             obj.refInvert = refInverte;
         end
         
+        % Distance in Homography to initial Image
+        function rpoints = distH2Image(obj, dists)
+            [x1,y1] = transformPointsForward(obj.tform.invert, dists(:, 1), dists(:,2));
+            rpoints = [x1, y1];
+        end
+        
+        % Distance in initial Image to Homography
+        function rpoints = distImage2H(obj,dists)
+            [x1,y1] = transformPointsForward(obj.tform, dists(:, 1), dists(:,2));
+            rpoints = [x1, y1];
+        end
         
         % Point in Homography to initial Image
         function rpoints = pointsH2Image(obj, points)

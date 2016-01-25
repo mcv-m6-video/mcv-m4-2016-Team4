@@ -37,6 +37,8 @@ classdef TrackingObjects<handle
             S = regionprops(CC,'Centroid', 'BoundingBox');
         end
         
+        
+        
         % Comprovar las medidas y si existe ya un tracking de ese objeto
         function checkMeasurements(obj, mask)
             % Obtenemos los centroides i lac
@@ -67,7 +69,7 @@ classdef TrackingObjects<handle
                 % Obtenemos todas las distancias
                 trackerspoints = zeros(length(obj.trackers), 2);
                 for i=1:length(obj.trackers)
-                    trackerspoints(i,:) = obj.trackers{i}.lastpredict;
+                    trackerspoints(i,:) = obj.trackers{i}.lastpredict.position;
                 end
 
                 objectspoints = zeros(size(objects, 1), 2);
@@ -96,12 +98,10 @@ classdef TrackingObjects<handle
                        % Actualizamos el tracker
                        obj.trackers{idtracker}.tracker.update(objects(idobject));
                        % Creamos nuevamente la bb
-                       obj.trackers{idtracker}.bb = objects(idobject).BoundingBox(3:4);
+                       %obj.trackers{idtracker}.bb = objects(idobject).BoundingBox(3:4);
                        
                        % Le anadimos vida, para que siga funcionando
                        obj.trackers{idtracker}.live = obj.trackers{idtracker}.live + obj.stepLive;
-                       
-                       % Incrementamos i
                     end
                 end
             end
@@ -110,7 +110,7 @@ classdef TrackingObjects<handle
             % tracker
             for i=1:size(objects, 1)
                 % Comprovamos que no ha sido usado
-                if length(obj.trackers) == 0 || objectsUsed(i) == false
+                if isempty(obj.trackers) || objectsUsed(i) == false
                     % Creamos un nuevo tracker para el
                     obj.trackers{end+1} = obj.createNewTracker(objects(i));
                     % Lo assignamos como usado (Es redundante)
@@ -119,9 +119,19 @@ classdef TrackingObjects<handle
             end
         end
         
+        % crear un struct de prediccion
+        function predict = createPredictStruct(obj, array)
+            predict = struct('position', [array(1) array(2)], 'velocity', [array(3) array(4)], 'BoundingBoxWH', [array(5) array(6)]);
+        end
+        
         % Crear un nuevo tracker 
         function tracker = createNewTracker(obj, object)
-            tracker = struct('live', obj.maxLive, 'tracker', kalmanTracker(object), 'lastpredict', [object.Centroid(1), object.Centroid(2)], 'antlastpredict', [Inf Inf], 'time', 0, 'timeStop', 0, 'bb', object.BoundingBox(3:4), 'accVel', 0);
+            % Create struct
+            lastpredict = obj.createPredictStruct([object.Centroid(1) object.Centroid(2), 0, 0, object.BoundingBox(3) object.BoundingBox(4)]);
+            antlastpredict = obj.createPredictStruct([Inf, Inf, 0, 0, object.BoundingBox(3) object.BoundingBox(4)]);
+            
+            % Creamos el tracker
+            tracker = struct('live', obj.maxLive, 'tracker', kalmanTracker(object), 'lastpredict', lastpredict, 'antlastpredict', antlastpredict, 'time', 0, 'timeStop', 0, 'accVel', 0, 'timeActive', 0); % 'bb', object.BoundingBox(3:4)
         end
         
         % Deja passar solo aquellos que tienen vida o se salen de la imagen
@@ -130,9 +140,10 @@ classdef TrackingObjects<handle
             
             
             % Si lleva mucho tiempo parado incrementamos su contador
-            aux = t.lastpredict - t.antlastpredict;
+            normVel = t.lastpredict.velocity;
+            normVel = sum(normVel.*normVel);
             
-            if sum(aux.*aux) < 0.5
+            if normVel < 0.5
                 t.timeStop = t.timeStop + 1;
             else
                 t.timeStop = 0;
@@ -140,11 +151,12 @@ classdef TrackingObjects<handle
             
             % Si dos trackers estan muy juntos
             for i=(id+1):length(obj.trackers)
-                aux = (t.lastpredict - obj.trackers{i}.lastpredict);
-                if sum(aux.*aux) < obj.minDistanceMerge
+                distance = (t.lastpredict.position - obj.trackers{i}.lastpredict.position);
+                distance = sum(distance.*distance);
+                if distance < obj.minDistanceMerge
                     % Se decrementa el que lleva menos rato, así
                     % podemos saber si se ha producido ruido
-                    if t.time < obj.trackers{i}.time
+                    if t.timeActive < obj.trackers{i}.timeActive
                         t.live = t.live - obj.mergePenalize;
                     else
                         obj.trackers{i}.live = obj.trackers{i}.live - obj.mergePenalize;
@@ -159,8 +171,8 @@ classdef TrackingObjects<handle
             
             % Si se sale de el rango de coordenadas (imagen) se elimina
             % el tracker se supone que el coche ya no esta en la imagen
-            lastpredict = tracker.lastpredict;
-            if lastpredict(1) < obj.limits(1,1) || lastpredict(1) > obj.limits(1,2) || lastpredict(2) < obj.limits(2,1) || lastpredict(2) > obj.limits(2,2)
+            if tracker.lastpredict.position(1) < obj.limits(1,1) || tracker.lastpredict.position(1) > obj.limits(1,2) || ...
+                    tracker.lastpredict.position(2) < obj.limits(2,1) || tracker.lastpredict.position(2) > obj.limits(2,2)
                 t = [];
             end
             
@@ -184,24 +196,34 @@ classdef TrackingObjects<handle
                 % Actualizamos la ultima prediccion
                 prediccion = obj.trackers{i}.tracker.predict();
                 obj.trackers{i}.antlastpredict = obj.trackers{i}.lastpredict;
-                obj.trackers{i}.lastpredict = prediccion;
+                obj.trackers{i}.lastpredict = obj.createPredictStruct(prediccion);
                 
+                % Estimacion de la velocidad
+                velocity = obj.predictVelocity(homography, obj.trackers{i});
+                    
                 % introducimos el codigo
                 % Si lleva muy poco rato, puede ser ruido
                 if obj.timeThres > obj.trackers{i}.time
                     code = 'notVehicleYet';
+                    obj.trackers{i}.timeActive = 0;
+                    obj.trackers{i}.accVel =  0;
+                    
                 elseif obj.timeStopThres < obj.trackers{i}.timeStop
                     code = 'inactive';
+                    obj.trackers{i}.timeActive = 0;
+                    obj.trackers{i}.accVel =  0;
+                    
                 else
                     code = 'active';
+                    obj.trackers{i}.timeActive = obj.trackers{i}.timeActive  + 1;
+                    
+                    obj.trackers{i}.accVel = obj.trackers{i}.accVel + velocity;
                 end
                 
-                % Estimacion de la velocidad
-                velocity = obj.predictVelocity(homography, obj.trackers{i});
-                obj.trackers{i}.accVel = obj.trackers{i}.accVel + velocity;
                 
                 
-                positions{i} = struct('location', prediccion, 'code', code, 'bb', obj.trackers{i}.bb, 'vel', velocity, 'avgVel', obj.trackers{i}.accVel/obj.trackers{i}.time);
+                
+                positions{i} = struct('location', obj.trackers{i}.lastpredict.position, 'code', code, 'BoundingBoxWH', obj.trackers{i}.lastpredict.BoundingBoxWH, 'vel', velocity, 'avgVel', obj.trackers{i}.accVel/obj.trackers{i}.timeActive);
                 % Quitamos vida a todos los trackers
                 obj.trackers{i}.live = obj.trackers{i}.live - 1;
                 obj.trackers{i}.time = obj.trackers{i}.time + 1;
@@ -212,11 +234,11 @@ classdef TrackingObjects<handle
         
         % Predict velocity
         % Para predecir la velocidad haremos uso de la homografia
+        % Es mejor usar la posicion porque la velocidad se va acumulando en
+        % el filtro de kalman y se acumula tambien cuando no esta 'Active'
         function vel = predictVelocity(obj, homography, tracker)
-            velP = [tracker.lastpredict; tracker.antlastpredict];
-            velPReal = homography.pointsImage2H(velP);
-            
-            vel = (velPReal(1,:) - velPReal(2,:));
+            velP = tracker.lastpredict.position - tracker.antlastpredict.position;
+            vel = homography.distImage2H(velP);
             vel = sqrt(sum(vel.*vel))*obj.velocityEstimator;
         end
         
@@ -252,10 +274,12 @@ classdef TrackingObjects<handle
                 end
                 
                 if strcmp('Active', n)
-                    thisBB = positions{i}.bb;
+                    thisBB = positions{i}.BoundingBoxWH;
+                    text(loc(1) + thisBB(1)/2 + 5, loc(2), num2str(k), 'Color', 'green', 'FontSize', 18)
                     rectangle('Position', [loc(1) - thisBB(1)/2, loc(2) - thisBB(2)/2, thisBB(1), thisBB(2)], 'EdgeColor',c,'LineWidth',2);
                 end
             end
+            
             legend(codes, 'Location', 'NorthOutside')
             hold off;
 

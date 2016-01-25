@@ -10,8 +10,11 @@ setup;
 %% Config
 enable_homography = 'false'; % 'before', 'false'
 
-%% Morpho to detect objects !! FALTA DEFINIRLA
-morphoFunction = @detectionMorpho;
+%% Morpho in learn Detector
+morphoForegroundFunction = @foregroundMorpho;
+
+%% Morpho to detect objects
+morphoObjDetectionFunction = @detectionMorpho;
 
 %% Learn foreground estimator and apply homography
 % Primero aprendemos el modelo para estimar que son coches y que no.
@@ -43,7 +46,7 @@ maxLive = 10;
 stepLive = 1;
 timeThres = 16;
 timeStopThres = 15;
-velocityEstimator = 360;
+velocityEstimator = 10;
 trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator);
 
 for iSeq = 1:length(inputFolders),
@@ -55,6 +58,9 @@ for iSeq = 1:length(inputFolders),
 
             % obtenemos la mascara
             mask = detector{iSeq}.detectForeground(im);
+            mask = morphoObjDetectionFunction(mask);
+            %imshow(mask);
+            %pause(0.0001);
             
             % Aplicamos el pipeline
             trackers.checkMeasurements(mask);

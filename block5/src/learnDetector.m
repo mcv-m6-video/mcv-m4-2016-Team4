@@ -10,7 +10,7 @@ if ~exist(['savedResults' filesep 'detectionStep.mat'], 'file')
     for iSeq = [1 3] % Highway y Traffic
         inputFolders{j} = seq.inputFolders{iSeq};
         
-        detector{j} = oneGaussianBackgroundAdaptiveModel(seq.alphas(iSeq), seq.rhos(iSeq), colorIm, colorTransform, morphoFunction);
+        detector{j} = oneGaussianBackgroundAdaptiveModel(seq.alphas(iSeq), seq.rhos(iSeq), colorIm, colorTransform, morphoForegroundFunction);
 
         % obtenemos las imagenes
         im = imread( [ seq.inputFolders{iSeq} , sprintf('%06d', idSequenceLearn{j}(1)) , fileFormat ] );
