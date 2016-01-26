@@ -45,8 +45,8 @@ classdef TrackingObjects<handle
             [objects, CC] = obj.getCentroidsAndCC(mask);
             
             % Creamos una lista de los objetos usados
-            objectsUsed = logical(zeros(size(objects, 1), 1, 'uint8'));
-            if length(obj.trackers) > 0
+            objectsUsed = false(size(objects, 1), 1);
+            if ~isempty(obj.trackers)
 %                 % Eliminamos los objetos que ya pertenecen a un tracker
 %                 for i=1:length(obj.trackers)
 %                     posx = round(obj.trackers{i}.lastpredict(1));
