@@ -46,11 +46,14 @@ maxLive = 10;
 stepLive = 1;
 timeThres = 16;
 timeStopThres = 15;
-velocityEstimator = 10;
-trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator);
+%velocityEstimator = 10;
+trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator(1));
 
 for iSeq = 1:length(inputFolders),
-    for id=idSequenceDemo{iSeq}
+    % Set velocityEstimation for each sequence
+    trackers.setVelocityEstimator(velocityEstimator(iSeq));
+    
+    for id=idSequenceDemo{iSeq}            
             imName = sprintf('%06d', id);
             fileName = [inputFolders{iSeq}, imName, fileFormat];
             % Si esta activada aplicamos la tform a cada imagen

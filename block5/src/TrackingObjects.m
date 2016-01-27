@@ -32,6 +32,10 @@ classdef TrackingObjects<handle
             obj.velocityEstimator = velocityEstimator;
         end
         
+        function setVelocityEstimator(obj, velEst)
+            obj.velocityEstimator = velEst;
+        end
+        
         function [S, CC] = getCentroidsAndCC(obj, mask)
             CC = bwconncomp(mask);
             S = regionprops(CC,'Centroid', 'BoundingBox');

@@ -6,6 +6,8 @@ if ~exist(['savedResults' filesep 'detectionStep.mat'], 'file')
     inputFolders = cell(2,1);
     homographySeq = cell(2,1);
     
+    velocityEstimator = [];
+    
     j = 1;
     for iSeq = [1 3] % Highway y Traffic
         inputFolders{j} = seq.inputFolders{iSeq};
@@ -18,6 +20,14 @@ if ~exist(['savedResults' filesep 'detectionStep.mat'], 'file')
 
         imagesLearning{j} = zeros(size(im,1), size(im,2), size(im,3), length(idSequenceLearn{j}), 'uint8');
 
+        % Calculamos el factor alpha
+        figure(1),imshow(im), title('Select a distance:');
+        [l1, l2] = ginput(2);
+        lineLen = pdist2(l1',l2');
+        realLen = input('Which is the real distance?\n');
+
+        velocityEstimator(end+1) = realLen/lineLen;
+        
         % Calculamos la homografia
         homographySeq{j} = Homography;
         homographySeq{j}.doTFORMVanishPoint(im);
@@ -39,7 +49,7 @@ if ~exist(['savedResults' filesep 'detectionStep.mat'], 'file')
         j = j + 1;
     end
     
-    save(['savedResults' filesep 'detectionStep.mat'], 'learnImages', 'detector', 'idSequenceLearn', 'homographySeq', 'inputFolders', 'fileFormat', 'enable_homography', 'sizeIm');
+    save(['savedResults' filesep 'detectionStep.mat'], 'learnImages', 'detector', 'idSequenceLearn', 'homographySeq', 'inputFolders', 'fileFormat', 'enable_homography', 'sizeIm', 'velocityEstimator');
 else
     load(['savedResults' filesep 'detectionStep.mat'])
    disp('Detection step results found (savedResults/detectionStep.mat). Skipping detectionStep...'); 
