@@ -10,6 +10,7 @@ classdef TrackingObjects<handle
         timeThres
         timeStopThres
         velocityEstimator
+        fps
     end
     
     methods
@@ -19,7 +20,7 @@ classdef TrackingObjects<handle
         % considera que esta dentro de ese objeto.
         %   a) Si es mas pequeño se actualiza el tracking de ese objeto.
         %   b) Sino se crea otro tracking distinto
-        function obj = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator)
+        function obj = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator, fps)
             obj.trackers = {};
             obj.maxDistanceMeasurement = maxDistanceMeasurement;
             obj.minDistanceMerge = minDistanceMerge^2;
@@ -30,6 +31,7 @@ classdef TrackingObjects<handle
             obj.timeThres = timeThres;
             obj.timeStopThres = timeStopThres;
             obj.velocityEstimator = velocityEstimator;
+            obj.fps = fps;
         end
         
         function setVelocityEstimator(obj, velEst)
@@ -243,7 +245,7 @@ classdef TrackingObjects<handle
         function vel = predictVelocity(obj, homography, tracker)
             velP = tracker.lastpredict.position - tracker.antlastpredict.position;
             vel = homography.distImage2H(velP);
-            vel = sqrt(sum(vel.*vel))*obj.velocityEstimator;
+            vel = sqrt(sum(vel.*vel))*obj.velocityEstimator*obj.fps*3.6;
         end
         
         

@@ -46,8 +46,8 @@ maxLive = 10;
 stepLive = 1;
 timeThres = 16;
 timeStopThres = 15;
-%velocityEstimator = 10;
-trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator(1));
+fps = 30;
+trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator(1), fps);
 
 for iSeq = 1:length(inputFolders),
     % Set velocityEstimation for each sequence
