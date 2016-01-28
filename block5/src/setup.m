@@ -49,8 +49,8 @@ seq.gtFolders = {[seq.basePaths{1} folderGroundtruth];...
 % Specific frame indexs that are going to be analyzed.
 seq.framesInd = {1050:1350; 1460:1560; 950:1050; 1:168; 1:262; 1:193;1:232};
 % Best Rhos and Alphas for every sequence (1G Recursive)
-seq.rhos = [0.2, 0.1, 0.2, 0.2, 0.2, 0.2];
-seq.alphas = [3, 3, 4, 3, 3, 3];
+seq.rhos = [0.2, 0.1, 0.2, 0.2, 0.2, 0.2, 0.2];
+seq.alphas = [3, 3, 4, 3, 3, 3, 3];
 
 %% Optical flow sequences
 flow.basePaths = [ pathDatasets 'data_stereo_flow' filesep 'training' filesep 'image_0' ];
