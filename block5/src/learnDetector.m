@@ -20,18 +20,20 @@ if ~exist(['savedResults' filesep 'detectionStep.mat'], 'file')
         sizeIm = [size(im, 1), size(im, 2)];
 
         imagesLearning{j} = zeros(size(im,1), size(im,2), size(im,3), length(seq.framesInd{iSeq}), 'uint8');
-
-        % Calculamos el factor alpha
-        figure(1),imshow(im), title('Select a distance:');
-        [l1, l2] = ginput(2);
-        lineLen = pdist2(l1',l2');
-        realLen = input('Which is the real distance?\n');
-
-        velocityEstimator(end+1) = realLen/lineLen;
         
         % Calculamos la homografia
         homographySeq{j} = Homography;
         homographySeq{j}.doTFORMVanishPoint(im);
+        
+        % Calculamos el factor alpha
+        figure(1),imshow(im), title('Select a distance:');
+        [l1, l2] = ginput(2);
+        lineLen = homographySeq{j}.distImage2H((l1-l2)');
+        lineLen = sqrt(sum(lineLen.*lineLen));
+        
+        realLen = input('Which is the real distance?\n');
+
+        velocityEstimator(end+1) = realLen/lineLen;
         
         k=1;
         for id=seq.framesInd{iSeq}
