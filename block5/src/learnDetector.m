@@ -1,24 +1,25 @@
 if ~exist(['savedResults' filesep 'detectionStep.mat'], 'file')
-    learnImages = cell(2,1);
-    detector = cell(2,1);
+    sequencesToAnalyze = [1 3 4 5 6 7]; % Highway y Traffic and own video
+    learnImages = cell(length(sequencesToAnalyze),1);
+    detector = cell(length(sequencesToAnalyze),1);
     idSequenceLearn = {1050:1350; 950:1050};
-    imagesLearning = cell(2,1);
-    inputFolders = cell(2,1);
-    homographySeq = cell(2,1);
+    imagesLearning = cell(length(sequencesToAnalyze),1);
+    inputFolders = cell(length(sequencesToAnalyze),1);
+    homographySeq = cell(length(sequencesToAnalyze),1);
     
     velocityEstimator = [];
     
     j = 1;
-    for iSeq = [1 3] % Highway y Traffic
+    for iSeq = sequencesToAnalyze
         inputFolders{j} = seq.inputFolders{iSeq};
         
         detector{j} = oneGaussianBackgroundAdaptiveModel(seq.alphas(iSeq), seq.rhos(iSeq), colorIm, colorTransform, morphoForegroundFunction);
 
         % obtenemos las imagenes
-        im = imread( [ seq.inputFolders{iSeq} , sprintf('%06d', idSequenceLearn{j}(1)) , fileFormat ] );
+        im = imread( [ seq.inputFolders{iSeq} , sprintf('%06d', seq.framesInd{iSeq}(j)) , fileFormat ] );
         sizeIm = [size(im, 1), size(im, 2)];
 
-        imagesLearning{j} = zeros(size(im,1), size(im,2), size(im,3), length(idSequenceLearn{j}), 'uint8');
+        imagesLearning{j} = zeros(size(im,1), size(im,2), size(im,3), length(seq.framesInd{iSeq}), 'uint8');
 
         % Calculamos el factor alpha
         figure(1),imshow(im), title('Select a distance:');
@@ -33,7 +34,7 @@ if ~exist(['savedResults' filesep 'detectionStep.mat'], 'file')
         homographySeq{j}.doTFORMVanishPoint(im);
         
         k=1;
-        for id=idSequenceLearn{j}
+        for id=seq.framesInd{iSeq}
             imName = sprintf('%06d', id);
             fileName = [ seq.inputFolders{iSeq} , imName , fileFormat ];
             
