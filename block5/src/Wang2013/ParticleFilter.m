@@ -1,11 +1,14 @@
 classdef ParticleFilter
     % atributos
     properties(Access = private)
+        a
         p
         opt
         opts
         tmpl
         param
+        paramOld
+        param0
         pos
         nn
         reportRes
@@ -20,13 +23,13 @@ classdef ParticleFilter
             self.p = [p(1)+p(3)/2, p(2)+p(4)/2, p(3), p(4), 0];
             
             % Other not so important self.parameters that need to be initialized
-            self.opt = self.initializeOpt(self);
+            self.opt = self.initializeOpt();
             
             % Initialize stuff to start estimating frames
-            self.initializeDLT(self, firstFrame);
+            self = self.initializeDLT(firstFrame);
         end
         
-        function opt = initializeOpt()
+        function opt = initializeOpt(self)
             opt = struct('numsample',1000, 'affsig',[4, 4,.05,.00,.001,.00]);
             opt.useGpu = true;
             opt.maxbasis = 10;
@@ -37,11 +40,11 @@ classdef ParticleFilter
             opt.normalHeight = 240;   
         end
         
-        function initializeDLT(self, frame)
+        function self = initializeDLT(self, frame)
             addpath('affineUtility');
             addpath('drawUtility');
             addpath('imageUtility');
-            addpath('self.nn');
+            addpath('nn');
             rand('state',0);  randn('state',0);
             
             if size(frame,3)==3
@@ -58,23 +61,21 @@ classdef ParticleFilter
             frame = double(frame) / 255;
 
             self.paramOld = [self.p(1), self.p(2), self.p(3)/self.opt.tmplsize(2), self.p(5), self.p(4) /self.p(3) / (self.opt.tmplsize(1) / self.opt.tmplsize(2)), 0];
-            self.param0 = affself.param2mat(self.paramOld);
+            self.param0 = affparam2mat(self.paramOld);
 
-
-            if ~exist('self.opt','var')  self.opt = [];  end
             if ~isfield(self.opt,'minopt')
               self.opt.minopt = optimset; self.opt.minopt.MaxIter = 25; self.opt.minopt.Display='off';
             end
             self.reportRes = [];
-            self.tmpl.mean = warpimg(frame, self.param0, self.opt.self.tmplsize);
+            self.tmpl.mean = warpimg(frame, self.param0, self.opt.tmplsize);
             self.tmpl.basis = [];
             % Sample 10 self.positive templates for initialization
             for i = 1 : self.opt.maxbasis / 10
-                self.tmpl.basis(:, (i - 1) * 10 + 1 : i * 10) = sampleself.pos_DLT(frame, self.param0, self.opt.self.tmplsize);
+                self.tmpl.basis(:, (i - 1) * 10 + 1 : i * 10) = samplePos_DLT(frame, self.param0, self.opt.tmplsize);
             end
             % Sample 100 negative templates for initialization
             p0 = self.paramOld(5);
-            self.tmpl.basis(:, self.opt.maxbasis + 1 : 100 + self.opt.maxbasis) = sampleNeg(frame, self.param0, self.opt.self.tmplsize, 100, self.opt, 8);
+            self.tmpl.basis(:, self.opt.maxbasis + 1 : 100 + self.opt.maxbasis) = sampleNeg(frame, self.param0, self.opt.tmplsize, 100, self.opt, 8);
 
             self.param.est = self.param0;
             self.param.lastUpdate = 1;
