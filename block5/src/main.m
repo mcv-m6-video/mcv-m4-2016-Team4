@@ -48,7 +48,6 @@ stepLive = 1;
 timeThres = 16;
 timeStopThres = 15;
 fps = 30;
-trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator(1), fps);
 
 historialSeq = cell(2,1);
 
@@ -58,8 +57,9 @@ numShowResults = 10;
 figure;
 for iSeq = 1:length(inputFolders),
     % Set velocityEstimation for each sequence
+    trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator(1), fps);
     trackers = trackers.setVelocityEstimator(velocityEstimator(iSeq));
-    
+   
     for id=idSequenceDemo{iSeq}            
         imName = sprintf('%06d', id);
         fileName = [inputFolders{iSeq}, imName, fileFormat];
@@ -86,6 +86,7 @@ for iSeq = 1:length(inputFolders),
             % Mostrar los resultados onlive
             if showResults
                 trackers.showTrackers(im, mask, positions);
+                pause;
             end
         end
             

@@ -49,7 +49,6 @@ stepLive = 1;
 timeThres = 16;
 timeStopThres = 15;
 fps = 30;
-trackers = TrackingObjectsSDA(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator(1), fps);
 
 historialSeq = cell(2,1);
 
@@ -58,7 +57,9 @@ numShowResults = 10;
 
 for iSeq = 1:length(inputFolders),
     % Set velocityEstimation for each sequence
+    trackers = TrackingObjectsSDA(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator(1), fps);
     trackers.setVelocityEstimator(velocityEstimator(iSeq));
+    
     
     for id=idSequenceDemo{iSeq}           
         imName = sprintf('%06d', id);
