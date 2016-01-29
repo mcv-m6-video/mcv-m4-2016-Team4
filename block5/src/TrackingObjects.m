@@ -256,7 +256,7 @@ classdef TrackingObjects<handle
             % Imagen Original
             subplot(1,2,1), imshow(im), hold on;
             codes = {};
-            
+            activeBBhandles = [];
             k = 0;
             for i=1:length(positions)
                 pos = positions{i};
@@ -273,11 +273,13 @@ classdef TrackingObjects<handle
                     k = k + 1;
                     n = 'Active';
                     c = 'g';
+                    codes{end+1} = n;
                 end
-                plot(loc(1), loc(2), [c '*']);
-                codes{end+1} = n;
+                h = plot(loc(1), loc(2), [c '*']);
+                
                 
                 if strcmp(code, 'active')
+                    activeBBhandles(end+1) = h;
                     codes{end} = [codes{end} '  num: ' num2str(k) ', vel: ' num2str(round(positions{i}.vel)) ', avgVel: ', num2str(round(positions{i}.avgVel))];
                 end
                 
@@ -288,7 +290,9 @@ classdef TrackingObjects<handle
                 end
             end
             
-            legend(codes, 'Location', 'NorthOutside')
+            if ~isempty(codes)
+                legend(activeBBhandles, codes, 'Location', 'NorthOutside')
+            end
             hold off;
 
             % Mascara

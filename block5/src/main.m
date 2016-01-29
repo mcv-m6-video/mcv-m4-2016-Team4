@@ -22,7 +22,7 @@ learnDetector;
 
 
 %% Read the rest of the sequence
-idSequenceDemo = {setdiff(1:1700, idSequenceLearn{1}); setdiff(1:1570, idSequenceLearn{2})};
+idSequenceDemo = {setdiff(1:1700, idSequenceLearn{1}); setdiff(1:1570, idSequenceLearn{2}); 1:168; 1:262; 1:193; 1:232};
 
 % El pipeline debera ser:
 % - Segmentar la imagen (usando el detector de foreground)
