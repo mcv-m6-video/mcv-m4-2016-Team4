@@ -37,7 +37,7 @@
 %    affsig(6) = skew angle
 clear all; close all;
 
-title = 'v1_40kmh';
+title = 'highway';
 datasetPath = ['..' filesep '..' filesep '..' filesep 'datasets' filesep];
 switch (title)
 case 'highway'; p = [216 13 27 23 0];
@@ -61,7 +61,7 @@ opt.maxbasis = 10;
 opt.updateThres = 0.8;
 % Indicate whether to use GPU in computation.
 global useGpu;
-useGpu = true;
+useGpu = false;
 opt.condenssig = 0.01;
 opt.tmplsize = [32, 32];
 opt.normalWidth = 320;
