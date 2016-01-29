@@ -11,6 +11,9 @@ classdef TrackingObjects<handle
         timeStopThres
         velocityEstimator
         fps
+        
+        historyNum
+        historialTrackersList
     end
     
     methods
@@ -32,6 +35,9 @@ classdef TrackingObjects<handle
             obj.timeStopThres = timeStopThres;
             obj.velocityEstimator = velocityEstimator;
             obj.fps = fps;
+            obj.historyNum = 0;
+            obj.historialTrackersList = {};
+
         end
         
         function [obj] = setVelocityEstimator(obj, velEst)
@@ -137,7 +143,8 @@ classdef TrackingObjects<handle
             antlastpredict = obj.createPredictStruct([Inf, Inf, 0, 0, object.BoundingBox(3) object.BoundingBox(4)]);
             
             % Creamos el tracker
-            tracker = struct('live', obj.maxLive, 'tracker', kalmanTracker(object), 'lastpredict', lastpredict, 'antlastpredict', antlastpredict, 'time', 0, 'timeStop', 0, 'accVel', 0, 'timeActive', 0); % 'bb', object.BoundingBox(3:4)
+            obj.historyNum = obj.historyNum + 1;
+            tracker = struct('live', obj.maxLive, 'tracker', kalmanTracker(object), 'lastpredict', lastpredict, 'antlastpredict', antlastpredict, 'time', 0, 'timeStop', 0, 'accVel', 0, 'timeActive', 0, 'id', obj.historyNum); % 'bb', object.BoundingBox(3:4)
         end
         
         % Deja passar solo aquellos que tienen vida o se salen de la imagen
@@ -228,8 +235,7 @@ classdef TrackingObjects<handle
                 
                 
                 
-                
-                positions{i} = struct('location', obj.trackers{i}.lastpredict.position, 'code', code, 'BoundingBoxWH', obj.trackers{i}.lastpredict.BoundingBoxWH, 'vel', velocity, 'avgVel', obj.trackers{i}.accVel/obj.trackers{i}.timeActive);
+                positions{i} = struct('location', obj.trackers{i}.lastpredict.position, 'code', code, 'BoundingBoxWH', obj.trackers{i}.lastpredict.BoundingBoxWH, 'vel', velocity, 'avgVel', obj.trackers{i}.accVel/obj.trackers{i}.timeActive, 'id', obj.trackers{i}.id);
                 % Quitamos vida a todos los trackers
                 obj.trackers{i}.live = obj.trackers{i}.live - 1;
                 obj.trackers{i}.time = obj.trackers{i}.time + 1;
@@ -250,6 +256,29 @@ classdef TrackingObjects<handle
             vel = vel*obj.velocityEstimator*obj.fps*3.6;
         end
         
+        % Guardamos el historial
+        function historialTrackers(obj, positions)
+            for i=1:length(positions)
+                if strcmp(positions{i}.code, 'active')
+                    obj.historialTrackersList{positions{i}.id} = struct('id', positions{i}.location, 'location', positions{i}.location, 'avgVel', positions{i}.avgVel);
+                end
+            end
+        end
+        
+        % Funcion para poder ver el historial
+        function [realHisto, total] = getHistorial(obj)
+            realHisto = {};
+            k=1;
+            for i=1:length(obj.historialTrackersList)
+                if ~isempty(obj.historialTrackersList{i})
+                    realHisto{k} = obj.historialTrackersList{i};
+                    realHisto{k}.id = k;
+                    k=k+1;
+                end
+            end
+            total = k-1;
+        end
+
         
         % Mostramos los resultados
         function showTrackers(obj, im, mask, positions)

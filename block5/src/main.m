@@ -22,7 +22,8 @@ learnDetector;
 
 
 %% Read the rest of the sequence
-idSequenceDemo = {setdiff(1:1700, idSequenceLearn{1}); setdiff(1:1570, idSequenceLearn{2}); 1:168; 1:262; 1:193; 1:232};
+idSequenceDemo = {setdiff(1:1700, idSequenceLearn{1}); setdiff(1:1570, idSequenceLearn{2}); ...
+    1:168; 1:262; 1:193; 1:232};
 
 % El pipeline debera ser:
 % - Segmentar la imagen (usando el detector de foreground)
@@ -47,30 +48,52 @@ stepLive = 1;
 timeThres = 16;
 timeStopThres = 15;
 fps = 30;
-trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator(1), fps);
 
+historialSeq = cell(2,1);
+
+showResults = true;
+numShowResults = 10;
+
+figure;
 for iSeq = 1:length(inputFolders),
     % Set velocityEstimation for each sequence
+    trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator(1), fps);
     trackers = trackers.setVelocityEstimator(velocityEstimator(iSeq));
-    
+   
     for id=idSequenceDemo{iSeq}            
-            imName = sprintf('%06d', id);
-            fileName = [inputFolders{iSeq}, imName, fileFormat];
-            % Si esta activada aplicamos la tform a cada imagen
-            im = imread(fileName);
+        imName = sprintf('%06d', id);
+        fileName = [inputFolders{iSeq}, imName, fileFormat];
+        fileName = strrep(fileName, '\', filesep);
+        % Si esta activada aplicamos la tform a cada imagen
+        im = imread(fileName);
 
-            % obtenemos la mascara
-            mask = detector{iSeq}.detectForeground(im);
-            mask = morphoObjDetectionFunction(mask);
-            %imshow(mask);
-            %pause(0.0001);
-            
-            % Aplicamos el pipeline
-            trackers.checkMeasurements(mask);
-            
-            positions = trackers.getTrackers(homographySeq{iSeq});
-            trackers.showTrackers(im, mask, positions);
+        % obtenemos la mascara
+        mask = detector{iSeq}.detectForeground(im);
+        mask = morphoObjDetectionFunction(mask);
+        %imshow(mask);
+        %pause(0.0001);
+
+        % Aplicamos el pipeline
+        trackers.checkMeasurements(mask);
+
+        positions = trackers.getTrackers(homographySeq{iSeq});
+
+        % Actualizamos el historial
+        trackers.historialTrackers(positions)
+        
+        if mod(id, numShowResults)==0
+            id
+            % Mostrar los resultados onlive
+            if showResults
+                trackers.showTrackers(im, mask, positions);
+                pause;
+            end
+        end
             
     end
+    
+    % Guardamos el historial de cada sequencia
+    historialSeq{iSeq} = trackers.getHistorial();
+    % displayHistorial(historialSeq{iSeq});
     
 end

@@ -49,30 +49,51 @@ stepLive = 1;
 timeThres = 16;
 timeStopThres = 15;
 fps = 30;
-trackers = TrackingObjectsSDA(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator(1), fps);
+
+historialSeq = cell(2,1);
+
+showResults = true;
+numShowResults = 10;
 
 for iSeq = 1:length(inputFolders),
     % Set velocityEstimation for each sequence
+    trackers = TrackingObjectsSDA(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator(1), fps);
     trackers.setVelocityEstimator(velocityEstimator(iSeq));
     
+    
     for id=idSequenceDemo{iSeq}           
-            imName = sprintf('%06d', id);
-            fileName = [inputFolders{iSeq}, imName, fileFormat];
-            % Si esta activada aplicamos la tform a cada imagen
-            im = imread(fileName);
+        imName = sprintf('%06d', id);
+        fileName = [inputFolders{iSeq}, imName, fileFormat];
+        fileName = strrep(fileName, '\', filesep);
+        % Si esta activada aplicamos la tform a cada imagen
+        im = imread(fileName);
 
-            % obtenemos la mascara
-            mask = detector{iSeq}.detectForeground(im);
-            mask = morphoObjDetectionFunction(mask);
-            %imshow(mask);
-            %pause(0.0001);
-            
-            % Aplicamos el pipeline
-            trackers.checkMeasurements(mask, im);
-            
-            positions = trackers.getTrackers(im, homographySeq{iSeq});
-            trackers.showTrackers(im, mask, positions);
+        % obtenemos la mascara
+        mask = detector{iSeq}.detectForeground(im);
+        mask = morphoObjDetectionFunction(mask);
+        %imshow(mask);
+        %pause(0.0001);
+
+        % Aplicamos el pipeline
+        trackers.checkMeasurements(mask, im);
+
+        positions = trackers.getTrackers(im, homographySeq{iSeq});
+
+        % Actualizamos el historial
+        trackers.historialTrackers(positions)
+        
+        if mod(id, numShowResults)==0
+            id
+            % Mostrar los resultados onlive
+            if showResults
+                trackers.showTrackers(im, mask, positions);
+            end
+        end
             
     end
+       
+    % Guardamos el historial de cada sequencia
+    historialSeq{iSeq} = trackers.getHistorial();
+    % displayHistorial(historialSeq{iSeq});
     
 end
