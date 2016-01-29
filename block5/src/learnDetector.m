@@ -23,15 +23,21 @@ if ~exist(['savedResults' filesep 'detectionStep.mat'], 'file')
         
         % Calculamos la homografia
         homographySeq{j} = Homography;
-        homographySeq{j}.doTFORMVanishPoint(im);
+        homographySeq{j} = homographySeq{j}.doTFORMVanishPoint(im);
         
         % Calculamos el factor alpha
         figure(1),imshow(im), title('Select a distance:');
-        [l1, l2] = ginput(2);
-        lineLen = homographySeq{j}.distImage2H((l1-l2)');
-        lineLen = sqrt(sum(lineLen.*lineLen));
+        [p1, p2] = ginput(2);
+        l1 = [ p1(1) , p2(1)];
+        l2 = [ p1(2) , p2(2)];
+%        lineLen_points1 = homographySeq{j}.pointsImage2H(l1');
+        %lineLen_points2 = homographySeq{j}.pointsImage2H(l2');
+%         lineLen = homographySeq{j}.distImage2H((l1-l2)');
+        %lineLen = lineLen_points1 - lineLen_points2;
+%         lineLen = sqrt(sum(lineLen.*lineLen));
         
-        realLen = input('Which is the real distance?\n');
+        lineLen = homographySeq{j}.dist2Points(l1,l2);
+        realLen = input('Which is the real distance (meters)?\n');
 
         velocityEstimator(end+1) = realLen/lineLen;
         

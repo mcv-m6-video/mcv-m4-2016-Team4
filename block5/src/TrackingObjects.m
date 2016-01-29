@@ -34,7 +34,7 @@ classdef TrackingObjects<handle
             obj.fps = fps;
         end
         
-        function setVelocityEstimator(obj, velEst)
+        function [obj] = setVelocityEstimator(obj, velEst)
             obj.velocityEstimator = velEst;
         end
         
@@ -243,9 +243,11 @@ classdef TrackingObjects<handle
         % Es mejor usar la posicion porque la velocidad se va acumulando en
         % el filtro de kalman y se acumula tambien cuando no esta 'Active'
         function vel = predictVelocity(obj, homography, tracker)
-            velP = tracker.lastpredict.position - tracker.antlastpredict.position;
-            vel = homography.distImage2H(velP);
-            vel = sqrt(sum(vel.*vel))*obj.velocityEstimator*obj.fps*3.6;
+            %velP = tracker.lastpredict.position - tracker.antlastpredict.position;
+            %vel = homography.distImage2H(velP);
+            vel = homography.dist2Points(tracker.lastpredict.position , tracker.antlastpredict.position);
+            %vel = sqrt(sum(vel.*vel))*obj.velocityEstimator*obj.fps*3.6;
+            vel = vel*obj.velocityEstimator*obj.fps*3.6;
         end
         
         

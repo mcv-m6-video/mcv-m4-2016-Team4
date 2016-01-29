@@ -35,7 +35,7 @@ classdef Homography<handle
         end
         
         % Obtener las lineas de una imagen i la homografia
-        function doTFORMVanishPoint(obj, im)
+        function [obj] = doTFORMVanishPoint(obj, im)
             [line1, line2] = obj.getLinesFigure(im);
             H = obj.vanish2H(obj.vanishPoint(line1, line2));
             obj.tform = projective2d(H);
@@ -66,6 +66,17 @@ classdef Homography<handle
         function rpoints = distImage2H(obj,dists)
             [x1,y1] = transformPointsForward(obj.tform, dists(:, 1), dists(:,2));
             rpoints = [x1, y1];
+        end
+        
+        % Distance in initial Image to Homography
+        function distp1p2 = dist2Points(obj,p1, p2)
+            H = transpose(obj.tform.T);
+
+            p1h = H*[p1 1]';
+            p1h = p1h/p1h(3);
+            p2h = H*[p2 1]';
+            p2h = p2h/p2h(3);
+            distp1p2 = norm(p1h-p2h);
         end
         
         % Point in Homography to initial Image

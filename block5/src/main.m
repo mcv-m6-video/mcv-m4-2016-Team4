@@ -51,7 +51,7 @@ trackers = TrackingObjects(limits, maxDistanceMeasurement, minDistanceMerge, mer
 
 for iSeq = 1:length(inputFolders),
     % Set velocityEstimation for each sequence
-    trackers.setVelocityEstimator(velocityEstimator(iSeq));
+    trackers = trackers.setVelocityEstimator(velocityEstimator(iSeq));
     
     for id=idSequenceDemo{iSeq}            
             imName = sprintf('%06d', id);
