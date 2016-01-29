@@ -1,4 +1,4 @@
-classdef SDAFilter % Stack Denoising Autoencoder filter (it also uses a Neural Network for classification)
+classdef SDAFilter<handle % Stack Denoising Autoencoder filter (it also uses a Neural Network for classification)
     % atributos
     properties(Access = private)
         a
@@ -20,26 +20,26 @@ classdef SDAFilter % Stack Denoising Autoencoder filter (it also uses a Neural N
     
     methods
         % Constructor
-        % firstFrame: first frame of the sequence for initializing purself.poses
+        % firstFrame: first frame of the sequence for initializing purobj.poses
         % p: bounding box indicating the selected object to track [xmin, ymin,
         % width, height]
-        function self = SDAFilter(firstFrame, p)   
+        function obj = SDAFilter(firstFrame, p)   
             % Convert from [xmin, ymin, width, height] to
             % [xcenter, ycenter, width, height]
-            self.p = [p(1)+p(3)/2, p(2)+p(4)/2, p(3), p(4), 0];
-            self.framesProcessed = 0;
+            obj.p = [p(1)+p(3)/2, p(2)+p(4)/2, p(3), p(4), 0];
+            obj.framesProcessed = 0;
             
             % Add to path needed functions
             addpath(genpath('bin'))
             
-            % Other not so important self.parameters that need to be initialized
-            self.opt = self.initializeOpt();
+            % Other not so important obj.parameters that need to be initialized
+            obj.opt = obj.initializeOpt();
             
             % Initialize stuff before starting to estimate new frames
-            self = self.initializeDLT(firstFrame);
+            obj = obj.initializeDLT(firstFrame);
         end
         
-        function opt = initializeOpt(self)
+        function opt = initializeOpt(obj)
             opt = struct('numsample',1000, 'affsig',[4, 4,.05,.00,.001,.00]);
             opt.useGpu = true;
             opt.maxbasis = 10;
@@ -50,103 +50,103 @@ classdef SDAFilter % Stack Denoising Autoencoder filter (it also uses a Neural N
             opt.normalHeight = 240;   
         end
         
-        function self = initializeDLT(self, frame)
+        function obj = initializeDLT(obj, frame)
             rand('state',0);  randn('state',0);
             
             if size(frame,3)==3
                 frame = double(rgb2gray(frame));
             end
 
-            self.scaleHeight = size(frame, 1) / self.opt.normalHeight;
-            self.scaleWidth = size(frame, 2) / self.opt.normalWidth;
-            self.p(1) = self.p(1) / self.scaleWidth;
-            self.p(3) = self.p(3) / self.scaleWidth;
-            self.p(2) = self.p(2) / self.scaleHeight;
-            self.p(4) = self.p(4) / self.scaleHeight;
-            frame = imresize(frame, [self.opt.normalHeight, self.opt.normalWidth]);
+            obj.scaleHeight = size(frame, 1) / obj.opt.normalHeight;
+            obj.scaleWidth = size(frame, 2) / obj.opt.normalWidth;
+            obj.p(1) = obj.p(1) / obj.scaleWidth;
+            obj.p(3) = obj.p(3) / obj.scaleWidth;
+            obj.p(2) = obj.p(2) / obj.scaleHeight;
+            obj.p(4) = obj.p(4) / obj.scaleHeight;
+            frame = imresize(frame, [obj.opt.normalHeight, obj.opt.normalWidth]);
             frame = double(frame) / 255;
 
-            self.paramOld = [self.p(1), self.p(2), self.p(3)/self.opt.tmplsize(2), self.p(5), self.p(4) /self.p(3) / (self.opt.tmplsize(1) / self.opt.tmplsize(2)), 0];
-            self.param0 = affparam2mat(self.paramOld);
+            obj.paramOld = [obj.p(1), obj.p(2), obj.p(3)/obj.opt.tmplsize(2), obj.p(5), obj.p(4) /obj.p(3) / (obj.opt.tmplsize(1) / obj.opt.tmplsize(2)), 0];
+            obj.param0 = affparam2mat(obj.paramOld);
 
-            if ~isfield(self.opt,'minopt')
-              self.opt.minopt = optimset; self.opt.minopt.MaxIter = 25; self.opt.minopt.Display='off';
+            if ~isfield(obj.opt,'minopt')
+              obj.opt.minopt = optimset; obj.opt.minopt.MaxIter = 25; obj.opt.minopt.Display='off';
             end
-            self.reportRes = [];
-            self.tmpl.mean = warpimg(frame, self.param0, self.opt.tmplsize);
-            self.tmpl.basis = [];
-            % Sample 10 self.positive templates for initialization
-            for i = 1 : self.opt.maxbasis / 10
-                self.tmpl.basis(:, (i - 1) * 10 + 1 : i * 10) = samplePos_DLT(frame, self.param0, self.opt.tmplsize);
+            obj.reportRes = [];
+            obj.tmpl.mean = warpimg(frame, obj.param0, obj.opt.tmplsize);
+            obj.tmpl.basis = [];
+            % Sample 10 obj.positive templates for initialization
+            for i = 1 : obj.opt.maxbasis / 10
+                obj.tmpl.basis(:, (i - 1) * 10 + 1 : i * 10) = samplePos_DLT(frame, obj.param0, obj.opt.tmplsize);
             end
             % Sample 100 negative templates for initialization
-            p0 = self.paramOld(5);
-            self.tmpl.basis(:, self.opt.maxbasis + 1 : 100 + self.opt.maxbasis) = sampleNeg(frame, self.param0, self.opt.tmplsize, 100, self.opt, 8);
+            p0 = obj.paramOld(5);
+            obj.tmpl.basis(:, obj.opt.maxbasis + 1 : 100 + obj.opt.maxbasis) = sampleNeg(frame, obj.param0, obj.opt.tmplsize, 100, obj.opt, 8);
 
-            self.param.est = self.param0;
-            self.param.lastUpdate = 1;
+            obj.param.est = obj.param0;
+            obj.param.lastUpdate = 1;
 
             wimgs = [];
 
 
             % track the sequence from frame 2 onward
-            L = [ones(self.opt.maxbasis, 1); (-1) * ones(100, 1)];
-            self.nn = initDLT(self.tmpl, L);
+            L = [ones(obj.opt.maxbasis, 1); (-1) * ones(100, 1)];
+            obj.nn = initDLT(obj.tmpl, L);
             L = [];
-            self.pos = self.tmpl.basis(:, 1 : self.opt.maxbasis);
-            self.pos(:, self.opt.maxbasis + 1) = self.tmpl.basis(:, 1);
-            self.opts.numepochs = 5 ; 
-            %self.drawopt = drawtrackresult([], 0, frame, self.tmpl, self.param, []);
+            obj.pos = obj.tmpl.basis(:, 1 : obj.opt.maxbasis);
+            obj.pos(:, obj.opt.maxbasis + 1) = obj.tmpl.basis(:, 1);
+            obj.opts.numepochs = 5 ; 
+            %obj.drawopt = drawtrackresult([], 0, frame, obj.tmpl, obj.param, []);
         end
         
-        function [self, bb, bbCenter, results] = estimatePosition(self, frame)            
+        function [obj, bb, bbCenter, results] = estimatePosition(obj, frame)            
             % (Lines 75 to 120 of run_DLT.m)
-            self.framesProcessed = self.framesProcessed + 1;
+            obj.framesProcessed = obj.framesProcessed + 1;
             if size(frame,3)==3
                 frame = double(rgb2gray(frame));
             end  
-            frame = imresize(frame, [self.opt.normalHeight, self.opt.normalWidth]);
+            frame = imresize(frame, [obj.opt.normalHeight, obj.opt.normalWidth]);
             frame = double(frame) / 255;
 
             % do tracking
-            self.param = estwarp_condens_DLT(frame, self.tmpl, self.param, self.opt, self.nn, self.framesProcessed);
+            obj.param = estwarp_condens_DLT(frame, obj.tmpl, obj.param, obj.opt, obj.nn, obj.framesProcessed);
 
             % do update
 
-            temp = warpimg(frame, self.param.est', self.opt.tmplsize);
-            self.pos(:, mod(self.framesProcessed - 1, self.opt.maxbasis) + 1) = temp(:);
-            if  self.param.update
-                self.opts.batchsize = 10;
+            temp = warpimg(frame, obj.param.est', obj.opt.tmplsize);
+            obj.pos(:, mod(obj.framesProcessed - 1, obj.opt.maxbasis) + 1) = temp(:);
+            if  obj.param.update
+                obj.opts.batchsize = 10;
                 % Sample two set of negative samples at different range.
-                neg = sampleNeg(frame, self.param.est', self.opt.tmplsize, 49, self.opt, 8);
-                neg = [neg sampleNeg(frame, self.param.est', self.opt.tmplsize, 50, self.opt, 4)];
-                self.nn = nntrain(self.nn, [self.pos neg]', [ones(self.opt.maxbasis + 1, 1); zeros(99, 1)], self.opts);
+                neg = sampleNeg(frame, obj.param.est', obj.opt.tmplsize, 49, obj.opt, 8);
+                neg = [neg sampleNeg(frame, obj.param.est', obj.opt.tmplsize, 50, obj.opt, 4)];
+                obj.nn = nntrain(obj.nn, [obj.pos neg]', [ones(obj.opt.maxbasis + 1, 1); zeros(99, 1)], obj.opts);
             end
             
-            res = affparam2geom(self.param.est);
-            self.p(1) = round(res(1));
-            self.p(2) = round(res(2)); 
-            self.p(3) = round(res(3) * self.opt.tmplsize(2));
-            self.p(4) = round(res(5) * (self.opt.tmplsize(1) / self.opt.tmplsize(2)) * self.p(3));
-            self.p(5) = res(4);
-            self.p(1) = self.p(1) * self.scaleWidth;
-            self.p(3) = self.p(3) * self.scaleWidth;
-            self.p(2) = self.p(2) * self.scaleHeight;
-            self.p(4) = self.p(4) * self.scaleHeight;
-            self.paramOld = [self.p(1), self.p(2), self.p(3)/self.opt.tmplsize(2), self.p(5), self.p(4) /self.p(3) / (self.opt.tmplsize(1) / self.opt.tmplsize(2)), 0];
+            res = affparam2geom(obj.param.est);
+            obj.p(1) = round(res(1));
+            obj.p(2) = round(res(2)); 
+            obj.p(3) = round(res(3) * obj.opt.tmplsize(2));
+            obj.p(4) = round(res(5) * (obj.opt.tmplsize(1) / obj.opt.tmplsize(2)) * obj.p(3));
+            obj.p(5) = res(4);
+            obj.p(1) = obj.p(1) * obj.scaleWidth;
+            obj.p(3) = obj.p(3) * obj.scaleWidth;
+            obj.p(2) = obj.p(2) * obj.scaleHeight;
+            obj.p(4) = obj.p(4) * obj.scaleHeight;
+            obj.paramOld = [obj.p(1), obj.p(2), obj.p(3)/obj.opt.tmplsize(2), obj.p(5), obj.p(4) /obj.p(3) / (obj.opt.tmplsize(1) / obj.opt.tmplsize(2)), 0];
 
-            self.reportRes = [self.reportRes;  affparam2mat(self.paramOld)];
+            obj.reportRes = [obj.reportRes;  affparam2mat(obj.paramOld)];
             
-            self.tmpl.basis = self.pos;
-            results.res=self.reportRes;
+            obj.tmpl.basis = obj.pos;
+            results.res=obj.reportRes;
             results.type='ivtAff';
-            results.tmplsize = self.opt.tmplsize;
-%             self.drawopt = drawtrackresult(self.drawopt, self.framesProcessed, frame, self.tmpl, self.param, []);
-            [bb, bbCenter] = self.obtainBB(size(self.tmpl.mean), self.param.est);
+            results.tmplsize = obj.opt.tmplsize;
+%             obj.drawopt = drawtrackresult(obj.drawopt, obj.framesProcessed, frame, obj.tmpl, obj.param, []);
+            [bb, bbCenter] = obj.obtainBB(size(obj.tmpl.mean), obj.param.est);
            
         end
         
-        function [bb, center] = obtainBB(self, sz, p)
+        function [bb, center] = obtainBB(obj, sz, p)
             h = sz(1); w = sz(2); %h = sz(1); w = sz(2); ??
             M = [p(1) p(3) p(4); p(2) p(5) p(6)];
             corners = [ 1,-w/2,-h/2; 1,w/2,-h/2; 1,w/2,h/2; 1,-w/2,h/2; 1,-w/2,-h/2 ]';
