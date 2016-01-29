@@ -63,6 +63,7 @@ for iSeq = 1:length(inputFolders),
     for id=idSequenceDemo{iSeq}           
         imName = sprintf('%06d', id);
         fileName = [inputFolders{iSeq}, imName, fileFormat];
+        fileName = strrep(fileName, '\', filesep);
         % Si esta activada aplicamos la tform a cada imagen
         im = imread(fileName);
 
@@ -92,5 +93,6 @@ for iSeq = 1:length(inputFolders),
        
     % Guardamos el historial de cada sequencia
     historialSeq{iSeq} = trackers.getHistorial();
+    % displayHistorial(historialSeq{iSeq});
     
 end

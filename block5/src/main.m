@@ -22,7 +22,8 @@ learnDetector;
 
 
 %% Read the rest of the sequence
-idSequenceDemo = {setdiff(1:1700, idSequenceLearn{1}); setdiff(1:1570, idSequenceLearn{2})};
+idSequenceDemo = {setdiff(1:1700, idSequenceLearn{1}); setdiff(1:1570, idSequenceLearn{2}); ...
+    1:168; 1:262; 1:193; 1:232};
 
 % El pipeline debera ser:
 % - Segmentar la imagen (usando el detector de foreground)
@@ -54,6 +55,7 @@ historialSeq = cell(2,1);
 showResults = true;
 numShowResults = 10;
 
+figure;
 for iSeq = 1:length(inputFolders),
     % Set velocityEstimation for each sequence
     trackers = trackers.setVelocityEstimator(velocityEstimator(iSeq));
@@ -61,6 +63,7 @@ for iSeq = 1:length(inputFolders),
     for id=idSequenceDemo{iSeq}            
         imName = sprintf('%06d', id);
         fileName = [inputFolders{iSeq}, imName, fileFormat];
+        fileName = strrep(fileName, '\', filesep);
         % Si esta activada aplicamos la tform a cada imagen
         im = imread(fileName);
 
@@ -90,5 +93,6 @@ for iSeq = 1:length(inputFolders),
     
     % Guardamos el historial de cada sequencia
     historialSeq{iSeq} = trackers.getHistorial();
+    % displayHistorial(historialSeq{iSeq});
     
 end
