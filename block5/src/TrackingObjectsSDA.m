@@ -11,6 +11,9 @@ classdef TrackingObjectsSDA<handle
         timeStopThres
         velocityEstimator
         fps
+        
+        historyNum
+        historialTrackersList
     end
     
     methods
@@ -32,6 +35,9 @@ classdef TrackingObjectsSDA<handle
             obj.timeStopThres = timeStopThres;
             obj.velocityEstimator = velocityEstimator;
             obj.fps = fps;
+            
+            obj.historyNum = 0;
+            obj.historialTrackersList = {};
         end
         
         function setVelocityEstimator(obj, velEst)
@@ -82,6 +88,13 @@ classdef TrackingObjectsSDA<handle
                        matrix(idtracker,:) = Inf;
                        matrix(:, idobject) = Inf;
                        objectsUsed(idobject) = true;
+                       
+                       % Si la bounding box encontrada es mas grande que la
+                       % actual, suponemos que la anterior era ruido y
+                       % copiamos la informacion
+                       if 0.4*prod(objects(idobject).BoundingBox(3:4)) > prod(obj.trackers{idtracker}.lastpredict.BoundingBoxWH(1:2))
+                            obj.trackers{idtracker}.tracker = obj.createSDAObj(objects(idobject), im);
+                       end
 
                        % Le anadimos vida, para que siga funcionando
                        obj.trackers{idtracker}.live = obj.trackers{idtracker}.live + obj.stepLive;
@@ -107,18 +120,22 @@ classdef TrackingObjectsSDA<handle
             predict = struct('position', [array(1) array(2)], 'velocity', [array(3) array(4)], 'BoundingBoxWH', [array(5) array(6)]);
         end
         
+        % Crear un sdaObject
+        function sdaObject = createSDAObj(obj, object, im)
+            % Creamos un SDAFilter
+            sdaObject = SDAFilter(im, object.BoundingBox);
+        end
+        
         % Crear un nuevo tracker 
-        function tracker = createNewTracker(obj, object, im)
-            % Create struct
+        function tracker = createNewTracker(obj, object, im)     
+            sdaObject = obj.createSDAObj(object, im);
+            
             lastpredict = obj.createPredictStruct([object.Centroid(1) object.Centroid(2), 0, 0, object.BoundingBox(3) object.BoundingBox(4)]);
             antlastpredict = obj.createPredictStruct([Inf, Inf, 0, 0, object.BoundingBox(3) object.BoundingBox(4)]);
             
-            % Creamos un SDAFilter
-            sdaObject = SDAFilter(im, object.BoundingBox);
-            
             
             % Creamos el tracker
-            tracker = struct('live', obj.maxLive, 'tracker', sdaObject, 'lastpredict', lastpredict, 'antlastpredict', antlastpredict, 'time', 0, 'timeStop', 0, 'accVel', 0, 'timeActive', 0); % 'bb', object.BoundingBox(3:4)
+            tracker = struct('live', obj.maxLive, 'tracker', kalmanTracker(object), 'lastpredict', lastpredict, 'antlastpredict', antlastpredict, 'time', 0, 'timeStop', 0, 'accVel', 0, 'timeActive', 0, 'id', obj.historyNum); % 'bb', object.BoundingBox(3:4)
         end
         
         % Deja passar solo aquellos que tienen vida o se salen de la imagen
@@ -209,7 +226,7 @@ classdef TrackingObjectsSDA<handle
                 
                 
                 
-                positions{i} = struct('location', obj.trackers{i}.lastpredict.position, 'code', code, 'BoundingBoxWH', obj.trackers{i}.lastpredict.BoundingBoxWH, 'vel', velocity, 'avgVel', obj.trackers{i}.accVel/obj.trackers{i}.timeActive);
+                positions{i} = struct('location', obj.trackers{i}.lastpredict.position, 'code', code, 'BoundingBoxWH', obj.trackers{i}.lastpredict.BoundingBoxWH, 'vel', velocity, 'avgVel', obj.trackers{i}.accVel/obj.trackers{i}.timeActive, 'id', obj.trackers{i}.id);
                 % Quitamos vida a todos los trackers
                 obj.trackers{i}.live = obj.trackers{i}.live - 1;
                 obj.trackers{i}.time = obj.trackers{i}.time + 1;
@@ -228,6 +245,28 @@ classdef TrackingObjectsSDA<handle
             vel = sqrt(sum(vel.*vel))*obj.velocityEstimator*obj.fps*3.6;
         end
         
+        % Guardamos el historial
+        function historialTrackers(obj, positions)
+            for i=1:length(positions)
+                if strcmp(positions{i}.code, 'active')
+                    obj.historialTrackersList{positions{i}.id} = struct('id', positions{i}.location, 'location', positions{i}.location, 'avgVel', positions{i}.avgVel);
+                end
+            end
+        end
+        
+        % Funcion para poder ver el historial
+        function [realHisto, total] = getHistorial(obj)
+            realHisto = {};
+            k=1;
+            for i=1:length(obj.historialTrackersList)
+                if ~isempty(obj.historialTrackersList{i})
+                    realHisto{k} = obj.historialTrackersList{i};
+                    realHisto{k}.id = k;
+                    k=k+1;
+                end
+            end
+            total = k-1;
+        end
         
         % Mostramos los resultados
         function showTrackers(obj, im, mask, positions)
