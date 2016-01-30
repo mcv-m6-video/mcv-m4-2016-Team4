@@ -6,7 +6,7 @@
 
 %% Setup
 setup;
-
+storeFigures = false;
 %% Config
 enable_homography = 'false'; % 'before', 'false'
 
@@ -22,7 +22,8 @@ learnDetector;
 
 
 %% Read the rest of the sequence
-idSequenceDemo = {setdiff(1:1700, idSequenceLearn{1}); setdiff(1:1570, idSequenceLearn{2})};
+idSequenceDemo = {setdiff(1:1700, idSequenceLearn{1}); setdiff(1:1570, idSequenceLearn{2}); ...
+    1:168; 1:262; 1:193; 1:232};
 
 
 addpath(genpath('Wang2013/'));
@@ -58,8 +59,11 @@ numShowResults = 10;
 for iSeq = 1:length(inputFolders),
     % Set velocityEstimation for each sequence
     trackers = TrackingObjectsSDA(limits, maxDistanceMeasurement, minDistanceMerge, mergePenalize, maxLive, stepLive, timeThres, timeStopThres, velocityEstimator(1), fps);
-    trackers.setVelocityEstimator(velocityEstimator(iSeq));
-    
+    trackers = trackers.setVelocityEstimator(velocityEstimator(iSeq));
+    folderName = ['..' filesep 'figures' filesep int2str(iSeq) filesep];
+    if ~exist(folderName,'dir')
+        mkdir(folderName);
+    end
     
     for id=idSequenceDemo{iSeq}           
         imName = sprintf('%06d', id);
@@ -82,13 +86,16 @@ for iSeq = 1:length(inputFolders),
         % Actualizamos el historial
         trackers.historialTrackers(positions)
         
-        if mod(id, numShowResults)==0
-            id
-            % Mostrar los resultados onlive
-            if showResults
+%         if mod(id, numShowResults)==0
+%             id
+%             % Mostrar los resultados onlive
+%             if showResults
                 trackers.showTrackers(im, mask, positions);
-            end
-        end
+                if storeFigures
+                    saveas(1, [folderName int2str(id) '.jpg']) ;
+                end
+%             end
+%         end
             
     end
        

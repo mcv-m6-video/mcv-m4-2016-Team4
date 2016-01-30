@@ -40,7 +40,7 @@ classdef TrackingObjectsSDA<handle
             obj.historialTrackersList = {};
         end
         
-        function setVelocityEstimator(obj, velEst)
+        function obj = setVelocityEstimator(obj, velEst)
             obj.velocityEstimator = velEst;
         end
         
@@ -135,7 +135,8 @@ classdef TrackingObjectsSDA<handle
             
             
             % Creamos el tracker
-            tracker = struct('live', obj.maxLive, 'tracker', kalmanTracker(object), 'lastpredict', lastpredict, 'antlastpredict', antlastpredict, 'time', 0, 'timeStop', 0, 'accVel', 0, 'timeActive', 0, 'id', obj.historyNum); % 'bb', object.BoundingBox(3:4)
+            obj.historyNum = obj.historyNum + 1;
+            tracker = struct('live', obj.maxLive, 'tracker', sdaObject, 'lastpredict', lastpredict, 'antlastpredict', antlastpredict, 'time', 0, 'timeStop', 0, 'accVel', 0, 'timeActive', 0, 'id', obj.historyNum); % 'bb', object.BoundingBox(3:4)
         end
         
         % Deja passar solo aquellos que tienen vida o se salen de la imagen
@@ -197,7 +198,7 @@ classdef TrackingObjectsSDA<handle
             positions = cell(length(obj.trackers), 1);
             for i=1:length(obj.trackers)
                 % Actualizamos la ultima prediccion
-                [~, bb, bbCenter, results] = obj.trackers{i}.tracker.estimatePosition(im);
+                [obj.trackers{i}.tracker, bb, bbCenter, results] = obj.trackers{i}.tracker.estimatePosition(im);
                 obj.trackers{i}.antlastpredict = obj.trackers{i}.lastpredict;
                 obj.trackers{i}.lastpredict = obj.createPredictStruct([bbCenter(1), bbCenter(2), 0, 0, bb(3), bb(4)]);
                 
@@ -226,7 +227,9 @@ classdef TrackingObjectsSDA<handle
                 
                 
                 
-                positions{i} = struct('location', obj.trackers{i}.lastpredict.position, 'code', code, 'BoundingBoxWH', obj.trackers{i}.lastpredict.BoundingBoxWH, 'vel', velocity, 'avgVel', obj.trackers{i}.accVel/obj.trackers{i}.timeActive, 'id', obj.trackers{i}.id);
+                positions{i} = struct('location', obj.trackers{i}.lastpredict.position, 'code', code, ...
+                    'BoundingBoxWH', obj.trackers{i}.lastpredict.BoundingBoxWH, 'vel', velocity, 'avgVel', ...
+                    obj.trackers{i}.accVel/obj.trackers{i}.timeActive, 'id', obj.trackers{i}.id);
                 % Quitamos vida a todos los trackers
                 obj.trackers{i}.live = obj.trackers{i}.live - 1;
                 obj.trackers{i}.time = obj.trackers{i}.time + 1;
@@ -240,9 +243,11 @@ classdef TrackingObjectsSDA<handle
         % Es mejor usar la posicion porque la velocidad se va acumulando en
         % el filtro de kalman y se acumula tambien cuando no esta 'Active'
         function vel = predictVelocity(obj, homography, tracker)
-            velP = tracker.lastpredict.position - tracker.antlastpredict.position;
-            vel = homography.distImage2H(velP);
-            vel = sqrt(sum(vel.*vel))*obj.velocityEstimator*obj.fps*3.6;
+%             velP = tracker.lastpredict.position - tracker.antlastpredict.position;
+%             vel = homography.distImage2H(velP);
+%             vel = sqrt(sum(vel.*vel))*obj.velocityEstimator*obj.fps*3.6;
+            vel = homography.dist2Points(tracker.lastpredict.position, tracker.antlastpredict.position);
+            vel = vel*obj.velocityEstimator*obj.fps*3.6;
         end
         
         % Guardamos el historial
@@ -273,7 +278,7 @@ classdef TrackingObjectsSDA<handle
             % Imagen Original
             subplot(1,2,1), imshow(im), hold on;
             codes = {};
-            
+            activeBBhandles = [];
             k = 0;
             for i=1:length(positions)
                 pos = positions{i};
@@ -290,11 +295,13 @@ classdef TrackingObjectsSDA<handle
                     k = k + 1;
                     n = 'Active';
                     c = 'g';
+                    codes{end+1} = n;
                 end
-                plot(loc(1), loc(2), [c '*']);
-                codes{end+1} = n;
+                h = plot(loc(1), loc(2), [c '*']);
+                
                 
                 if strcmp(code, 'active')
+                    activeBBhandles(end+1) = h;
                     codes{end} = [codes{end} '  num: ' num2str(k) ', vel: ' num2str(round(positions{i}.vel)) ', avgVel: ', num2str(round(positions{i}.avgVel))];
                 end
                 
@@ -305,7 +312,9 @@ classdef TrackingObjectsSDA<handle
                 end
             end
             
-            legend(codes, 'Location', 'NorthOutside')
+            if ~isempty(codes)
+                legend(activeBBhandles, codes, 'Location', 'NorthOutside')
+            end
             hold off;
 
             % Mascara
