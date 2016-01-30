@@ -54,7 +54,8 @@
 <a id="demo-videos" class="anchor" href="#demo-videos" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Demo Videos and Images</h3>
       <p>An example of how our tracker system works. It has some limitations when it comes to occlusions and shadows.</p>
       <iframe width="420" height="315" src="https://www.youtube.com/embed/KxQIcXbbdS4" frameborder="0" allowfullscreen></iframe>
-      <p>We will update a video with the tracking method of Wang (which is inspired by deep learning). We haven't done so yet because it is very slow to run.</p>  
+      <p>We will update a video with the tracking method of Wang (which is inspired by deep learning). We haven't done so yet because it is very slow to run.</p>
+      <p>We can see that Kalman filter does a pretty good job estimating the velocity of the vehicles, which remains most of the time stable. However, it is highly dependant on the segmentation that sometimes can be noisy or affected by shadows or occlusions. On the other hand, the SDA+NN is very good at tracking the objects, but as the bounding boxes constantly change the size and aspect ratio, the velocity estimation is more unstable (in one frame we have 55 kmh and in the next one 220 kmh, for example).</p>
         
         
         <h3>
