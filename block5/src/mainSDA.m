@@ -6,7 +6,7 @@
 
 %% Setup
 setup;
-storeFigures = false;
+storeFigures = true;
 %% Config
 enable_homography = 'false'; % 'before', 'false'
 

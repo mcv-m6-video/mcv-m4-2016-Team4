@@ -1,6 +1,7 @@
 function newNN = initDLT(tmpl, L)
     load pretrain;
     global useGpu;
+    useGpu = true;
     newNN = nnsetup([1024 2560 1024 512 256 1]);
     for i = 1 : 4
         if useGpu
